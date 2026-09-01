@@ -109,7 +109,7 @@ def _con(c):
             "lits": c.lits, "op": c.op, "rhs": c.rhs}
 
 if __name__ == "__main__":
-    import sys, argparse
+    import sys, argparse, json
     ap = argparse.ArgumentParser()
     ap.add_argument("--size", default="small", choices=list(SIZES))
     ap.add_argument("--seed", type=int, default=1)

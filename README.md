@@ -1,71 +1,91 @@
-# EnigmaForge
+# 🧩 EnigmaForge
 
-Procedural generator of hidden-formal-world strategic-reasoning benchmarks.
+**Procedurally generated benchmarks for the hardest thing an LLM can do: discover the problem before solving it.**
 
-A fictional narrative surface (case file, correspondence, records) is *compiled
-from* a machine-verified formal instance. The solver must discover the problem,
-the latent variables, and the relevant evidence before solving. Uniqueness of
-the intended solution is mechanically proven; ablation proves every clue is
-load-bearing; distractors are formally inert.
+Most benchmarks hand a model the question. EnigmaForge hands it a *record* — letters, receipts, logbooks, marginalia — and asks nothing else. The real task is hidden inside: the solver must infer latent entities, decide which evidence matters, supply world knowledge the narrative never states, abandon objectives that turn out to be intermediate, and justify a final answer against a **mechanically verified ground truth**.
 
-## Architecture
+> *You have been given the complete record of an unusual sequence of events. Determine what the record ultimately requires you to figure out. Then figure it out.*
 
-```
-config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ package
-            │                          │          │
-   HiddenWorld (HFW)            SAT gates   multiple surface
-   ground truth first           + oracle    realizations
-```
+## Why it is different
 
-- `enigmaforge/rng.py` — seeded mulberry32, all artifacts reproducible
-- `world.py` — Hidden Formal World: vars, constraints, evidence units,
-  knowledge bridges, staged objectives (apparent → intermediate → true)
-- `generator.py` — ground-truth-first sampling; strengthen; minimize
-  (PINs dropped first); chain-depth instrumentation
-- `verify.py` — SAT gates: uniqueness via ban-clause SAT, ablation
-  (each clue removal must admit a second model), engine-vs-oracle
-  differential on small shapes
-- `oracle.py` — brute-force truth for differential validation
-- `narrative.py` — replaceable compiler: channels (letter/receipt/logbook/
-  dialogue/marginalia/photo/chronology/omission), surface-noun lexicon,
-  deterministic per-realization paraphrase
-- `interactive.py` — budgeted investigation; irreversible actions
-- `evaluate.py` — trajectory scoring from the hidden representation
-
-## Guarantees (enforced by tests)
-
-1. SAT engine ≡ brute-force oracle on the small-shape corpus (model-set
-   equality, order-insensitive).
-2. Uniqueness: banning the ground-truth assignment makes the instance UNSAT.
-3. Essentiality: removing ANY published clue admits a second model.
-4. Determinism: same seed → identical challenge; different realization seed →
-   different surface, same hidden structure and solution.
-5. Distractors are formally inert by construction (carry no constraints).
-
-## Use
-
-    python3 -m enigmaforge.pipeline --size small|medium|large --seed N --out runs/X
-
-Sizes: small (8 vars), medium (30 vars), large (60 vars, interactive mode).
-
-## Verification battery per published instance
-
-| Gate | Method |
+| Conventional benchmarks | EnigmaForge |
 |---|---|
-| engine agreement | oracle vs SAT, small shapes |
-| uniqueness | ban-clause SAT (early exit) |
-| ablation | drop-each-clue → must loosen |
-| distractor safety | structural (no formal content) |
-| realizations | ≥2 surfaces, same solution |
+| Question is stated | Problem must be **discovered** |
+| Puzzle handcrafted | Instance **procedurally generated** at any complexity |
+| Solution trusted by convention | Uniqueness **proved by SAT** |
+| Distractors are noise | Distractors **support plausible false hypotheses** |
+| Score = final answer | **Trajectory scored**: insight latency, evidence efficiency, objective revision |
+| One canonical wording | Multiple **surface realizations** of one hidden instance |
 
-## Limits (v1, honest)
+## The pipeline
 
-- Narrative compiler is template-based, not LLM-compiled; prose quality is
-  serviceable, not literary. The module is replaceable by design — an LLM
-  compiler subject to the same constraint-evidence map is the v2 path.
-- Testimony gating (speaker reliability self-reference) is designed but not
-  yet wired into generation.
-- Underdetermined-scenario mode (recognizing ambiguity is the answer) is
-  designed but not yet generated; the verifier supports it (`want_unique=False`).
-- Adversarial LLM validation (running solvers against the challenge) is not
-  in this prototype.
+```
+config ──► World Generator ──► Constraint/Objective Generator ──► Formal Verifier
+                                                                        │
+   ◄── package ── Narrative Compiler ◄── Knowledge Bridges ◄── Distractors ◄──┘
+                    │
+                    ├─► Interactive Environment (budgeted investigation)
+                    └─► Trajectory Recorder ──► Evaluator ──► Difficulty Calibrator
+```
+
+Every published challenge ships with:
+
+- the **solver-visible narrative** (and a second realization with identical solution);
+- the **hidden formal world** — variables, constraints, dependency graph;
+- a **machine-verified solution** — uniqueness proven by ban-clause UNSAT;
+- **ablation certificates** — removing *any* clue provably admits a second model;
+- the **evidence→constraint map**, external-knowledge facts, distractor annotations;
+- a **scoring rubric** computed from the hidden representation, not an LLM judge.
+
+## Quick start
+
+```bash
+git clone https://github.com/robottwo/enigmaforge.git
+cd enigmaforge
+python3 -m enigmaforge.pipeline --size small --seed 2026 --out runs/demo
+```
+
+Three difficulty tiers, all gates verified:
+
+| Size | Latent vars | What it tests |
+|---|---|---|
+| `small` | 8 | Human-inspectable: latent structure, basic discovery |
+| `medium` | 30 | Distractors, knowledge bridges, hidden intermediate objective |
+| `large` | 60+ | Budgeted interactive investigation, competing hypotheses, nested objectives |
+
+## Verified guarantees
+
+1. **Solvability** — the world is generated ground-truth-first; a solution exists by construction.
+2. **Uniqueness** — banning the intended solution makes the instance UNSAT (DPLL proof).
+3. **No dead clues** — dropping any published clue provably admits a second model.
+4. **Engine ≡ oracle** — the DPLL engine agrees with exhaustive enumeration across a 75-instance differential corpus (committed test battery).
+5. **Determinism** — same seed → identical challenge; realization seed changes only the surface, never the solution.
+6. **Inert distractors** — narrative red herrings carry no formal content; they can mislead, never invalidate.
+
+## Configurable difficulty
+
+Latent entity count, constraint topology, dependency depth, distractor ratio,
+competing-hypothesis count, world-knowledge bridges, narrative length,
+information budget, planning horizon — every axis is a config knob, from a
+6-variable puzzle to 100+ variables spanning tens of thousands of tokens.
+
+## Status
+
+v0.1 — working end-to-end prototype: generation, verification, narrative
+compilation, interactive mode, trajectory scoring. See the honest
+[Limits](#limits-v1) section in the docs. Roadmap: LLM narrative compiler
+under the same constraint-evidence contract, underdetermined-scenario mode,
+adversarial LLM validation harness.
+
+## Limits (v1)
+
+Honest state of the prototype: the narrative compiler is template-based (an
+LLM compiler under the same constraint-evidence contract is the v2 path);
+testimony gating, underdetermined-scenario generation, and adversarial LLM
+validation are designed but not yet wired. Technical detail:
+[`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## License
+
+MIT — © 2026 Robottwo
+
