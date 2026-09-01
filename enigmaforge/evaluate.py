@@ -1,20 +1,27 @@
 """Trajectory evaluator: scores from the hidden formal representation.
 v1 dimensions: objective identification, evidence efficiency, hypothesis
-quality, insight latency, calibration. Computed mechanically where possible."""
+quality, insight latency, calibration. Computed mechanically where possible.
+v2 adds problem discovery (did the solver realize there was a task at all —
+the load-bearing question in story mode, where nothing announces a puzzle)
+and clue discovery latency (share of essential clues needed before the first
+insight, normalized to the clues actually rendered in the surface)."""
 from .world import HiddenWorld
 
-def score_trajectory(world, trajectory):
+def score_trajectory(world, trajectory, realization=None):
     """trajectory = list of events, each {t, type, payload}.
     Types: observe(euid), hypothesize(latent_vars, mapping), answer(stage, answer),
-    revise(stage, new_answer), done."""
+    revise(stage, new_answer), done.
+    realization: optional Realization — restricts clue-latency accounting to
+    the units actually rendered in the surface the solver saw."""
     events = trajectory
     essential = set(world.meta.get("essential_cids", []))
     n_ev = len(world.evidence)
     dims = {
         "final_outcome": 0.0, "objective_identification": 0.0,
         "evidence_efficiency": 0.0, "redundant_investigation": 0.0,
-        "hypothesis_quality": 0./1, "insight_latency": 0.0,
+        "hypothesis_quality": 0.0, "insight_latency": 0.0,
         "objective_revision_accuracy": 0.0, "calibration": None,
+        "problem_discovery": 0.0, "clue_discovery_latency": None,
     }
     gt = world.meta.get("ground_truth", {})
     true_stage = [o for o in world.objectives if o.true_objective]
@@ -44,10 +51,12 @@ def score_trajectory(world, trajectory):
     dims["redundant_investigation"] = len(obs) - len(set(obs))
 
     # insight latency: t of first hypothesis containing >=50% of gt vars
+    first_insight = None
     for e in hypo_events:
         m = e["payload"].get("mapping", {})
         if m and _match(m, gt) >= 0.5:
             dims["insight_latency"] = 1.0 / (1.0 + e["t"])
+            first_insight = e
             break
     # hypothesis quality: mean match of all hypotheses over time
     if hypo_events:
@@ -60,6 +69,24 @@ def score_trajectory(world, trajectory):
     if revise_events and hypo_events:
         kept = [e for e in hypo_events if not e["payload"].get("abandoned", False)]
         dims["objective_revision_accuracy"] = len(kept) / len(hypo_events)
+
+    # problem discovery: with no announced task, the first deliberate act
+    # (hypothesis or answer) IS the discovery. 1/(1+t); 0 if the solver
+    # only ever observed passively.
+    deliberative = [e for e in events if e["type"] in ("hypothesize", "answer")]
+    if deliberative:
+        dims["problem_discovery"] = 1.0 / (1.0 + deliberative[0]["t"])
+
+    # clue discovery latency: share of essential clues observed at or before
+    # the first insight — how much of the surface the solver needed before
+    # getting it. Lower is sharper. None when there was no insight.
+    ess_euids = essential_euids(world)
+    if realization is not None:
+        ess_euids = ess_euids & set(realization.rendered)
+    if first_insight is not None and ess_euids:
+        seen = {e["payload"].get("euid") for e in observe_events
+                if e["t"] <= first_insight["t"]}
+        dims["clue_discovery_latency"] = len(seen & ess_euids) / len(ess_euids)
     return dims
 
 def _match(answer, gt):

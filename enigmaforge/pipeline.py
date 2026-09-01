@@ -8,6 +8,7 @@ from .populate import populate_evidence, populate_bridges, populate_objectives
 from .verify import (sat_vs_oracle, verify_uniqueness, verify_ablation,
                      verify_distractor_safety, sat_models, has_other_model)
 from .narrative import compile_narrative
+from .verify import verify_realization, verify_roundtrip
 from .interactive import InteractiveSession
 
 SIZES = {
@@ -60,32 +61,118 @@ def verify_ablation_sat(world, essential_cids):
                         "essential": other}
     return {"pass": all(r["essential"] for r in results.values()), "detail": results}
 
-def build(size="small", seed=1, config_overrides=None):
+def _realizations(world, n=2, renderer=None, polisher=None):
+    """Compile n surface realizations; realization i uses seed + i*5000 so
+    surfaces differ while the skeleton (macro pacing) stays fixed. A
+    polisher(world, realization) runs a final creative pass on story
+    drafts; its output is re-gated, and the locked draft ships if the
+    polish breaks the contract."""
+    mode = world.config.get("mode", "record")
+    rs = []
+    for i in range(n):
+        rseed = world.seed + i * 5000
+        if mode == "story":
+            from .story import build_skeleton, compile_story_verified
+            sk = world.meta.get("skeleton") or build_skeleton(world, world.seed)
+            world.meta["skeleton"] = sk
+            r = compile_story_verified(world, sk, rseed, renderer=renderer)
+            if polisher is not None:
+                # polisher raises after its retry budget if it cannot
+                # preserve the hints — no unpolished draft is ever shipped
+                # from a --polish run
+                r = polisher(world, r)
+            rs.append(r)
+        else:
+            rs.append(compile_narrative(world, realization_seed=rseed))
+    return rs
+
+
+def build(size="small", seed=1, config_overrides=None, renderer=None,
+          polisher=None, genre_gen=None):
     cfg = dict(SIZES[size])
     cfg.update(config_overrides or {})
-    world = generate_world(cfg, seed)
+    # genre is a seeded axis: unset/auto picks from the pack list, so the
+    # setting varies across instances while same-seed determinism holds
+    world = None
+    if cfg.get("genre") == "llm":
+        if genre_gen is None:
+            raise ValueError("genre 'llm' requires a genre_gen callable "
+                             "(see llm.generate_genre_pack)")
+        pack = genre_gen(seed)   # raises if it can't build a valid pack
+        world = generate_world(cfg, seed)
+        world.meta["genre_pack"] = pack
+    else:
+        from .genres import pick_genre
+        if not cfg.get("genre"):
+            cfg["genre"] = pick_genre(seed)
+        world = generate_world(cfg, seed)
     populate_evidence(world, seed)
     populate_bridges(world, seed)
     populate_objectives(world, seed)
     # verification battery (adaptive: oracle for small, SAT for large)
     v = adaptive_gates(world)
+    # story mode: fix the macro-structure (pacing, sequencing) before any
+    # surface exists, so all realizations of this instance are difficulty-matched
+    if cfg.get("mode", "record") == "story":
+        from .story import build_skeleton
+        world.meta["skeleton"] = build_skeleton(world, seed)
+    # surface-faithfulness gates: coverage/spans/leakage + extraction round-trip
+    rs = _realizations(world, n=2, renderer=renderer, polisher=polisher)
+    v["realization"] = {}
+    for i, r in enumerate(rs, 1):
+        entry = verify_realization(world, r)
+        entry["roundtrip"] = verify_roundtrip(world, r)
+        if r.gates.get("polished"):
+            entry["polished"] = True
+        v["realization"][f"r{i}"] = entry
+    world.meta["realizations"] = rs
     world.verification = v
     return world
 
-def package(world, out_dir, n_realizations=2):
+
+def package(world, out_dir, n_realizations=2, renderer=None, polisher=None):
     """Write the full benchmark package: solver-visible text + hidden files."""
     import os, json
     os.makedirs(out_dir, exist_ok=True)
     d = lambda f: os.path.join(out_dir, f)
+    mode = world.config.get("mode", "record")
+    stem = "story" if mode == "story" else "challenge"
+    rs = world.meta.get("realizations") or []
+    if len(rs) < n_realizations:
+        rs = _realizations(world, n_realizations, renderer=renderer,
+                           polisher=polisher)
     pub = world.public_summary()
-    with open(d("challenge.md"), "w") as f:
-        f.write(compile_narrative(world, realization_seed=world.seed))
-    if n_realizations > 1:
-        with open(d("challenge_r2.md"), "w") as f:
-            f.write(compile_narrative(world, realization_seed=world.seed + 5000))
-    with open(d("hidden_formal.json"), "f" if False else "w") as f:
+    pub["mode"] = mode
+    for i, r in enumerate(rs[:n_realizations]):
+        suffix = "" if i == 0 else f"_r{i+1}"
+        with open(d(f"{stem}{suffix}.md"), "w") as f:
+            f.write(r.text)
+        with open(d(f"realization_map{suffix}.json"), "w") as f:
+            json.dump({"mode": r.mode, "rendered": r.rendered,
+                       "spans": {k: list(v) for k, v in r.spans.items()},
+                       "clauses": r.clauses}, f, indent=2)
+    if mode == "story" and world.meta.get("skeleton") is not None:
+        from .story import skeleton_summary
+        with open(d("skeleton.json"), "w") as f:
+            json.dump(skeleton_summary(world.meta["skeleton"]), f, indent=2)
+    gp = world.meta.get("genre_pack")
+    if gp is not None:
+        # the llm genre is not seed-reproducible: persist the generated
+        # pack with the instance for audit and replay
+        with open(d("genre_pack.json"), "w") as f:
+            json.dump({"name": gp.name, "vibe": gp.vibe,
+                       "setting": gp.setting, "locale": gp.locale,
+                       "demonym": gp.demonym, "chrono": gp.chrono,
+                       "nouns": gp.nouns, "places": gp.places,
+                       "frames": gp.frames, "filler": gp.filler,
+                       "titles": gp.titles,
+                       "distractor_bodies": gp.distractor_bodies,
+                       "hypotheses": gp.hypotheses,
+                       "lore": [list(x) for x in gp.lore],
+                       "things": gp.things}, f, indent=2)
+    with open(d("hidden_formal.json"), "w") as f:
         json.dump(_hidden(world), f, indent=2, default=str)
-    with open(d("verification.json"), "d" if False else "w") as f:
+    with open(d("verification.json"), "w") as f:
         json.dump(world.verification, f, indent=2, default=str)
     return {"dir": out_dir, "summary": pub}
 
@@ -108,15 +195,68 @@ def _con(c):
     return {"cid": c.cid, "kind": c.kind.value, "vars": c.vars, "values": c.values,
             "lits": c.lits, "op": c.op, "rhs": c.rhs}
 
-if __name__ == "__main__":
-    import sys, argparse, json
-    ap = argparse.ArgumentParser()
+def main(argv=None):
+    import argparse, json
+    ap = argparse.ArgumentParser(
+        prog="enigmaforge",
+        description="Generate a verified benchmark instance and package it.")
     ap.add_argument("--size", default="small", choices=list(SIZES))
+    ap.add_argument("--mode", default="record", choices=["record", "story"],
+                    help="record: numbered exhibits; story: puzzle embedded in prose")
+    ap.add_argument("--renderer", default="template", choices=["template", "llm"],
+                    help="story-mode scene renderer (llm resolves endpoint from "
+                         "args > env > local agent configs; see `python3 -m "
+                         "enigmaforge.llm`)")
+    ap.add_argument("--model", default=None, help="model id for --renderer llm")
+    ap.add_argument("--base-url", default=None,
+                    help="OpenAI-compatible endpoint, e.g. http://localhost:11434/v1")
+    ap.add_argument("--genre", default="auto",
+                    help="setting pack; 'auto' picks by seed; 'llm' has a "
+                         "model invent the whole setting (maritime, manor, "
+                         "hotel, theater, observatory are built in)")
+    ap.add_argument("--burial", type=int, default=1, choices=[0, 1, 2, 3],
+                    help="how deep clues sit under pure story: scenic "
+                         "paragraphs around clue scenes; 2+ adds whole "
+                         "clue-free story scenes")
+    ap.add_argument("--polish", action="store_true",
+                    help="final LLM pass: rewrite the story draft for "
+                         "natural prose while claim clauses stay verbatim; "
+                         "3 attempts with feedback, then the run fails")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--out", default=None)
     ap.add_argument("--n-realizations", type=int, default=2)
-    a = ap.parse_args()
-    w = build(a.size, a.seed)
+    a = ap.parse_args(argv)
+    renderer = None
+    polisher = None
+    genre_gen = None
+    cfg = {"mode": a.mode, "burial": a.burial}
+    if a.genre != "auto":
+        cfg["genre"] = a.genre
+    if a.genre == "llm":
+        from .llm import generate_genre_pack
+        genre_gen = lambda seed: generate_genre_pack(
+            seed=seed, model=a.model, base_url=a.base_url)
+    if a.renderer == "llm":
+        if a.mode != "story":
+            ap.error("--renderer llm requires --mode story")
+        from .llm import llm_scene_renderer
+        renderer = llm_scene_renderer(model=a.model, base_url=a.base_url)
+        cfg["renderer"] = "llm"
+    if a.polish:
+        if a.mode != "story":
+            ap.error("--polish requires --mode story")
+        from .llm import polish_realization
+        cfg["polish"] = True
+        polisher = lambda world, r: polish_realization(
+            world, r, model=a.model, base_url=a.base_url)
+    w = build(a.size, a.seed, config_overrides=cfg, renderer=renderer,
+              polisher=polisher, genre_gen=genre_gen)
     out = a.out or f"runs/{a.size}-seed{a.seed}"
-    r = package(w, out, a.n_realizations)
+    r = package(w, out, a.n_realizations, renderer=renderer,
+                polisher=polisher)
     print(json.dumps(r, indent=2))
+    return r
+
+
+if __name__ == "__main__":
+    main()

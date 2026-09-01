@@ -34,8 +34,9 @@ Every published challenge ships with:
 - the **hidden formal world** — variables, constraints, dependency graph;
 - a **machine-verified solution** — uniqueness proven by ban-clause UNSAT;
 - **ablation certificates** — removing *any* clue provably admits a second model;
-- the **evidence→constraint map**, external-knowledge facts, distractor annotations;
-- a **scoring rubric** computed from the hidden representation, not an LLM judge.
+- the **evidence→constraint map**, in-world lore references, distractor annotations;
+- a **realization map** — span-level provenance from every clue's prose to its
+  evidence unit, plus the story skeleton and pacing policy in story mode;
 
 ## Quick start
 
@@ -43,7 +44,79 @@ Every published challenge ships with:
 git clone https://github.com/robottwo/enigmaforge.git
 cd enigmaforge
 python3 -m enigmaforge.pipeline --size small --seed 2026 --out runs/demo
+# or, equivalently:  ./run.py --size small --seed 2026 --out runs/demo
 ```
+
+Story mode embeds the same verified instance in plain prose — no exhibit
+list, no stated task; whether there is anything to figure out is itself
+part of the challenge:
+
+```bash
+python3 -m enigmaforge.pipeline --size small --seed 2026 --mode story --out runs/demo-story
+```
+
+The setting is a seeded axis too — `--genre` picks the pack (maritime,
+manor, hotel, theater, observatory); `auto` (default) selects by seed, so
+instances vary in setting while staying reproducible per seed. `--genre llm`
+goes further: a model invents the entire setting pack, madlib-style — nouns,
+places, frames, lore — and the generated pack must pass every construction
+time check (unique extractable nouns, no formal leakage) with corrective
+retries, else the run fails. Invented packs are persisted per instance as
+`genre_pack.json` (they are not seed-reproducible):
+
+```bash
+./run.py --size small --seed 2026 --mode story --genre theater --out runs/theater
+./run.py --size small --seed 7 --mode story --genre llm --out runs/invented
+```
+
+Clue burial is a measured dial: `--burial 0-3` (default 1) adds seeded
+pure-story paragraphs before and after clue-bearing paragraphs — at 2+,
+whole clue-free story scenes appear between them. Depth is fixed by the
+world seed (both realizations bury identically), recorded in
+`skeleton.json`, and gated: buried or not, the extraction round-trip must
+still recover the model from the prose alone. A final creative `--polish`
+pass lets a model rewrite the finished draft for natural prose with full
+liberty around the claim clauses — clauses stay verbatim, the polished text
+is re-gated, and if the hints cannot be preserved in 3 attempts the run
+fails rather than publish an unpolished or broken surface.
+
+### Running with an LLM renderer
+
+Story mode can hand scene prose to a chat model instead of the template
+renderer. Rendering is two-phase: one planning call drafts a shared premise,
+a character sheet (roles, pronouns), and a distinct setting per scene; the
+scene calls then render in parallel (default 3 workers, per-scene retry)
+inside that one story — so scenes differ in place and weather and the cast
+stays consistent instead of converging on the same rainy room. The model
+writes everything *around* the clues but must embed every claim clause
+**verbatim**; the pipeline trusts nothing — span search and the extraction
+round-trip gate every scene, and failures are rejection-sampled.
+
+```bash
+# OpenAI (reads OPENAI_API_KEY; model via --model or ENIGMAFORGE_MODEL)
+export OPENAI_API_KEY=sk-...
+./run.py --size small --seed 2026 --mode story --renderer llm --out runs/llm-story
+
+# any OpenAI-compatible local server (ollama, vLLM, llama.cpp)
+./run.py --size small --seed 2026 --mode story --renderer llm \
+         --base-url http://localhost:11434/v1 --model llama3.1
+```
+
+With no flags and no env vars, the endpoint is **autodiscovered from local
+agent configs** — opencode (`auth.json` + `opencode.jsonc`), codex
+(`config.toml` + `auth.json`), goose, and continue are probed for an
+OpenAI-compatible base URL, key, and model (precedence: flags > env
+`OPENAI_*` > agent configs > defaults; native non-compatible providers like
+Anthropic are skipped). Inspect what would be used — keys always redacted:
+
+```bash
+python3 -m enigmaforge.llm          # human-readable
+python3 -m enigmaforge.llm --json   # machine-readable
+```
+
+Trade-off: the formal world, skeleton, pacing, and every verified guarantee
+stay seed-deterministic, but the LLM prose itself is not reproducible and
+each run re-renders (small ≈ 10-20 calls, large ≈ 100+).
 
 Three difficulty tiers, all gates verified:
 
@@ -71,19 +144,30 @@ information budget, planning horizon — every axis is a config knob, from a
 
 ## Status
 
-v0.1 — working end-to-end prototype: generation, verification, narrative
-compilation, interactive mode, trajectory scoring. See the honest
-[Limits](#limits-v1) section in the docs. Roadmap: LLM narrative compiler
-under the same constraint-evidence contract, underdetermined-scenario mode,
-adversarial LLM validation harness.
-
-## Limits (v1)
-
-Honest state of the prototype: the narrative compiler is template-based (an
-LLM compiler under the same constraint-evidence contract is the v2 path);
-testimony gating, underdetermined-scenario generation, and adversarial LLM
-validation are designed but not yet wired. Technical detail:
+v0.2 — working end-to-end prototype in two surfaces: the exhibit **record**
+and **story mode**, where the instance is embedded in prose with no stated
+task. Both run under the same contract: every clue's clause is embedded
+verbatim and span-mapped (`realization_map.json`), and an extraction
+round-trip re-derives the formal model from the prose alone, re-proving
+uniqueness *as read*. Story macro-structure (scene allocation, clue
+sequencing, pacing policy) is fixed per instance; realizations vary only
+texture. Custom (e.g. LLM) scene renderers plug in behind the same contract
+and are rejection-sampled against the gates. See the honest
+[Limits](#limits-v2) section. Roadmap: LLM renderer wired to a live
+adversarial extractor, underdetermined-scenario mode, subtlety calibration
+(pass-rate vs. burial depth). Technical detail:
 [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## Limits (v2)
+
+Honest state: both compilers (record and story) are template-based; the LLM
+scene renderer is an API hook behind the rejection-sampled contract, not
+shipped wired to a model. The extractor is the deterministic inverse of the
+template grammar — it covers the constraint kinds the generator emits
+(eq/neq/implies/alldiff) and treats out-of-domain matches as scenery; a live
+adversarial LLM extractor, testimony gating, underdetermined-scenario
+generation, and subtlety calibration are designed but not yet wired.
+Technical detail: [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## License
 

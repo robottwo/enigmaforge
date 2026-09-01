@@ -1,5 +1,6 @@
 """Evidence, bridges, objectives, distractors — built from the verified HFW."""
 from .rng import Rng
+from .genres import get_pack
 from .narrative import assign_surfaces
 from .world import EvidenceUnit, KnowledgeBridge, ObjectiveStage, Constraint
 
@@ -16,11 +17,7 @@ def populate_evidence(world, seed, distractor_hypotheses=()):
         world.evidence.append(EvidenceUnit(
             euid=f"E{c.cid}", channel=ch, encodes=[c.cid], speaker=speaker,
             surface={"tone": rng.pick(["neutral", "warm", "brisk", "evasive"])}))
-    # distractors: constraints NOT in world — narrative claims with no formal
-    # backing (or true-but-irrelevant facts) supporting named false hypotheses
-    hyps = list(distractor_hypotheses) or [
-        "the oldest letter is the forgery", "the harbor fee was never paid",
-        "the second partner acted alone", "the ledger was altered after the fire"]
+    hyps = list(distractor_hypotheses) or get_pack(world).hypotheses
     n_dis = world.config.get("n_distractors", max(2, len(world.constraints) // 4))
     for i in range(n_dis):
         ch = rng.pick(CHANNELS)
@@ -31,22 +28,14 @@ def populate_evidence(world, seed, distractor_hypotheses=()):
     rng.shuffle(world.evidence)
     return world
 
-# stable, broadly-known facts; roles essential/confirmatory/seductive/multi_hop
-BRIDGE_FACTS = [
-    ("George Washington was the first President of the United States.", "George Washington"),
-    ("Neil Armstrong walked on the Moon in 1969.", "Neil Armstrong"),
-    ("The Nile is the longest river in Africa.", "the Nile"),
-    ("Penicillin was discovered by Alexander Fleming.", "penicillin"),
-    ("World War II ended in 1945.", "World War II"),
-    ("The Titanic sank on its maiden voyage in 1912.", "the Titanic"),
-    ("Shakespeare wrote Hamlet.", "Shakespeare"),
-    ("Mount Everest is the highest mountain above sea level.", "Mount Everest"),
-]
-
+# Bridges are in-world lore from the active genre pack. Real-world knowledge
+# grounding (facts the SOLVER must supply) stays on the roadmap; these are
+# diegetic texture only, carrying no formal content.
 def populate_bridges(world, seed):
     rng = Rng(seed + 991)
+    lore = get_pack(world).lore
     n = world.config.get("n_bridges", 2)
-    picks = rng.sample(BRIDGE_FACTS, min(n, len(BRIDGE_FACTS)))
+    picks = rng.sample(lore, min(n, len(lore)))
     roles = ["essential"] + ["confirmatory", "seductive"] * 4
     for i, (fact, ref) in enumerate(picks):
         world.bridges.append(KnowledgeBridge(
