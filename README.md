@@ -118,6 +118,55 @@ Trade-off: the formal world, skeleton, pacing, and every verified guarantee
 stay seed-deterministic, but the LLM prose itself is not reproducible and
 each run re-renders (small ≈ 10-20 calls, large ≈ 100+).
 
+### Benchmarking models
+
+`enigmaforge.harness` generates a verified story cohort, runs every instance
+through a list of OpenAI-compatible providers, grades each (provider,
+instance) pair mechanically from the hidden formal world, and writes
+`results.json`, `results-detailed.json` (raw responses inline), and a
+self-contained dark-theme `report.html` with a ranked bar chart:
+
+```bash
+python3 -m enigmaforge.harness --providers providers.json --instances 6 \
+         --sizes small,medium --genre auto --out runs/harness
+```
+
+The providers file is a JSON list. Only `name` is required (and must be
+unique); every other field is optional and falls through the usual
+resolution chain (explicit > env `OPENAI_*` > agent-config autodiscovery >
+defaults):
+
+```json
+[
+  {"name": "glm-flash", "model": "glm-5.3-flash"},
+  {"name": "openai", "model": "gpt-4o-mini"},
+  {"name": "local-ollama", "base_url": "http://localhost:11434/v1"},
+  {"name": "budget", "base_url": "https://api.example.com/v1",
+   "api_key_env": "EXAMPLE_API_KEY"}
+]
+```
+
+- `name` — required, unique across the list; labels every response file and
+  leaderboard row.
+- `model` — optional; omit it and the endpoint's own `/models` list is
+  probed for the newest version (fast tier preferred).
+- `base_url` — optional; omit to use the env/agent-config autodiscovery
+  described above.
+- `api_key` (literal) or `api_key_env` (name of an env var to read) —
+  optional; the two are mutually exclusive.
+
+Cohort knobs: `--instances` (default 6), `--sizes` comma list cycled across
+instances, `--genre` (`auto` derives it from the seed), `--burial-min/max`,
+`--seed-base` (instance *i* uses seed `seed_base + i*17`). Runs are
+resumable at both stages: existing instance dirs are never rebuilt and
+existing response files are never re-called, so an interrupted batch
+continues where it stopped; `--grade-only` skips generation and solving
+entirely and just re-grades and re-renders the reports. Grading is a fixed
+mechanical rubric — ground-truth fact recovery (0.5), similarity of the
+final action to the canonical answer (0.3), and response-format compliance
+(0.2) — never an LLM judge.
+
+
 Three difficulty tiers, all gates verified:
 
 | Size | Latent vars | What it tests |
