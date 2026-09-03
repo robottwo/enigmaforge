@@ -214,7 +214,7 @@ def main(argv=None):
                     help="setting pack; 'auto' picks by seed; 'llm' has a "
                          "model invent the whole setting (maritime, manor, "
                          "hotel, theater, observatory are built in)")
-    ap.add_argument("--burial", type=int, default=1, choices=[0, 1, 2, 3],
+    ap.add_argument("--burial", type=int, default=1, choices=range(0, 13),
                     help="how deep clues sit under pure story: scenic "
                          "paragraphs around clue scenes; 2+ adds whole "
                          "clue-free story scenes")

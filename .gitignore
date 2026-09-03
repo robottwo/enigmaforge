@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 runs/
+.env
+benchmarks/
+.DS_Store

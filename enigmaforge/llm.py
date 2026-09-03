@@ -65,23 +65,27 @@ def _scene_prompt(world):
 SYSTEM_PROMPT_TEMPLATE = """You are ghostwriting one scene of a quiet {vibe}
 mystery. You will receive a PREMISE, a CHARACTER sheet, a SETTING, and CLAIM
 clauses — residue of things that happened. Write 3 to 8 sentences of scene
-prose that carries every claim into the story.
+prose that carries every claim into the story. Write the scene as if it is
+happening now: concrete actions, spoken lines, plain crisp sentences. Never
+reminisce, never summarize, never stack three clauses into one sentence.
 
 Hard rules:
 1. Every CLAIM must appear in your scene EXACTLY as given, character for
    character. Never reword, shorten, translate, or capitalize a claim, and
    never let a claim open a sentence — lead into it with your own words.
 2. Stage each claim as something that HAPPENED: an errand, an argument, a
-   habit, a memory, something said in passing ("...she said, not looking
-   up..."). NEVER stage a claim as someone consulting, quoting, or reading
-   out a record, ledger, or paper — characters handling exhibits is itself
-   the puzzle-frame we are hiding.
+   habit, something said in passing ("...she said, not looking up...").
+   Ground every claim in a person doing something concrete. NEVER stage a
+   claim as someone consulting, quoting, or reading out a record, ledger,
+   or paper — characters handling exhibits is itself the puzzle-frame we
+   are hiding.
 3. Obey the SETTING and timeline you are given. Do not reuse weather,
    rooms, or mannerisms from other scenes; each scene advances the story.
 4. Keep every character consistent with the sheet (role, pronouns, habits).
-5. Write around the claims: weather, rooms, small human action. Do NOT add
-   any further statement about a document, ledger, or record reading,
-   agreeing, matching, or being stamped, signed, or marked.
+5. Write around the claims: what people do, say, and want — small human
+   business, not atmospheric padding. Do NOT add any further statement
+   about a document, ledger, or record reading, agreeing, matching, or
+   being stamped, signed, or marked.
 6. No lists, no numbering, no headings. Never ask a question, and never
    suggest there is a puzzle, task, or anything to be figured out.
 7. Return only the scene prose — no preamble, no explanation."""
@@ -109,10 +113,11 @@ def _polish_prompt(world):
 
 POLISH_PROMPT_TEMPLATE = """You are revising the draft of a short {vibe}
 mystery story for publication. Rewrite it as natural, flowing narrative:
-vary sentence rhythm, merge and break sentences as the prose wants, smooth
-the seams between scenes, cut repetition, and let the characters and the
-season come alive. You have full creative liberty over everything EXCEPT
-the claims.
+break up run-on sentences, keep the language plain and colloquial, vary
+sentence rhythm, merge and break sentences as the prose wants, smooth the
+seams between scenes, cut repetition, and let the characters and the
+season come alive. Scenes play out in the present, not as reminiscence.
+You have full creative liberty over everything EXCEPT the claims.
 
 Hard rules:
 1. Every CLAIM clause (listed after the draft) must appear in your revision
@@ -232,19 +237,41 @@ def generate_genre_pack(model=None, base_url=None, api_key=None,
         try:
             m = re.search(r"\{.*\}", raw, re.S)
             d = json.loads(m.group(0)) if m else {}
+            nouns = [str(n) for n in d["nouns"]]
+            claim_words = ("agreed", "matched", "stamped", "signed out",
+                           "pointed to", "disputed", "coincided", "whenever",
+                           "no two")
+
+            def _clean(label, items, min_keep=1):
+                # models routinely mention setting nouns in scenery, which
+                # the pack forbids (scenery must carry no formal content).
+                # Drop the offending lines instead of rejecting the pack —
+                # deterministic repair beats reject-and-retry roulette.
+                items = [str(x) for x in items]
+                kept = [x for x in items
+                        if not any(n in x for n in nouns)
+                        and not any(w in x.lower() for w in claim_words)]
+                if len(kept) < min_keep:
+                    raise ValueError(f"{label}: every line referenced a "
+                                     f"noun or claim word")
+                if len(kept) < len(items):
+                    _note(f"genre pack: dropped {len(items) - len(kept)} "
+                          f"{label} line(s) referencing nouns/claim words")
+                return kept
+
             pack = GenrePack(
                 name=str(d["name"])[:40], vibe=str(d["vibe"])[:80],
                 setting=str(d["setting"])[:60], locale=str(d["locale"])[:40],
                 demonym=str(d["demonym"])[:40], chrono=str(d["chrono"])[:60],
-                nouns=[str(n) for n in d["nouns"]],
-                places=[str(p) for p in d["places"]],
+                nouns=nouns,
+                places=_clean("places", d["places"]),
                 frames=[str(f) for f in d["frames"]],
-                filler=[str(f) for f in d["filler"]],
-                titles=[str(t) for t in d["titles"]],
-                distractor_bodies=[str(b) for b in d["distractor_bodies"]],
-                hypotheses=[str(h) for h in d["hypotheses"]],
+                filler=_clean("filler", d["filler"], min_keep=6),
+                titles=_clean("titles", d["titles"]),
+                distractor_bodies=_clean("distractor", d["distractor_bodies"]),
+                hypotheses=_clean("hypothesis", d["hypotheses"]),
                 lore=[(str(a), str(b)) for a, b in d["lore"]],
-                things=[str(t) for t in d.get("things", [])])
+                things=_clean("thing", d.get("things", []), min_keep=0))
             if len(pack.nouns) < 12:
                 raise ValueError(f"only {len(pack.nouns)} nouns (need >=12; "
                                  f"series prefixes extend larger tiers)")
@@ -493,11 +520,21 @@ def _post_chat(base, key, model, payload, timeout):
                  **({"Authorization": f"Bearer {key}"} if key else {})})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         out = json.load(resp)
-    return out["choices"][0]["message"]["content"]
+    msg = out["choices"][0]["message"]
+    content = msg.get("content")
+    if isinstance(content, list):  # some providers return text blocks
+        content = "".join(b.get("text", "") for b in content
+                          if isinstance(b, dict))
+    if content is None:  # reasoning models can spend the whole budget
+        finish = out["choices"][0].get("finish_reason")
+        raise ValueError(f"model returned no content "
+                         f"(finish_reason={finish}); raise max_tokens")
+    return content, out.get("usage") or {}
 
 
 def chat_completion(messages, model=None, base_url=None, api_key=None,
-                    temperature=0.7, timeout=120):
+                    temperature=0.7, timeout=120, with_usage=False,
+                    track_cost=False, max_tokens=None):
     """One call against an OpenAI-compatible /chat/completions endpoint.
     Unset fields fall back through env/autodiscovery/defaults. If the
     resolved endpoint fails hard (auth, bad request, unreachable, timeout),
@@ -528,6 +565,10 @@ def chat_completion(messages, model=None, base_url=None, api_key=None,
             key = "none"  # local servers commonly accept any bearer
         use_model = cand["model"] or model or DEFAULT_MODEL
         payload = {"messages": messages, "temperature": temperature}
+        if max_tokens:
+            payload["max_tokens"] = max_tokens
+        if track_cost:  # OpenRouter: opt in to usage.cost in the response
+            payload["usage"] = {"include": True}
         if cand["model"] is None and model is None:
             ckey = (base, key)
             if ckey in _MODEL_PICK_CACHE:
@@ -543,7 +584,9 @@ def chat_completion(messages, model=None, base_url=None, api_key=None,
                     pass
         for attempt in (1, 2):  # one retry on transient errors, then next candidate
             try:
-                return _post_chat(base, key, use_model, payload, timeout)
+                content, usage = _post_chat(base, key, use_model,
+                                            payload, timeout)
+                return (content, usage) if with_usage else content
             except urllib.error.HTTPError as e:
                 body = e.read().decode(errors="replace")[:300]
                 failures.append(f"{cand['source']} {base} -> HTTP {e.code}: {body}")

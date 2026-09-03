@@ -1,0 +1,211 @@
+{
+  "corpus": "benchmarks/openrouter-ladder",
+  "renderer": "llm",
+  "renderer_model": "qwen3.8-27b",
+  "renderer_base_url": "https://openrouter.ai/api/v1",
+  "renderer_api_key_env": "OPENROUTER_API_KEY",
+  "provider_defaults": {
+    "openrouter": {
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 65536
+    }
+  },
+  "providers": [
+    {
+      "model": "moonshotai/kimi-k3",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "qwen/qwen3.6-27b",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "moonshotai/kimi-k2.6",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "openai/gpt-5.6-luna",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "z-ai/glm-5.3-flash",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "minimax/minimax-m3",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "xiaomi/mimo-v2.5",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "z-ai/glm-4.7-flash",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "anthropic/claude-opus-5",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "anthropic/claude-sonnet-5",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "openai/gpt-5.6-sol",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "x-ai/grok-4.6",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "anthropic/claude-fable-5",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "anthropic/claude-fable-5.1",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "z-ai/glm-5.3",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "google/gemini-3.8-flash",
+      "defaults": "openrouter"
+    },
+    {
+      "model": "google/gemini-3.7-flash",
+      "defaults": "openrouter"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "ladder",
+      "instances": 5,
+      "genre": "auto",
+      "seed_base": 1000,
+      "levels": [
+        {
+          "size": "small",
+          "burial": 2,
+          "overrides": {
+            "n_variables": 8,
+            "n_constraints": 10,
+            "dependency_depth": 3,
+            "n_people": 4,
+            "n_bridges": 1,
+            "n_distractors": 2
+          }
+        },
+        {
+          "size": "small",
+          "burial": 2,
+          "overrides": {
+            "n_variables": 10,
+            "n_constraints": 14,
+            "dependency_depth": 3,
+            "n_people": 5,
+            "n_bridges": 2,
+            "n_distractors": 2
+          }
+        },
+        {
+          "size": "small",
+          "burial": 3,
+          "overrides": {
+            "n_variables": 12,
+            "n_constraints": 17,
+            "dependency_depth": 3,
+            "n_people": 5,
+            "n_bridges": 2,
+            "n_distractors": 3
+          }
+        },
+        {
+          "size": "small",
+          "burial": 3,
+          "overrides": {
+            "n_variables": 16,
+            "n_constraints": 22,
+            "dependency_depth": 4,
+            "n_people": 6,
+            "n_bridges": 3,
+            "n_distractors": 4
+          }
+        },
+        {
+          "size": "small",
+          "burial": 4,
+          "overrides": {
+            "n_variables": 20,
+            "n_constraints": 28,
+            "dependency_depth": 4,
+            "n_people": 7,
+            "n_bridges": 3,
+            "n_distractors": 5
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 4,
+          "overrides": {
+            "n_variables": 24,
+            "n_constraints": 34,
+            "dependency_depth": 5,
+            "n_people": 8,
+            "n_bridges": 4,
+            "n_distractors": 6
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 5,
+          "overrides": {
+            "n_variables": 32,
+            "n_constraints": 45,
+            "dependency_depth": 6,
+            "n_people": 10,
+            "n_bridges": 5,
+            "n_distractors": 8
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 5,
+          "overrides": {
+            "n_variables": 40,
+            "n_constraints": 56,
+            "dependency_depth": 6,
+            "n_people": 12,
+            "n_bridges": 6,
+            "n_distractors": 10
+          }
+        },
+        {
+          "size": "large",
+          "burial": 6,
+          "overrides": {
+            "n_variables": 50,
+            "n_constraints": 70,
+            "dependency_depth": 7,
+            "n_people": 14,
+            "n_bridges": 7,
+            "n_distractors": 12
+          }
+        },
+        {
+          "size": "large",
+          "burial": 6
+        }
+      ]
+    }
+  ]
+}

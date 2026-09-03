@@ -43,15 +43,49 @@ def populate_bridges(world, seed):
             role=roles[i % len(roles)] if i else "essential"))
     return world
 
+_PERSON_ACTIONS = [
+    "restore {name}'s entry to the register",
+    "back {name}'s claim in full",
+    "void the deed filed against {name}",
+    "credit {name}'s account with the missing sum",
+    "clear {name}'s debt before the quarter closes",
+    "transfer the mooring lease to {name}",
+    "strike every charge but {name}'s from the book",
+]
+_INT_ACTIONS = [
+    "log the true count as {n}",
+    "set the ledger total to {n}",
+    "cap the season's quota at {n}",
+    "carry {n} forward as the corrected figure",
+]
+
+
+def _true_action(world, rng):
+    """Derive the final action from the resolved world: the origin variable
+    (V0, the layer-0 anchor the stage-0 statement points at) names the
+    person or count the corrected record must act on. Varies per instance,
+    and a solver that recovered the origin can actually produce it."""
+    gt = world.meta["ground_truth"]
+    origin = gt.get("V0")
+    if isinstance(origin, str):  # a person the record must be made right for
+        return rng.pick(_PERSON_ACTIONS).format(name=origin)
+    if isinstance(origin, int):
+        return rng.pick(_INT_ACTIONS).format(n=origin)
+    return "act on the corrected record"
+
+
 def populate_objectives(world, seed):
     """Staged objectives. Level 0 = apparent (characters' belief), final =
-    true objective whose answer is derived from the ground truth model."""
-    gt = world.meta["ground_truth"]
+    true objective whose answer is derived from the ground truth model, so
+    the canonical action varies per instance instead of being one of two
+    hardcoded strings."""
+    rng = Rng(seed + 5501)
     stages = []
     stages.append(ObjectiveStage(
         sid="S0", level=0, statement="Identify the origin of the disruption.",
         answer={}, unlocks="S1",
         reveal_text="With the origin named, the sealed registry becomes legible."))
+    action = _true_action(world, rng)
     if world.config.get("n_objective_stages", 2) >= 3:
         stages.append(ObjectiveStage(
             sid="S1", level=1,
@@ -61,13 +95,13 @@ def populate_objectives(world, seed):
         stages.append(ObjectiveStage(
             sid="S2", level=2,
             statement="Determine the correct final action given the invalidated assumption.",
-            answer={"final_action": "discard primary ledger; act on annex"},
+            answer={"final_action": f"discard the primary ledger; {action}"},
             true_objective=True))
     else:
         stages.append(ObjectiveStage(
             sid="S1", level=1,
             statement="Determine the correct final action.",
-            answer={"final_action": "act on the corrected record"},
+            answer={"final_action": action},
             true_objective=True))
     world.objectives = stages
     return world
