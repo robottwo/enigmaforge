@@ -525,7 +525,9 @@ def _post_chat(base, key, model, payload, timeout):
     if isinstance(content, list):  # some providers return text blocks
         content = "".join(b.get("text", "") for b in content
                           if isinstance(b, dict))
-    if content is None:  # reasoning models can spend the whole budget
+    if content is None:  # thinking models may park the answer in reasoning
+        content = msg.get("reasoning") or ""
+    if not str(content).strip():
         finish = out["choices"][0].get("finish_reason")
         raise ValueError(f"model returned no content "
                          f"(finish_reason={finish}); raise max_tokens")

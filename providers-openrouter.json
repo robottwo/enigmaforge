@@ -1,7 +1,7 @@
 {
   "corpus": "benchmarks/openrouter-ladder",
   "renderer": "llm",
-  "renderer_model": "qwen3.8-27b",
+  "renderer_model": "google/gemini-3.7-flash",
   "renderer_base_url": "https://openrouter.ai/api/v1",
   "renderer_api_key_env": "OPENROUTER_API_KEY",
   "provider_defaults": {
@@ -179,14 +179,14 @@
         },
         {
           "size": "medium",
-          "burial": 5,
+          "burial": 6,
           "overrides": {
-            "n_variables": 40,
-            "n_constraints": 56,
+            "n_variables": 32,
+            "n_constraints": 45,
             "dependency_depth": 6,
-            "n_people": 12,
-            "n_bridges": 6,
-            "n_distractors": 10
+            "n_people": 10,
+            "n_bridges": 5,
+            "n_distractors": 8
           }
         },
         {
@@ -202,8 +202,16 @@
           }
         },
         {
-          "size": "large",
-          "burial": 6
+          "size": "medium",
+          "burial": 6,
+          "overrides": {
+            "n_variables": 40,
+            "n_constraints": 56,
+            "dependency_depth": 7,
+            "n_people": 12,
+            "n_bridges": 6,
+            "n_distractors": 10
+          }
         }
       ]
     }

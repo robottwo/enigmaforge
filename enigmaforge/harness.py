@@ -863,6 +863,15 @@ def render_html(agg, out_path, instances=None):
         return "&mdash;" if x is None else f"{x:.{nd}f}"
 
     rows = agg["leaderboard"]
+
+    # display order: best -> worst by the combined ladder.composite score
+    # (ladder level as the whole number, composite as the decimals)
+    def _combined(r):
+        cl, c = r.get("levels_cleared"), r.get("composite")
+        return (cl or 0) + c if (cl is not None and c is not None) else -1.0
+
+    rows = sorted(rows, key=lambda r: (_combined(r), r["composite"] is None),
+                  reverse=True)
     top = max((r["composite"] for r in rows if r["composite"] is not None),
               default=0.0) or 1.0
 
@@ -885,6 +894,8 @@ def render_html(agg, out_path, instances=None):
                 f'<div class="bar-score muted">no scored instances '
                 f'({r["n_errors"]} errors)</div></div>')
             continue
+        cl = r.get("levels_cleared")
+        combined = f"{cl + c:.3f}" if cl is not None else f"{c:.3f}"
         segs = "".join(
             f'<div class="{cls}" style="width:'
             f'{100.0 * WEIGHTS[key] * (r[key] or 0.0) / c if c else 0.0:.1f}%" '
@@ -896,10 +907,9 @@ def render_html(agg, out_path, instances=None):
             f'<div class="bar-row" title="{tip}">{name}'
             f'<div class="bar-track"><div class="bar-fill" '
             f'style="width:{100.0 * c / top:.1f}%">{segs}</div></div>'
-            f'<div class="bar-score"><b>{c:.3f}</b>'
+            f'<div class="bar-score"><b>{combined}</b>'
             f'<span class="bar-meta">{r["total_seconds"]:.0f}s'
             f'{(" &middot; $" + format(r["cost"], ".4f")) if r.get("cost") is not None else ""}'
-            f'{(" &middot; " + str(r["levels_cleared"]) + "/10") if r.get("levels_cleared") is not None else ""}'
             f'</span></div></div>')
 
     detailed_rows = []

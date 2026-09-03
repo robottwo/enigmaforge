@@ -206,21 +206,27 @@ cycled across instances, `--genre` (`auto` derives it from the seed),
   counts stories *per level* (default 1; each (level, index) pair pins its
   seed, so growing `instances` never re-renders existing stories), and
   levels are walked easiest → hardest. After grading, the report shows a
-  level × provider matrix with a ✓ where a level is solved (every story
-  answered, mean facts ≥ 0.6) and each provider's highest level reached
-  before its first miss — the walk stops there — plus a gap-blind
-  `levels_cleared` count.
+  level × provider matrix where a level is ✓ solved only if every story
+  answered and mean comprehension ≥ 0.6; each provider's headline is its
+  highest level reached before the first miss (the walk stops there),
+  plus a gap-blind `levels_cleared` count. The leaderboard then ranks by
+  the combined score `<levels cleared>.<composite>` — e.g. 10.668 means a
+  full sweep at composite 0.668 — best first.
   `results.json` carries the same breakdown under `ladder`.
 
-Runs are **idempotent** at both stages: existing instance dirs are reused,
-never rebuilt, and existing response files are never re-called. Rerun the
-same command after an interruption and only the missing pieces execute;
-adding a provider or growing a scenario's `instances` creates and calls
-only the new combinations. `--grade-only` skips generation and solving
-entirely and just re-grades and re-renders the reports. Grading is a fixed
-mechanical rubric — ground-truth fact recovery (0.5), similarity of the
-final action to the canonical answer (0.3), and response-format compliance
-(0.2) — never an LLM judge.
+Runs are **idempotent** at both stages: successful instance dirs and
+response files are never rebuilt or re-called; **error records retry
+automatically on the next run** (transient endpoint failures and timeouts
+self-heal), except deterministic policy refusals (content_filter), which
+are kept. Rerun the same command after an interruption and only the
+missing pieces execute; adding a provider or growing a scenario's
+`instances` creates and calls only the new combinations. `--grade-only`
+skips generation and solving entirely and just re-grades and re-renders
+the reports. Grading is a fixed mechanical rubric — **decisions**:
+content-word overlap between the model's final action and the
+world-derived canonical decision (0.66); **comprehension**: recovery of
+the hidden variables in `fixed_facts` (0.24); **compliance**: response
+format (0.10) — never an LLM judge.
 
 Three difficulty tiers, all gates verified:
 
