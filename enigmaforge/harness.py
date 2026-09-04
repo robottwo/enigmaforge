@@ -792,6 +792,7 @@ th { color:#9fb3d1; font-weight:600; }
 .bar-track { flex:1; background:#1a2030; border-radius:4px; height:22px; }
 .bar-fill { height:100%; border-radius:4px; display:flex; overflow:hidden;
             min-width:2px; }
+.seg-ladder { background:#a78bfa; }
 .seg-facts { background:#4f9cf9; } .seg-action { background:#f9a94f; }
 .seg-compliance { background:#58c98b; }
 .bar-score { width:130px; font-variant-numeric:tabular-nums;
@@ -872,8 +873,7 @@ def render_html(agg, out_path, instances=None):
 
     rows = sorted(rows, key=lambda r: (_combined(r), r["composite"] is None),
                   reverse=True)
-    top = max((r["composite"] for r in rows if r["composite"] is not None),
-              default=0.0) or 1.0
+    top = max((_combined(r) for r in rows), default=1.0) or 1.0
 
     chart = []
     for r in rows:
@@ -896,9 +896,16 @@ def render_html(agg, out_path, instances=None):
             continue
         cl = r.get("levels_cleared")
         combined = f"{cl + c:.3f}" if cl is not None else f"{c:.3f}"
-        segs = "".join(
+        # bar = ladder chunk (levels cleared) + weighted component segments,
+        # all scaled to the best combined score so length == position order
+        ladder_w = (cl or 0)
+        segs = (f'<div class="seg-ladder" '
+                f'style="width:{100.0 * (cl or 0) / top:.1f}%" '
+                f'title="levels cleared={cl}"></div>'
+                if cl is not None else "")
+        segs += "".join(
             f'<div class="{cls}" style="width:'
-            f'{100.0 * WEIGHTS[key] * (r[key] or 0.0) / c if c else 0.0:.1f}%" '
+            f'{100.0 * WEIGHTS[key] * (r[key] or 0.0) / top:.1f}%" '
             f'title="{key}={num(r[key])}"></div>'
             for key, cls in _SEGMENTS)
         cost = (f'<span class="bar-meta">${r["cost"]:.4f}</span>'
@@ -906,7 +913,7 @@ def render_html(agg, out_path, instances=None):
         chart.append(
             f'<div class="bar-row" title="{tip}">{name}'
             f'<div class="bar-track"><div class="bar-fill" '
-            f'style="width:{100.0 * c / top:.1f}%">{segs}</div></div>'
+            f'style="width:{100.0 * ((cl or 0) + c) / top:.1f}%">{segs}</div></div>'
             f'<div class="bar-score"><b>{combined}</b>'
             f'<span class="bar-meta">{r["total_seconds"]:.0f}s'
             f'{(" &middot; $" + format(r["cost"], ".4f")) if r.get("cost") is not None else ""}'
@@ -1115,6 +1122,7 @@ def render_html(agg, out_path, instances=None):
 
 <h2>Leaderboard</h2>
 <div class="legend">
+<span><span class="dot seg-ladder"></span>levels cleared</span>
 <span><span class="dot seg-facts"></span>comprehension &times;0.24</span>
 <span><span class="dot seg-action"></span>decisions &times;0.66</span>
 <span><span class="dot seg-compliance"></span>compliance &times;0.10</span>
