@@ -81,6 +81,15 @@ def _realizations(world, n=2, renderer=None, polisher=None):
                 # preserve the hints — no unpolished draft is ever shipped
                 # from a --polish run
                 r = polisher(world, r)
+            # decision flag: every story closes by naming the origin's
+            # surface noun, so the graded "what should be done" decision is
+            # inferable from the story alone. One deterministic sentence,
+            # appended after gates/polish — it carries no claim values, so
+            # the as-read model is unchanged.
+            v0 = world.variables[0]
+            if v0.surface_names:
+                r.text += ("\n\nOne thing was certain: a decision about "
+                           f"{v0.surface_names[0]} could wait no longer.")
             rs.append(r)
         else:
             rs.append(compile_narrative(world, realization_seed=rseed))
