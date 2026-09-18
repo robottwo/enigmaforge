@@ -166,6 +166,16 @@ def _summary(pairs, resamples, seed):
     derived["educated_guess"] = {
         "rate": round(guesses / len(decision_items), 4) if decision_items else None,
         "count": guesses, "denominator": len(decision_items)}
+    # Intuition: absolute task success on implicit items only — how well the
+    # model performs when handed the story with no stated question.
+    implicit_tasks = [v for inst, r in pairs
+                      if inst.get("condition") == "implicit"
+                      and _eligible(inst, "task_success")
+                      and (v := _value(r, "task_success")) is not None]
+    derived["intuition"] = {
+        "implicit_task": (round(sum(implicit_tasks) / len(implicit_tasks), 4)
+                          if implicit_tasks else None),
+        "denominator": len(implicit_tasks)}
 
     warnings = (["Scoring unavailable: judge failures or legacy responses "
                  "require adjudication; lower bounds are not capability estimates."]
@@ -282,14 +292,21 @@ def _scores_100(summary):
     """Unified 0-100 scale, lower = worse. Failure-mode rates are inverted
     into goodness scores so every column reads the same direction:
     discovery retention (100 − explicit−implicit F1 gap), reasoning
-    discipline (100 − overflow), earned decisions (100 − guess rate)."""
+    discipline (100 − overflow), earned decisions (100 − guess rate).
+    Claim accuracy is conditional precision — the trust measure: of every
+    asserted fact, how many were right. Intuition is conditional task
+    success on implicit items — the absolute unguided-performance measure.
+    """
     m = summary["metrics"]
     d = summary["derived"]
     disc = d["discovery_cost"]["difference"]
+    intuition = d["intuition"]["implicit_task"]
     return {
         "task_success": _score100(m["task_success"]["all_items"]["value"]),
         "fact_f1": _score100(m["fact_f1"]["all_items"]["value"]),
         "exact_world": _score100(m["exact_world"]["all_items"]["value"]),
+        "claim_accuracy": _score100(m["fact_precision"]["conditional"]["value"]),
+        "intuition": _score100(intuition) if intuition is not None else None,
         "discovery_retention": None if disc is None else round(100 - disc * 100, 1),
         "reasoning_discipline": _score100(1 - (d["reasoning_overflow"]["rate"] or 0))
         if d["reasoning_overflow"]["denominator"] else None,
@@ -713,6 +730,8 @@ def render_html(agg, out_path, instances=None):
                 metric_cells.append(_metric_cell(row["metrics"][key][population]))
         metric_cells += [f"{s['task_success']}" if s["task_success"] is not None else "—",
                          f"{s['fact_f1']}" if s["fact_f1"] is not None else "—",
+                         f"{s['claim_accuracy']}" if s["claim_accuracy"] is not None else "—",
+                         f"{s['intuition']}" if s["intuition"] is not None else "—",
                          f"{s['discovery_retention']}" if s["discovery_retention"] is not None else "—",
                          f"{s['reasoning_discipline']}" if s["reasoning_discipline"] is not None else "—",
                          f"{s['earned_decisions']}" if s["earned_decisions"] is not None else "—"]
@@ -732,15 +751,18 @@ def render_html(agg, out_path, instances=None):
     performance = _table(
         ["Provider"] + [f"{m} · {p}" for m in ("Task success", "Fact F1", "Exact world")
                         for p in ("all items /100", "scored only")] +
-        ["Task success /100", "Fact F1 /100", "Discovery retention /100",
+        ["Task success /100", "Fact F1 /100", "Claim accuracy /100 (trust)",
+         "Intuition /100 (unguided)", "Discovery retention /100",
          "Reasoning discipline /100", "Earned decisions /100"],
         performance_rows,
         "Performance — all scores 0-100, higher is better (lower is worse). "
-        "Discovery retention = 100 − (explicit − implicit F1 gap); reasoning "
-        "discipline = 100 − reasoning overflow; earned decisions = 100 − share "
-        "of correct decisions reached without an exactly-right world. "
-        "Discovery retention above 100 means the unstated task outperformed "
-        "the stated one for that provider.")
+        "Claim accuracy (trust): of every asserted fact, the share that was "
+        "right. Intuition: task success when handed only the story, no stated "
+        "question. Discovery retention = 100 − (explicit − implicit F1 gap); "
+        "reasoning discipline = 100 − reasoning overflow; earned decisions = "
+        "100 − share of correct decisions reached without an exactly-right "
+        "world. Discovery retention above 100 means the unstated task "
+        "outperformed the stated one for that provider.")
     coverage = _table(["Provider", "Expected", "Recorded", "Answered", "Valid", "Missing",
                        "Filtered", "Transport error", "Invalid response", "Judge error",
                        "Adjudication required", "Recorded attempt cost", "Known-cost records"],
@@ -975,17 +997,16 @@ def print_leaderboard(agg):
     print("\n== Top line ==")
     print(top_line or "No provider produced a scored answer.")
     print("\n== Leaderboard: scores out of 100, lower is worse ==")
-    print(f"{'provider':<28} {'task':>6} {'F1':>6} {'exact':>6} {'answer':>8} "
-          f"{'disco':>6} {'ovfl':>6} {'guess':>6}")
+    print(f"{'provider':<28} {'task':>6} {'F1':>6} {'exact':>6} {'trust':>6} "
+          f"{'intuit':>6} {'answer':>8}")
     for row in agg["leaderboard"]:
         sc = row["scores_100"]
         fmt = lambda v: "—" if v is None else f"{v:g}"
         coverage = row["coverage"]
         count = f"{coverage['answered']}/{coverage['expected']}"
         print(f"{row['provider']:<28} {fmt(sc['task_success']):>6} {fmt(sc['fact_f1']):>6} "
-              f"{fmt(sc['exact_world']):>6} {count:>8}"
-              f" {fmt(sc['discovery_retention']):>6} {fmt(sc['reasoning_discipline']):>6}"
-              f" {fmt(sc['earned_decisions']):>6}")
+              f"{fmt(sc['exact_world']):>6} {fmt(sc['claim_accuracy']):>6} "
+              f"{fmt(sc['intuition']):>6} {count:>8}")
         for warning in row["warnings"]:
             print(f"  WARNING: {warning}")
     print("All-item denominator includes missing attempts; — means unavailable, not zero capability.")

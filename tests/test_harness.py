@@ -336,3 +336,20 @@ def test_legacy_regrade_rejects_providers_config(tmp_path):
     rc = main(["--providers", "x.json", "--legacy-regrade", "d.json",
                "--legacy-corpus", "c", "--out", str(tmp_path / "o")])
     assert rc == 1
+
+
+def test_fenced_json_tolerated_but_prose_still_rejected():
+    inst = _instance()
+    good = json.dumps({"observations": ["o"],
+                       "fixed_facts": _facts(inst),
+                       "final_action": _action(inst)})
+    fenced = f"```json\n{good}\n```"
+    g = grade_instance(inst, _record(fenced))
+    assert g["score"] == 1.0                      # fence habit != capability
+    bare_fences = grade_instance(inst, _record("```\n" + good + "\n```"))
+    assert bare_fences["score"] == 1.0            # unlabelled fence also fine
+    prose = grade_instance(inst, _record(
+        "Here is my answer:\n" + good + "\nHope that helps!"))
+    assert prose["score"] == 0.0                  # prose around the document fails
+    unclosed = grade_instance(inst, _record("```json\n" + good))
+    assert unclosed["score"] == 0.0

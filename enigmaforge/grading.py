@@ -1,7 +1,8 @@
 """Versioned, deterministic grading of declared assignments (never raw prose)."""
 import json
+import re
 
-GRADER_VERSION = "3"
+GRADER_VERSION = "3.1"
 SOLVER_PROMPT = """Read the supplied material and return ONLY one JSON object, without
 markdown or surrounding prose, with exactly these keys:
 "observations": an array of zero to six nonempty strings describing your inferences;
@@ -14,8 +15,26 @@ exactly "operation", "subject", and "value" following the supplied decision poli
 The action value must be a string, integer, or boolean. Do not include extra keys."""
 
 
+_FENCE_RE = re.compile(r"^```[a-zA-Z0-9_-]*[ \t]*\n(.*?)\n?```\s*$", re.S)
+
+
 def strict_json(text):
-    """Parse a whole JSON document, rejecting duplicate keys and non-JSON numbers."""
+    """Parse a whole JSON document, rejecting duplicate keys and non-JSON numbers.
+
+    A single markdown code fence around the document is tolerated — several
+    models are trained to emit ```json fences regardless of instructions, and
+    punishing wrapper formatting conflates format habit with capability.
+    Anything else outside the document (prose, explanations) still fails.
+    """
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        match = _FENCE_RE.match(stripped)
+        if not match:
+            raise ValueError("response opens with a code fence but does not close it")
+        stripped = match.group(1).strip()
+    if not stripped.startswith("{") and not stripped.startswith("["):
+        raise ValueError("response is not a JSON document")
+
     def pairs(items):
         result = {}
         for key, value in items:
@@ -27,7 +46,7 @@ def strict_json(text):
     def constant(value):
         raise ValueError(f"invalid JSON constant: {value}")
 
-    return json.loads(text, object_pairs_hook=pairs, parse_constant=constant)
+    return json.loads(stripped, object_pairs_hook=pairs, parse_constant=constant)
 
 
 def normalize_subject(value):

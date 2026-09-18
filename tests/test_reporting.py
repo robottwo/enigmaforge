@@ -346,3 +346,24 @@ def test_overview_chart_annotates_bars_and_shows_cost():
     assert ">100<" in chart            # every bar carries its value
     assert "$5.00" in chart            # summed attempt cost beside the provider
     assert "recorded cost" in chart
+
+
+def test_trust_and_intuition_scores():
+    def rec(iid, condition, task, precision):
+        inst = instance(iid, condition=condition)
+        row = grade("p", iid)
+        row["metrics"]["task_success"] = task
+        row["metrics"]["fact_precision"] = precision
+        return inst, row
+    pairs = [rec(f"e{n}", "explicit", 1.0, 1.0) for n in range(3)]
+    pairs += [rec(f"i{n}", "implicit", task, 0.8) for n, task in
+              enumerate((1.0, 0.0))]
+    pairs += [rec("i9", "implicit", 0.0, 0.5)]
+    row = aggregate([r for _, r in pairs], [i for i, _ in pairs], ["p"],
+                    bootstrap_resamples=0)["leaderboard"][0]
+    s = row["scores_100"]
+    # trust = mean precision of scored items: (3x1.0 + 2x0.8 + 0.5) / 6
+    assert s["claim_accuracy"] == pytest.approx(85.0)
+    # intuition = mean implicit task success
+    assert s["intuition"] == 33.3  # rounded to one decimal like all scores
+    assert row["derived"]["intuition"]["denominator"] == 3
