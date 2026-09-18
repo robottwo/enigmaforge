@@ -336,3 +336,13 @@ def test_report_leads_with_chart_and_demotes_completeness(tmp_path):
     assert parser.svg_count >= 6          # overview + strata + paired + difficulty + stories + decisions
     assert html_text.index("Generation completeness") > html_text.index('id="tab-appendix"')
     assert 'aside class="warning"' not in html_text.split("<nav")[0]
+
+
+def test_overview_chart_annotates_bars_and_shows_cost():
+    instances = [instance(str(n)) for n in range(4)]
+    records = [grade("p", str(n), cost=1.25) for n in range(4)]
+    agg = aggregate(records, instances, ["p"], bootstrap_resamples=0)
+    chart = reporting._summary_chart(agg["leaderboard"])
+    assert ">100<" in chart            # every bar carries its value
+    assert "$5.00" in chart            # summed attempt cost beside the provider
+    assert "recorded cost" in chart

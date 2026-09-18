@@ -525,31 +525,37 @@ _PALETTE = ["#4f9cf0", "#2f7d4f", "#d97706", "#9333ea", "#dc2626", "#0891b2",
             "#65a30d", "#db2777", "#7c3aed", "#ca8a04"]
 
 
-def _chart(cats, series, *, signed=False, max_label=28):
+def _chart(cats, series, *, signed=False, max_label=28, annotate=False, side=None, side_label=""):
     """Static inline SVG grouped horizontal bar chart.
 
     cats: ordered category labels; series: list of (name, {cat: value|None})
     with values in display units (0-100 scores, or signed differences in
     percentage points when signed=True). Bars start at zero (at the plot
     centre when signed). Text is escaped; no JS data. Missing values leave
-    a gap. Single-series charts annotate bar values.
+    a gap. annotate=True labels every bar with its value; side maps each
+    category to a short right-hand annotation (e.g. cost).
     """
     bar_h, group_gap, label_w, plot_w = 12, 9, 190, 460
     cats = list(cats)
     if not cats or not series:
         return ""
+    side = side or {}
+    right_pad = 70 + (86 if side else 0)
     maxabs = max((abs(v) for _, values in series for v in values.values()
                   if v is not None), default=1.0) or 1.0
     origin = label_w + (plot_w / 2 if signed else 0)
     span = plot_w / (2 if signed else 1)
     group_h = len(series) * bar_h
     chart_h = len(cats) * (group_h + group_gap) + 34
-    parts = [f'<svg role="img" viewBox="0 0 {label_w + plot_w + 70} {chart_h}" '
+    parts = [f'<svg role="img" viewBox="0 0 {label_w + plot_w + right_pad} {chart_h}" '
              f'width="100%" style="max-width:760px" xmlns="http://www.w3.org/2000/svg">']
     if signed:
         axis_x = label_w + plot_w / 2
         parts.append(f'<line x1="{axis_x}" y1="0" x2="{axis_x}" y2="{chart_h - 30}" '
                      f'stroke="#46516a" stroke-width="1"/>')
+    if side and side_label:
+        parts.append(f'<text x="{origin + span + 44}" y="6" font-size="9" '
+                     f'fill="#8a94a8">{_escape(side_label)}</text>')
     y = 4
     for cat in cats:
         label = _escape(str(cat)[:max_label])
@@ -565,11 +571,14 @@ def _chart(cats, series, *, signed=False, max_label=28):
             parts.append(f'<rect x="{x}" y="{vy}" width="{max(length, 1)}" height="{bar_h - 2}" '
                          f'fill="{_PALETTE[si % len(_PALETTE)]}">'
                          f'<title>{_escape(str(cat))} · {_escape(name)}: {v:g}</title></rect>')
-            if len(series) == 1:
-                anchor = "start" if v >= 0 else "end"
-                tx = (x + length + 5) if v >= 0 else (x - 5)
-                parts.append(f'<text x="{tx}" y="{vy + bar_h / 2}" dominant-baseline="middle" '
-                             f'font-size="10" fill="#c1c8d4" text-anchor="{anchor}">{v:g}</text>')
+            if annotate:
+                parts.append(f'<text x="{x + max(length, 1) + 4}" y="{vy + bar_h / 2}" '
+                             f'dominant-baseline="middle" font-size="9" '
+                             f'fill="#c1c8d4">{v:g}</text>')
+        if cat in side:
+            parts.append(f'<text x="{origin + span + 44}" y="{y + group_h / 2}" '
+                         f'dominant-baseline="middle" font-size="10" '
+                         f'fill="#93a2bd">{_escape(side[cat])}</text>')
         y += group_h + group_gap
     legend_y = chart_h - 14
     lx = label_w
@@ -585,12 +594,16 @@ def _chart(cats, series, *, signed=False, max_label=28):
 
 def _summary_chart(rows):
     """Overview chart: all-item task success and fact F1 (/100) per model
-    provider in ranking order. Baselines stay in the tables but are not
-    plotted."""
+    provider in ranking order, every bar annotated, recorded attempt cost at
+    the right. Baselines stay in the tables but are not plotted."""
     models = [r for r in rows if not r["provider"].startswith("baseline:")]
     series = [("task success", {r["provider"]: r["scores_100"]["task_success"] for r in models}),
               ("fact F1", {r["provider"]: r["scores_100"]["fact_f1"] for r in models})]
-    return _chart([r["provider"] for r in models], series)
+    side = {r["provider"]: (f"${r['recorded_attempt_cost']:.2f}"
+                            if _number(r.get("recorded_attempt_cost")) else "—")
+            for r in models}
+    return _chart([r["provider"] for r in models], series, annotate=True,
+                  side=side, side_label="recorded cost")
 
 
 def _metric_cell(estimate):
