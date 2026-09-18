@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "generated_at": "2026-09-18T19:21:16+00:00",
+  "generated_at": "2026-09-18T19:23:45+00:00",
   "n_instances": 600,
   "n_families": 120,
   "ranking": [
@@ -555131,7 +555131,7 @@
       "oracle.py": "ab5878f8ed180bccc9653a0b2fc601220d0d81cbaa24a91622d764aacfc37c55",
       "pipeline.py": "e05a0889f24003a90ef4b6c4a9ce60bd50759939e839a9bc4d03377e3dc572ca",
       "populate.py": "2dab5370fd9895de2f25c92cd851dff84a642bb125d6e07666241661136577a3",
-      "reporting.py": "f77b322c767e8dd9e39637ba712aa1509532f80abce465615adfe349c16b96ae",
+      "reporting.py": "3486da1bcad1fa94684fcb90df54b3988c3154e539bd92891c34349883bfe55e",
       "rng.py": "3de3ceaced32995ab61a317be204656229ad67b10a05f21736cac082b1941917",
       "sat.py": "bfbb94117dca5e649f609b388dc741d5082be17cb278c581a7da78cd3b81797d",
       "story.py": "391f2f97fd142cbd0cbcdf12fbdef194ba4377896fd315ee19ec1bddf7d1f965",
@@ -562153,7 +562153,7 @@
     "complete": true,
     "integrity_sha256": "b2632b00e4e25aa7b33fcb28e9a3be4055d5b95436a7f253c9fd7fa2ed725e12"
   },
-  "finished_at": "2026-09-18T19:22:01.196540+00:00",
-  "regrading_seconds": 52.756183,
+  "finished_at": "2026-09-18T19:24:30.577906+00:00",
+  "regrading_seconds": 52.710664,
   "evaluation_seconds": 719001.67962
 }
