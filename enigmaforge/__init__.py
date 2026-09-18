@@ -1,3 +1,7 @@
+"""Procedurally generated benchmarks: discover the problem before solving it."""
+
+__version__ = "0.3.0"
+
 from .rng import Rng
 from .world import *
 from .sat import Sat

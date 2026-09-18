@@ -44,7 +44,10 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
   difficulty, deterministic no-API baselines
 - `enigmaforge/reporting.py` — coverage-first aggregation (all-item vs
   conditional metrics, family-cluster bootstrap CIs, paired
-  condition/model differences) and the offline HTML report
+  condition/model differences), derived diagnostics rendered as unified
+  0–100 scores (discovery retention, reasoning discipline, earned
+  decisions), inline SVG summary chart, top-line outcome, and the
+  offline HTML report
 - `enigmaforge/narrative.py` — replaceable compiler returning a `Realization`
   (text + verbatim span map per evidence unit and the public decision
   policy); clauses are natural wrappers
@@ -58,9 +61,14 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
   hypotheses, lore; seeded pick per instance, pinnable via config/CLI;
   construction-time checks keep pack flavor free of variable surfaces
 - `enigmaforge/llm.py` — stdlib-only OpenAI-compatible client + scene
-  renderer behind the same verbatim-clause contract; endpoint resolution:
-  flags > env > local agent-config autodiscovery (opencode/codex/goose/
-  continue); gates verify every model output, rejection-sample failures
+  renderer behind the same verbatim-clause contract; `with_metadata`
+  envelopes keep visible text, model reasoning, refusals and raw
+  responses separate (reasoning is never a content fallback), and carry
+  finish reason, usage, and response IDs; `reasoning_max_tokens` caps
+  the model's internal reasoning budget via OpenRouter's unified
+  `reasoning` object; explicit model/endpoint configurations never
+  reroute, fall back, or autodiscover credentials; gates verify every
+  model output, rejection-sample failures
 - `enigmaforge/interactive.py` — budgeted investigation; irreversible actions
   destroy evidence classes
 - `enigmaforge/evaluate.py` — trajectory scoring from the hidden world
@@ -68,7 +76,10 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
 - `enigmaforge/harness.py` — benchmark v3 driver: hashed independent
   seeds, condition expansion, solver execution with structured transport
   envelopes and per-attempt history, signed corpus manifests
-  (fail-closed cache validation), identity/provenance hashing, baseline
+  (fail-closed validation: instance content hashes are the tamper guard;
+  response identity binds semantic fields — input, prompt, request
+  params — while implementation hashes are recorded for forensics but do
+  not block regrading across grading/reporting/driver changes), baseline
   runs, and read-only legacy regrading
 
 ## Verification battery (per published instance)

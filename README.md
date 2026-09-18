@@ -124,8 +124,10 @@ each run re-renders (small ≈ 10-20 calls, large ≈ 100+).
 `enigmaforge.harness` generates a verified story cohort, runs every instance
 through a list of OpenAI-compatible providers, grades each (provider,
 instance) pair mechanically from the hidden formal world, and writes
-`results.json`, `results-detailed.json` (raw responses inline), and a
-self-contained dark-theme `report.html` with a ranked bar chart:
+`results.json`, `results-detailed.json` (raw responses, attempt histories,
+and response identities inline), and a self-contained dark-theme
+`report.html` with a top-line outcome sentence and a summary bar chart of
+all providers on the 0–100 scale:
 
 ```bash
 python3 -m enigmaforge.harness --providers benchmark.json --out runs/harness
@@ -159,12 +161,19 @@ cycled across instances, `--genre` (`auto` derives it from the seed),
 
 - `providers[]` — one entry per model. `name` labels the response files
   and leaderboard rows; omit it and it defaults to the last path segment
-  of `model` (`"moonshotai/kimi-k3"` → `kimi-k3`). `model` is optional
-  too: omit it and the endpoint's own `/models` list is probed for the
-  newest version (fast tier preferred). `base_url`, `api_key` (literal)
-  and `api_key_env` (env var name; mutually exclusive with `api_key`)
-  resolve entry > defaults group > env `OPENAI_*` > agent-config
-  autodiscovery > defaults.
+  of `model` (`"moonshotai/kimi-k3"` → `kimi-k3`). Request knobs:
+  `temperature` (default 0.2), `max_tokens` (default 4096 — set this
+  generously; reasoning-mode models can exhaust small budgets on internal
+  reasoning without emitting any visible text), `track_cost` (OpenRouter
+  `usage: {"include": true}`), `reasoning_effort`, and
+  `reasoning_max_tokens` — the latter caps the model's internal reasoning
+  budget via OpenRouter's unified `reasoning` object (it replaces
+  `reasoning_effort` on the wire, since endpoints reject both together;
+  the harness records which was sent in the response identity). An entry
+  that exhausts `max_tokens` on reasoning is graded as a failed item and
+  flagged in the report when it exceeds 10% of a provider's records.
+  `api_key` (literal) and `api_key_env` (env var name; mutually exclusive)
+  resolve entry > defaults group > environment.
 - `provider_defaults` — optional map of named default groups; an entry
   inherits one with `"defaults": "<group>"`, and per-entry fields win.
   Unknown group references and unknown keys are rejected.
@@ -245,6 +254,23 @@ Grading is deterministic and **answer-shaped, never lexical**:
   correct action) is reported separately and drives ranking. There is no
   weighted composite and no threshold "ladder ceiling".
 
+Every provider row also carries **`scores_100`** — a unified 0–100 scale,
+higher is better (lower is worse) — plus three derived diagnostics that
+each isolate one failure mode:
+
+- **discovery retention** = 100 − (explicit − implicit conditional-F1
+  gap): how much capability survives when the task isn't stated. Values
+  above 100 mean the unstated task outperformed the stated one.
+- **reasoning discipline** = 100 − share of items where the model
+  exhausted its completion budget on internal reasoning without emitting
+  visible text;
+- **earned decisions** = 100 − share of policy-graded decisions that were
+  correct while the submitted world was *not* exactly right (right
+  action, imperfect facts).
+
+Raw 0–1 metrics and failure-mode rates are retained in `results.json`
+alongside the scores, so every number is auditable to its counts.
+
 Every story **family** is evaluated under matched **conditions**:
 `formal` (published constraints, explicit question), `explicit` (story +
 stated task), and `implicit` (story alone, two surface realizations) —
@@ -286,20 +312,24 @@ information budget, planning horizon — every axis is a config knob, from a
 
 ## Status
 
-v3 (benchmark contract) — deterministic, answer-shaped grading over
+**v0.3** (benchmark contract v3) — deterministic, answer-shaped grading over
 strict structured solver responses; public conditional decision policies
 with an explicitly superseded provisional rule; matched formal/explicit/
 implicit conditions over two surface realizations; deterministic
 baselines (including a story-copy control that must score 0); signed
 corpus manifests with fail-closed cache validation; transport that keeps
-reasoning separate from visible answers and never falls back to it; a
-blind, cached-only judge (`python -m enigmaforge.judge`) for legacy
-regrading with an auditable human-calibration workflow; and coverage-first
-reporting (all-item vs conditional metrics with family-cluster bootstrap
-CIs) where missing attempts count as failures and adjudication-pending
-never masquerades as zero capability. The pilot leaderboard
-(`runs/eval-final`) predates v3 and is retained read-only as a negative
-result: its word-overlap grader was beaten by copying the story (0.993).
+reasoning separate from visible answers, never falls back to it, and
+supports explicit reasoning-budget caps (`reasoning_effort`,
+`reasoning_max_tokens`); a blind, cached-only judge
+(`python -m enigmaforge.judge`) for legacy regrading with an auditable
+human-calibration workflow; and coverage-first reporting — unified 0–100
+scores, derived diagnostics (discovery retention, reasoning discipline,
+earned decisions), family-cluster bootstrap CIs — where missing attempts
+count as failures and adjudication-pending never masquerades as zero
+capability. First full seven-model comparison on one 600-variant cohort
+in `runs/v3-models-7`. The pilot leaderboard (`runs/eval-final`) predates
+v3 and is retained read-only as a negative result: its word-overlap
+grader was beaten by copying the story (0.993).
 
 ## Limits (v3)
 
