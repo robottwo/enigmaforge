@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "generated_at": "2026-09-18T19:19:48+00:00",
+  "generated_at": "2026-09-18T19:21:16+00:00",
   "n_instances": 600,
   "n_families": 120,
   "ranking": [
@@ -562153,7 +562153,7 @@
     "complete": true,
     "integrity_sha256": "b2632b00e4e25aa7b33fcb28e9a3be4055d5b95436a7f253c9fd7fa2ed725e12"
   },
-  "finished_at": "2026-09-18T19:20:33.447434+00:00",
-  "regrading_seconds": 53.097628,
+  "finished_at": "2026-09-18T19:22:01.196540+00:00",
+  "regrading_seconds": 52.756183,
   "evaluation_seconds": 719001.67962
 }
