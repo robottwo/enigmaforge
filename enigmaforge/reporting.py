@@ -621,7 +621,9 @@ main { max-width:1400px; padding:1.5rem; margin:auto; }
 a { color:#a9d0ff; } button { font:inherit; cursor:pointer; padding:.5rem .8rem;
 background:#26334a; color:#fff; border:1px solid #7187a8; border-radius:.3rem; }
 button[aria-selected=true] { background:#375b8d; } :focus-visible { outline:3px solid #ffd35e; }
-nav { display:flex; gap:.5rem; flex-wrap:wrap; margin:1rem 0; }
+nav { display:flex; gap:.5rem; flex-wrap:wrap; margin:1rem 0;
+position:sticky; top:0; z-index:20; background:rgba(15,21,34,.94);
+backdrop-filter:blur(6px); padding:.6rem 0; border-bottom:1px solid #2a3550; }
 .table-scroll { overflow-x:auto; } table { width:100%; border-collapse:collapse; margin:1rem 0; }
 caption { text-align:left; font-weight:600; padding:.5rem 0; }
 th,td { text-align:left; padding:.5rem; border-bottom:1px solid #46516a; vertical-align:top; }
@@ -670,6 +672,15 @@ tabs.forEach((tab, index) => {
   });
 });
 if (tabs.length) activate(tabs[0]);
+// Deep links: #pane-<key> (or #<key>) opens that tab; activation updates the hash.
+function tabFromHash() {
+  const key = decodeURIComponent(location.hash.slice(1)).replace(/^pane-/, "");
+  return tabs.find(t => t.getAttribute("aria-controls") === "pane-" + key);
+}
+if (tabFromHash()) activate(tabFromHash());
+window.addEventListener("hashchange", () => { const t = tabFromHash(); if (t) activate(t); });
+tabs.forEach(tab => tab.addEventListener("click", () =>
+  history.replaceState(null, "", "#" + tab.getAttribute("aria-controls").replace(/^pane-/, ""))));
 """
 
 
@@ -889,7 +900,25 @@ def render_html(agg, out_path, instances=None):
 
     tabs = [("home", "Benchmark", _home_tab(rows, performance, top_line)),
             ("how", "How it works", _how_it_works_tab()),
-            ("overview", "Full report", coverage + performance),
+            ("methodology", "Benchmark details",
+             '<h2>How scores work</h2>'
+             '<p>All scores are 0-100; lower is worse. Headline measure: fact F1. '
+             'Ranking: all-item task success, then all-item fact F1, then provider '
+             'name. No weighted composite. Conditional means use scored-item '
+             'denominators; all-item means include missing, filtered, invalid, and '
+             'failed attempts as zero achieved success. Unadjudicated outcomes '
+             'remain unavailable. Decisions and task success use policy-bearing '
+             'items only. Derived diagnostics: discovery cost is the conditional-F1 '
+             'drop from a stated task (explicit) to an unstated one (implicit) — '
+             'the price of finding the problem; reasoning overflow is the share of '
+             'items where the model exhausted max_tokens without visible output; '
+             'educated guesses are decisions that were correct while the submitted '
+             'world was not exactly right. Answered includes invalid content; valid '
+             'means a schema-compliant scored answer. Confidence intervals resample '
+             'world families, not realizations.</p>'
+             '<p>' + _escape(agg["cost_scope"]) + '</p>'
+             + ''.join(blocks) + coverage),
+            ("overview", "Full report", performance),
             ("strata", "Strata", '<p>Levels are configured strata, not calibrated capability ceilings. '
              'Charts show scored-only fact F1 per provider; tables add all-item values and intervals '
              '(family clusters).</p>' + strata_charts + ''.join(strata_parts)),
@@ -919,19 +948,9 @@ def render_html(agg, out_path, instances=None):
            '<meta name="viewport" content="width=device-width, initial-scale=1">'
            '<title>EnigmaForge — the find-the-problem benchmark</title><style>' + _CSS +
            '</style></head><body><main>' + _hero(agg, rows) +
-           '<p>' + _escape(agg["generated_at"]) +
-           f' · {agg["n_instances"]} instances · {agg["n_families"]} world families</p>' +
-           '<p>All scores are 0-100; lower is worse. Headline measure: fact F1. Ranking: all-item task success, then all-item fact F1, '
-           'then provider name. No weighted composite. Conditional means use scored-item denominators; '
-           'all-item means include missing, filtered, invalid, and failed attempts as zero achieved success. '
-           'Unadjudicated outcomes remain unavailable. Decisions and task success use policy-bearing items only. '
-           'Derived diagnostics: discovery cost is the conditional-F1 drop from a stated task (explicit) to an '
-           'unstated one (implicit) — the price of finding the problem; reasoning overflow is the share of items '
-           'where the model exhausted max_tokens without visible output; educated guesses are decisions that were '
-           'correct while the submitted world was not exactly right. '
-           'Answered includes invalid content; valid means a schema-compliant scored answer. '
-           'Confidence intervals resample world families, not realizations.</p><p>' +
-           _escape(agg["cost_scope"]) + '</p>' + ''.join(blocks) +
+           '<p class="scale-note">' + _escape(agg["generated_at"]) +
+           f' · {agg["n_instances"]} instances · {agg["n_families"]} world families'
+           ' · methodology under “Benchmark details”</p>' +
            '<nav role="tablist" aria-label="Report sections">' + nav + '</nav>' + panes +
            '</main><script>' + _SCRIPT + '</script></body></html>')
     Path(out_path).write_text(doc, encoding="utf-8")
