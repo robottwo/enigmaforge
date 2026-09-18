@@ -625,18 +625,13 @@ def _summary_chart(rows):
 
 # Every switchable score view: (scores_100 key, dropdown label, chart title).
 _SCORE_VIEWS = [
-    ("combined", "task success + fact F1", None),
     ("task_success", "task success", "Task success (/100)"),
-    ("fact_f1", "fact F1", "Fact F1 (/100)"),
-    ("claim_accuracy", "trust — claim accuracy", "Claim accuracy (/100): of every "
-     "asserted fact, the share that was right"),
-    ("intuition", "intuition — unguided", "Intuition (/100): task success when "
-     "handed only the story, no stated question"),
-    ("discovery_retention", "discovery retention", "Discovery retention (/100): "
-     "performance without a stated question, relative to with one (100+ = "
-     "unstated task was easier)"),
-    ("reasoning_discipline", "reasoning discipline", "Reasoning discipline (/100): "
-     "share of items answered without exhausting the thinking budget"),
+    ("fact_f1", "fact retention", "Fact retention (/100): balance of right "
+     "claims made vs hidden facts found"),
+    ("claim_accuracy", "trust", "Trust (/100): of every asserted fact, the "
+     "share that was right"),
+    ("intuition", "intuition", "Intuition (/100): task success when handed "
+     "only the story, no stated question"),
     ("earned_decisions", "earned decisions", "Earned decisions (/100): correct "
      "actions reached on an exactly-right world"),
 ]
@@ -756,21 +751,41 @@ tabs.forEach((tab, index) => {
   });
 });
 if (tabs.length) activate(tabs[0]);
-// Deep links: #pane-<key> (or #<key>) opens that tab; activation updates the hash.
-function tabFromHash() {
-  const key = decodeURIComponent(location.hash.slice(1)).replace(/^pane-/, "");
+// Deep links: a hash naming a tab opens it (#decisions); a hash naming a
+// score view opens the Benchmark tab with that score selected (#intuition,
+// #trust). Built from the DOM — no data crosses into JavaScript.
+const scoreSelect = document.getElementById("score-select");
+const scoreAliases = { trust: "claim_accuracy", retention: "fact_f1" };
+function tabFromHash(key) {
   return tabs.find(t => t.getAttribute("aria-controls") === "pane-" + key);
 }
-if (tabFromHash()) activate(tabFromHash());
-window.addEventListener("hashchange", () => { const t = tabFromHash(); if (t) activate(t); });
-tabs.forEach(tab => tab.addEventListener("click", () =>
-  history.replaceState(null, "", "#" + tab.getAttribute("aria-controls").replace(/^pane-/, ""))));
-const scoreSelect = document.getElementById("score-select");
+function applyHash() {
+  const key = decodeURIComponent(location.hash.slice(1)).replace(/^pane-/, "");
+  if (!key) return;
+  const tab = tabFromHash(key);
+  if (tab) { activate(tab); return; }
+  if (scoreSelect) {
+    const scoreKey = scoreAliases[key] || key;
+    const match = [...scoreSelect.options].some(o => o.value === scoreKey);
+    if (match) {
+      activate(tabFromHash("home"));
+      scoreSelect.value = scoreKey;
+      scoreSelect.dispatchEvent(new Event("change"));
+    }
+  }
+}
 if (scoreSelect) {
   const views = [...document.querySelectorAll('[id^="scoreview-"]')];
   const show = key => views.forEach(v => v.hidden = v.id !== "scoreview-" + key);
-  scoreSelect.addEventListener("change", () => show(scoreSelect.value));
+  scoreSelect.addEventListener("change", () => {
+    show(scoreSelect.value);
+    history.replaceState(null, "", "#" + scoreSelect.value);
+  });
 }
+if (tabs.length) window.addEventListener("hashchange", applyHash);
+applyHash();
+tabs.forEach(tab => tab.addEventListener("click", () =>
+  history.replaceState(null, "", "#" + tab.getAttribute("aria-controls").replace(/^pane-/, ""))));
 """
 
 

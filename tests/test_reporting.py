@@ -376,12 +376,14 @@ def test_score_picker_renders_all_views_with_toggle():
     agg = aggregate(records, instances, ["p"], bootstrap_resamples=0)
     picker = reporting._score_chart_picker(agg["leaderboard"])
     assert 'id="score-select"' in picker
-    for key in ("combined", "task_success", "claim_accuracy", "intuition",
-                "discovery_retention", "reasoning_discipline", "earned_decisions"):
+    for key in ("task_success", "fact_f1", "claim_accuracy", "intuition",
+                "earned_decisions"):
         assert f'id="scoreview-{key}"' in picker
+    for dropped in ("combined", "discovery_retention", "reasoning_discipline"):
+        assert f'id="scoreview-{dropped}"' not in picker
     assert picker.count("<svg") == len(reporting._SCORE_VIEWS)
     # exactly one view visible initially
-    assert 'id="scoreview-combined">' in picker
+    assert 'id="scoreview-task_success">' in picker
     assert 'id="scoreview-intuition" hidden>' in picker
 
 
