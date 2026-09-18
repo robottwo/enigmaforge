@@ -367,3 +367,18 @@ def test_trust_and_intuition_scores():
     # intuition = mean implicit task success
     assert s["intuition"] == 33.3  # rounded to one decimal like all scores
     assert row["derived"]["intuition"]["denominator"] == 3
+
+
+def test_score_picker_renders_all_views_with_toggle():
+    instances = [instance(str(n)) for n in range(4)]
+    records = [grade("p", str(n)) for n in range(4)]
+    agg = aggregate(records, instances, ["p"], bootstrap_resamples=0)
+    picker = reporting._score_chart_picker(agg["leaderboard"])
+    assert 'id="score-select"' in picker
+    for key in ("combined", "task_success", "claim_accuracy", "intuition",
+                "discovery_retention", "reasoning_discipline", "earned_decisions"):
+        assert f'id="scoreview-{key}"' in picker
+    assert picker.count("<svg") == len(reporting._SCORE_VIEWS)
+    # exactly one view visible initially
+    assert 'id="scoreview-combined">' in picker
+    assert 'id="scoreview-intuition" hidden>' in picker

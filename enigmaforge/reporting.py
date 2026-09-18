@@ -421,7 +421,7 @@ def _hero(agg, rows):
 
 def _home_tab(rows, performance, top_line):
     """Executive summary: chart + leaderboard + how to read it + why different."""
-    chart = _summary_chart(rows)
+    chart = _score_chart_picker(rows)
     top_line_html = (f'<p class="topline"><strong>{_escape(top_line)}</strong></p>'
                      if top_line else '')
     how_to_read = ''.join(
@@ -623,6 +623,52 @@ def _summary_chart(rows):
                   side=side, side_label="recorded cost")
 
 
+# Every switchable score view: (scores_100 key, dropdown label, chart title).
+_SCORE_VIEWS = [
+    ("combined", "task success + fact F1", None),
+    ("task_success", "task success", "Task success (/100)"),
+    ("fact_f1", "fact F1", "Fact F1 (/100)"),
+    ("claim_accuracy", "trust — claim accuracy", "Claim accuracy (/100): of every "
+     "asserted fact, the share that was right"),
+    ("intuition", "intuition — unguided", "Intuition (/100): task success when "
+     "handed only the story, no stated question"),
+    ("discovery_retention", "discovery retention", "Discovery retention (/100): "
+     "performance without a stated question, relative to with one (100+ = "
+     "unstated task was easier)"),
+    ("reasoning_discipline", "reasoning discipline", "Reasoning discipline (/100): "
+     "share of items answered without exhausting the thinking budget"),
+    ("earned_decisions", "earned decisions", "Earned decisions (/100): correct "
+     "actions reached on an exactly-right world"),
+]
+
+
+def _score_chart_picker(rows):
+    """Dropdown + one pre-rendered chart per score. Switching is pure
+    visibility toggling — no data crosses into JavaScript."""
+    models = [r for r in rows if not r["provider"].startswith("baseline:")]
+    side = {r["provider"]: (f"${r['recorded_attempt_cost']:.2f}"
+                            if _number(r.get("recorded_attempt_cost")) else "—")
+            for r in models}
+    cats = [r["provider"] for r in models]
+    options, panes = [], []
+    for i, (key, label, title) in enumerate(_SCORE_VIEWS):
+        if key == "combined":
+            chart = _summary_chart(rows)
+        else:
+            values = {r["provider"]: r["scores_100"][key] for r in models}
+            chart = _chart(cats, [(label, values)], annotate=True, side=side)
+        hidden = "" if i == 0 else " hidden"
+        panes.append(f'<div id="scoreview-{key}"{hidden}>'
+                     + (f'<p class="scale-note">{_escape(title)}</p>' if title else '')
+                     + chart + '</div>')
+        options.append(f'<option value="{key}"{" selected" if i == 0 else ""}>'
+                       f'{_escape(label)}</option>')
+    select = ('<label class="score-picker">Score: <select id="score-select" '
+              'aria-label="Choose the score to display">' + ''.join(options) +
+              '</select></label>')
+    return select + ''.join(panes)
+
+
 def _metric_cell(estimate):
     result = f"{_percent(estimate['value'])} <small>(n={estimate['denominator']})</small>"
     ci = estimate.get("ci")
@@ -676,6 +722,9 @@ gap:.8rem; margin:1rem 0; }
 .card-value { font-size:1.5rem; font-weight:700; color:#e8f0ff; }
 .card-label { font-size:.8rem; color:#93a2bd; text-transform:uppercase; letter-spacing:.06em; }
 .scale-note { color:#93a2bd; font-size:.9rem; }
+.score-picker { display:inline-block; margin:.4rem 0 .8rem; font-size:.95rem; color:#c1d7f5; }
+.score-picker select { font:inherit; padding:.35rem .6rem; background:#26334a; color:#fff;
+border:1px solid #7187a8; border-radius:.3rem; }
 [hidden] { display:none !important; }
 """
 
@@ -711,6 +760,12 @@ if (tabFromHash()) activate(tabFromHash());
 window.addEventListener("hashchange", () => { const t = tabFromHash(); if (t) activate(t); });
 tabs.forEach(tab => tab.addEventListener("click", () =>
   history.replaceState(null, "", "#" + tab.getAttribute("aria-controls").replace(/^pane-/, ""))));
+const scoreSelect = document.getElementById("score-select");
+if (scoreSelect) {
+  const views = [...document.querySelectorAll('[id^="scoreview-"]')];
+  const show = key => views.forEach(v => v.hidden = v.id !== "scoreview-" + key);
+  scoreSelect.addEventListener("change", () => show(scoreSelect.value));
+}
 """
 
 
