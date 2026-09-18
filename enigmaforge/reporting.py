@@ -419,8 +419,9 @@ def _hero(agg, rows):
             f'<div class="cards">{card_html}</div></section>')
 
 
-def _home_tab(rows, performance, top_line):
-    """Executive summary: chart + leaderboard + how to read it + why different."""
+def _home_tab(rows, top_line, performance_link):
+    """Executive summary: chart + how to read it + why different. The full
+    performance table lives in the companion file; link to it."""
     chart = _score_chart_picker(rows)
     top_line_html = (f'<p class="topline"><strong>{_escape(top_line)}</strong></p>'
                      if top_line else '')
@@ -471,7 +472,7 @@ def _home_tab(rows, performance, top_line):
             'All scores are 0–100; higher is better. Deterministic baselines '
             'appear in the tables only: a perfect-information solver marks the '
             'ceiling, and a text-copier marks the floor at zero.</p>'
-            + performance +
+            + performance_link +
             f'<h2>How to read this benchmark</h2><div class="cards">{how_to_read}</div>'
             + interpretation +
             '<h2>Why it is different</h2>' + why)
@@ -1012,7 +1013,11 @@ def render_html(agg, out_path, instances=None):
                 'on an exactly-right world</summary>' +
                 _chart([r["provider"] for r in models], series) + '</details>')
 
-    tabs = [("home", "Benchmark", _home_tab(rows, performance, top_line)),
+    performance_link = (f'<p><a class="button" href="{_escape(companion_name)}'
+                        '#performance">Open the full performance table</a> '
+                        '<span class="scale-note">(per metric: all-item and '
+                        'scored-only, with confidence intervals)</span></p>')
+    tabs = [("home", "Benchmark", _home_tab(rows, top_line, performance_link)),
             ("how", "How it works", _how_it_works_tab()),
             ("methodology", "Benchmark details",
              '<h2>How scores work</h2>'
@@ -1032,7 +1037,6 @@ def render_html(agg, out_path, instances=None):
              'world families, not realizations.</p>'
              '<p>' + _escape(agg["cost_scope"]) + '</p>'
              + ''.join(blocks) + coverage),
-            ("overview", "Full report", performance),
             ("strata", "Strata", '<p>Levels are configured strata, not calibrated capability ceilings. '
              'Charts show scored-only fact F1 per provider; tables add all-item values and intervals '
              '(family clusters).</p>' + strata_charts + ''.join(strata_parts)),
@@ -1066,7 +1070,8 @@ def render_html(agg, out_path, instances=None):
     # in a companion file next to the main report.
     companion_body = ('<h1>Raw records</h1>'
                       '<p><a class="button" href="index.html">Back to the leaderboard</a></p>'
-                      '<h2 id="stories">Solver inputs &amp; hidden fact patterns</h2>'
+                      '<h2 id="performance">Performance table</h2>' + performance
+                      + '<h2 id="stories">Solver inputs &amp; hidden fact patterns</h2>'
                       + (''.join(stories) or '<p>No story data supplied.</p>')
                       + '<h2 id="details">Per-record details</h2>' + ''.join(detailed))
     companion = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
