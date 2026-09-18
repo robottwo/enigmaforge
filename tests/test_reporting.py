@@ -285,3 +285,54 @@ def test_scores_100_scale_and_direction():
     assert s["earned_decisions"] == 75.0      # 1 of 4 decisions was a guess
     assert s["reasoning_discipline"] == 100.0
     assert s["discovery_retention"] is None   # single condition: no gap
+
+
+def test_report_leads_with_chart_and_demotes_completeness(tmp_path):
+    class ChartParser(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.first_heading = None
+            self.svg_count = 0
+            self.in_h2 = False
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "svg":
+                self.svg_count += 1
+            if tag == "h2":
+                self.in_h2 = True
+                if self.first_heading is None:
+                    self.first_heading = "__h2__"
+
+        def handle_data(self, data):
+            if self.in_h2 and self.first_heading == "__h2__":
+                self.first_heading = data.strip()
+
+        def handle_endtag(self, tag):
+            if tag == "h2":
+                self.in_h2 = False
+
+    instances = [instance(str(n), level=n % 2) for n in range(6)]
+    for inst in instances:
+        inst["difficulty"] = {"forward_chain_rounds": 2, "direct_assignment_fraction": .5}
+        inst["input_words"] = 900
+    records = []
+    for n, inst in enumerate(instances):
+        row = grade("p", inst["iid"])
+        if inst["condition"] == "implicit":
+            row["metrics"]["fact_f1"] = .5
+        records.append(row)
+    agg = aggregate(records, instances, ["p"], bootstrap_resamples=0)
+    agg["generation_completeness"] = {"complete": True}
+    out = tmp_path / "r.html"
+    render_html(agg, out, instances)
+    html_text = out.read_text()
+    parser = ChartParser()
+    parser.feed(html_text)
+    # Hero leads the page; the Benchmark tab opens with the top line + chart.
+    assert html_text.index('class="hero"') < html_text.index("<svg")
+    assert html_text.index("leads: task success") < html_text.index("<svg")
+    assert parser.first_heading == "The leaderboard at a glance"
+    # Every tab carries at least one chart; completeness is appendix-only.
+    assert parser.svg_count >= 6          # overview + strata + paired + difficulty + stories + decisions
+    assert html_text.index("Generation completeness") > html_text.index('id="tab-appendix"')
+    assert 'aside class="warning"' not in html_text.split("<nav")[0]

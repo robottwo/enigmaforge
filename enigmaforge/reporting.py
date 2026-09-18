@@ -13,6 +13,7 @@ import json
 import math
 from pathlib import Path
 import random
+import statistics
 
 
 METRICS = ("fact_precision", "fact_recall", "fact_f1", "exact_world",
@@ -379,6 +380,126 @@ def _percent(value):
     return "—" if value is None else f"{100 * value:.1f}%"
 
 
+def _hero(agg, rows):
+    """Above-the-fold marketing header: title, tagline, headline stat cards."""
+    models = [r for r in rows if not r["provider"].startswith("baseline:")]
+    leader = models[0] if models else None
+    cards = [
+        ("Worlds", f"{agg['n_families']}"),
+        ("Scored items", f"{agg['n_instances']}"),
+        ("Models compared", str(len(models))),
+    ]
+    if leader is not None and leader["scores_100"]["task_success"] is not None:
+        cards.append(("Current leader",
+                      f"{_escape(leader['provider'])} · "
+                      f"{leader['scores_100']['task_success']}/100"))
+    card_html = ''.join(f'<div class="card"><div class="card-value">{v}</div>'
+                        f'<div class="card-label">{_escape(k)}</div></div>'
+                        for k, v in cards)
+    return ('<section class="hero"><h1>EnigmaForge</h1>'
+            '<p class="tagline">The benchmark where a model must find the problem '
+            'before it can solve it.</p>'
+            f'<div class="cards">{card_html}</div></section>')
+
+
+def _home_tab(rows, performance, top_line):
+    """Executive summary: chart + leaderboard + how to read it + why different."""
+    chart = _summary_chart(rows)
+    top_line_html = (f'<p class="topline"><strong>{_escape(top_line)}</strong></p>'
+                     if top_line else '')
+    how_to_read = ''.join(
+        f'<div class="card"><h3>{_escape(title)}</h3><p>{_escape(body)}</p></div>'
+        for title, body in (
+            ("What a model must do",
+             "Every item is a short story that hides a set of definite facts and a "
+             "rule for what should happen next. The model reads the story and must "
+             "report the facts it is sure of, plus the action the rule calls for. "
+             "Everything is exact: a fact is right or wrong, an action is right or "
+             "wrong."),
+            ("Finding the problem is scored",
+             "The same world is presented three ways: as a plain list of rules, as "
+             "a story with the question stated, and as a story with no question at "
+             "all. Discovery retention shows how much performance survives when "
+             "the model is not told what it is looking for — the benchmark's "
+             "signature measure."),
+            ("Three honesty checks",
+             "Reasoning discipline flags models that burn their entire thinking "
+             "budget without producing an answer. Earned decisions counts actions "
+             "that were correct with a fully correct world, separating insight "
+             "from lucky guessing. A story-copying control is graded alongside "
+             "every model and must score zero — if it doesn't, the leaderboard "
+             "is void."),
+        ))
+    why = _table(["Typical benchmarks", "EnigmaForge"],
+                 [["The question is stated", "The question is hidden in the story"],
+                  ["Hand-written items", "Every world is generated and machine-verified"],
+                  ["One checked answer", "Answer plus the rule that justifies it"],
+                  ["A right-sounding guess scores", "Guesses are measured and shown separately"],
+                  ["Scores can be gamed by copying", "Copying the source text scores zero"]],
+                 "How EnigmaForge differs")
+    interpretation = _table(
+        ["Score (0–100)", "What it means"],
+        [["Task success", "Share of items where the model reported every fact exactly "
+          "right and took the action the rule requires. The headline measure."],
+         ["Fact F1", "Balance of how many stated facts were right vs how many of the "
+          "hidden facts were found. Forgives a few misses; punishes wrong claims."],
+         ["Discovery retention", "Performance without a stated question, relative to "
+          "with one. 100 means finding the problem cost nothing."],
+         ["Reasoning discipline", "Share of items answered without running out of "
+          "thinking budget first."],
+         ["Earned decisions", "Correct actions that came with a fully correct world — "
+          "the no-luckiness measure."]],
+        "How to interpret the scores")
+    return (f'<h2>The leaderboard at a glance</h2>{top_line_html}{chart}<p class="scale-note">'
+            'All scores are 0–100; higher is better. Deterministic baselines '
+            'appear in the tables only: a perfect-information solver marks the '
+            'ceiling, and a text-copier marks the floor at zero.</p>'
+            + performance +
+            f'<h2>How to read this benchmark</h2><div class="cards">{how_to_read}</div>'
+            + interpretation +
+            '<h2>Why it is different</h2>' + why)
+
+
+def _how_it_works_tab():
+    steps = [
+        ("1 · Write a hidden rulebook",
+         "Each world starts as a list of secret facts — which record says what — "
+         "and clues that connect them. No story exists yet."),
+        ("2 · Prove there is exactly one answer",
+         "A checker proves two things before anything is written down: the clues "
+         "have exactly one possible set of facts, and every clue is needed — "
+         "remove any one and other answers become possible. No broken puzzles."),
+        ("3 · Hide it in a story",
+         "Each clue becomes one sentence, woven into a story with extra scenes "
+         "that mean nothing. A second, differently written story hides the same "
+         "puzzle, so a model can't memorise the wording."),
+        ("4 · Ask, three ways",
+         "The same puzzle goes out three ways: as a bare list of rules, as a "
+         "story with the question stated, and as a story with no question at "
+         "all. The last version is the real test — the model must notice there "
+         "is something to solve."),
+        ("5 · Grade exactly, not generously",
+         "The model must state each fact as 'this record equals this value' and "
+         "name the action the rule requires. Paraphrase and partial credit are "
+         "not awarded: values are checked letter-for-letter against the secret "
+         "rulebook."),
+        ("6 · Score it four ways",
+         "Solving (did it get everything right?), discovery (what did it keep "
+         "when the question was hidden?), discipline (did it answer instead of "
+         "running out of thinking room?), and honesty (were its right answers "
+         "earned, or lucky?)."),
+    ]
+    cards = ''.join(f'<div class="card"><h3>{_escape(t)}</h3><p>{_escape(b)}</p></div>'
+                    for t, b in steps)
+    return ('<p>Every EnigmaForge item is a short mystery with a machine-checked '
+            'answer. Here is how one is made, in plain terms.</p>'
+            f'<div class="cards">{cards}</div>'
+            '<p class="scale-note">A note on honesty: the story-copying control is '
+            'graded alongside every model. It submits the raw text as its answer '
+            'and must score zero — a standing proof that the leaderboard cannot '
+            'be gamed by copying.</p>')
+
+
 def _top_line(rows):
     """One-sentence outcome: the leading real (non-baseline) provider under
     the report's single ranking, with honest coverage caveats. Returns
@@ -400,39 +521,76 @@ def _top_line(rows):
             + ". Solid baselines: constraint-solver and story-copy bound the scale.")
 
 
-def _summary_chart(rows):
-    """Static inline SVG: paired horizontal bars (task success, fact F1) per
-    model provider in ranking order. Baselines stay in the tables but are not
-    plotted. All text is escaped; no JS data."""
-    rows = [r for r in rows if not r["provider"].startswith("baseline:")]
-    bar_h, gap, label_w, plot_w = 14, 6, 190, 420
-    chart_h = max(len(rows), 1) * (bar_h * 2 + gap) + 30
-    parts = [f'<svg role="img" aria-label="All-item task success and fact F1 per provider" '
-             f'viewBox="0 0 {label_w + plot_w + 60} {chart_h}" width="100%" '
-             f'style="max-width:700px" xmlns="http://www.w3.org/2000/svg">']
+_PALETTE = ["#4f9cf0", "#2f7d4f", "#d97706", "#9333ea", "#dc2626", "#0891b2",
+            "#65a30d", "#db2777", "#7c3aed", "#ca8a04"]
+
+
+def _chart(cats, series, *, signed=False, max_label=28):
+    """Static inline SVG grouped horizontal bar chart.
+
+    cats: ordered category labels; series: list of (name, {cat: value|None})
+    with values in display units (0-100 scores, or signed differences in
+    percentage points when signed=True). Bars start at zero (at the plot
+    centre when signed). Text is escaped; no JS data. Missing values leave
+    a gap. Single-series charts annotate bar values.
+    """
+    bar_h, group_gap, label_w, plot_w = 12, 9, 190, 460
+    cats = list(cats)
+    if not cats or not series:
+        return ""
+    maxabs = max((abs(v) for _, values in series for v in values.values()
+                  if v is not None), default=1.0) or 1.0
+    origin = label_w + (plot_w / 2 if signed else 0)
+    span = plot_w / (2 if signed else 1)
+    group_h = len(series) * bar_h
+    chart_h = len(cats) * (group_h + group_gap) + 34
+    parts = [f'<svg role="img" viewBox="0 0 {label_w + plot_w + 70} {chart_h}" '
+             f'width="100%" style="max-width:760px" xmlns="http://www.w3.org/2000/svg">']
+    if signed:
+        axis_x = label_w + plot_w / 2
+        parts.append(f'<line x1="{axis_x}" y1="0" x2="{axis_x}" y2="{chart_h - 30}" '
+                     f'stroke="#46516a" stroke-width="1"/>')
     y = 4
-    for row in rows:
-        s = row["scores_100"]
-        task = (s["task_success"] or 0) / 100
-        f1 = (s["fact_f1"] or 0) / 100
-        label = _escape(row["provider"][:28])
-        parts.append(f'<text x="{label_w - 8}" y="{y + bar_h}" text-anchor="end" '
+    for cat in cats:
+        label = _escape(str(cat)[:max_label])
+        parts.append(f'<text x="{label_w - 8}" y="{y + group_h / 2}" text-anchor="end" '
                      f'dominant-baseline="middle" font-size="11" fill="#c1d7f5">{label}</text>')
-        w_task = round(plot_w * task)
-        w_f1 = round(plot_w * f1)
-        parts.append(f'<rect x="{label_w}" y="{y}" width="{w_task}" height="{bar_h - 2}" '
-                     f'fill="#4f9cf0"><title>{_escape(row["provider"])} task success: {s["task_success"]}/100</title></rect>')
-        parts.append(f'<rect x="{label_w}" y="{y + bar_h}" width="{w_f1}" height="{bar_h - 2}" '
-                     f'fill="#2f7d4f"><title>{_escape(row["provider"])} fact F1: {s["fact_f1"]}/100</title></rect>')
-        parts.append(f'<text x="{label_w + plot_w + 6}" y="{y + bar_h}" dominant-baseline="middle" '
-                     f'font-size="10" fill="#c1c8d4">{s["task_success"]}</text>')
-        y += bar_h * 2 + gap
-    parts.append(f'<rect x="{label_w}" y="{chart_h - 14}" width="12" height="10" fill="#4f9cf0"/>'
-                 f'<text x="{label_w + 16}" y="{chart_h - 6}" font-size="10" fill="#c1c8d4">task success</text>'
-                 f'<rect x="{label_w + 110}" y="{chart_h - 14}" width="12" height="10" fill="#2f7d4f"/>'
-                 f'<text x="{label_w + 126}" y="{chart_h - 6}" font-size="10" fill="#c1c8d4">fact F1</text>')
+        for si, (name, values) in enumerate(series):
+            v = values.get(cat)
+            if v is None:
+                continue
+            vy = y + si * bar_h
+            length = round(span * abs(v) / maxabs)
+            x = origin if v >= 0 else origin - length
+            parts.append(f'<rect x="{x}" y="{vy}" width="{max(length, 1)}" height="{bar_h - 2}" '
+                         f'fill="{_PALETTE[si % len(_PALETTE)]}">'
+                         f'<title>{_escape(str(cat))} · {_escape(name)}: {v:g}</title></rect>')
+            if len(series) == 1:
+                anchor = "start" if v >= 0 else "end"
+                tx = (x + length + 5) if v >= 0 else (x - 5)
+                parts.append(f'<text x="{tx}" y="{vy + bar_h / 2}" dominant-baseline="middle" '
+                             f'font-size="10" fill="#c1c8d4" text-anchor="{anchor}">{v:g}</text>')
+        y += group_h + group_gap
+    legend_y = chart_h - 14
+    lx = label_w
+    for si, (name, _) in enumerate(series):
+        parts.append(f'<rect x="{lx}" y="{legend_y - 4}" width="12" height="10" '
+                     f'fill="{_PALETTE[si % len(_PALETTE)]}"/>')
+        parts.append(f'<text x="{lx + 16}" y="{legend_y + 3}" font-size="10" '
+                     f'fill="#c1c8d4">{_escape(name)}</text>')
+        lx += 16 + len(name) * 6 + 24
     parts.append('</svg>')
     return ''.join(parts)
+
+
+def _summary_chart(rows):
+    """Overview chart: all-item task success and fact F1 (/100) per model
+    provider in ranking order. Baselines stay in the tables but are not
+    plotted."""
+    models = [r for r in rows if not r["provider"].startswith("baseline:")]
+    series = [("task success", {r["provider"]: r["scores_100"]["task_success"] for r in models}),
+              ("fact F1", {r["provider"]: r["scores_100"]["fact_f1"] for r in models})]
+    return _chart([r["provider"] for r in models], series)
 
 
 def _metric_cell(estimate):
@@ -471,6 +629,21 @@ th { color:#c1d7f5; } small { color:#c1c8d4; } pre { white-space:pre-wrap; overf
 background:#1d2533; padding:1rem; } details { margin:.7rem 0; border:1px solid #46516a; padding:.5rem; }
 summary { cursor:pointer; font-weight:600; overflow-wrap:anywhere; }
 .warning { padding:1rem; border:2px solid #dfb158; background:#332b1e; }
+.hero { background:linear-gradient(135deg,#101828 0%,#1b2a4a 55%,#23407a 100%);
+border:1px solid #37517e; border-radius:.6rem; padding:2.5rem 2rem 2rem; margin:0 0 1.5rem; }
+.hero h1 { font-size:2.6rem; margin:0 0 .4rem; letter-spacing:.02em;
+background:linear-gradient(90deg,#e8f0ff,#9fc2ff); -webkit-background-clip:text;
+background-clip:text; color:transparent; }
+.hero .tagline { font-size:1.15rem; color:#c9d8f2; margin:0 0 1.4rem; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+gap:.8rem; margin:1rem 0; }
+.card { background:#1d2533; border:1px solid #46516a; border-radius:.5rem; padding:.9rem 1rem; }
+.hero .card { text-align:center; }
+.card h3 { margin:.1rem 0 .4rem; font-size:1rem; color:#c1d7f5; }
+.card p { margin:0; color:#b9c4d8; font-size:.92rem; }
+.card-value { font-size:1.5rem; font-weight:700; color:#e8f0ff; }
+.card-label { font-size:.8rem; color:#93a2bd; text-transform:uppercase; letter-spacing:.06em; }
+.scale-note { color:#93a2bd; font-size:.9rem; }
 [hidden] { display:none !important; }
 """
 
@@ -617,32 +790,137 @@ def render_html(agg, out_path, instances=None):
     headline = (f'<h2>Top line</h2><p><strong>{_escape(top_line)}</strong></p>'
                 if top_line else
                 '<h2>Top line</h2><p>No provider produced a scored answer.</p>')
-    summary = ('<details open><summary>Summary</summary>' + _summary_chart(rows) +
-               '<p>All-item values include failed and missing attempts as zero; '
-               'pale bars are deterministic baselines (constraint-solver: perfect '
-               'information bound; story-copy: must score zero).</p></details>')
-    tabs = [("overview", "Overview", headline + summary + performance + coverage),
+    overview_chart = _summary_chart(rows)
+
+    # --- per-tab overview charts -----------------------------------------
+    def _stratum_chart(dimension, metric="fact_f1", population="conditional",
+                       note=""):
+        """Grouped bars of a per-stratum metric, one series per model."""
+        values_by_provider = {}
+        cats = set()
+        for name in names:
+            if name.startswith("baseline:"):
+                continue
+            values = {}
+            for group in agg["strata"][name][dimension]:
+                value = group["metrics"][metric][population]["value"]
+                if value is not None:
+                    cats.add(str(group["value"]))
+                    values[str(group["value"])] = round(value * 100, 1)
+            if values:
+                values_by_provider[name] = values
+        if not values_by_provider or not cats:
+            return ""
+        ordered = sorted(cats)
+        series = [(name, values_by_provider[name]) for name in values_by_provider]
+        return ('<details open><summary>' + _escape(note or dimension) +
+                ' · ' + _escape(metric) + ' (/100)</summary>' +
+                _chart(ordered, series) + '</details>')
+
+    strata_charts = ''.join(
+        chart for dimension in STRATA
+        for chart in [_stratum_chart(dimension)] if chart)
+
+    def _paired_chart():
+        entries = []
+        for comparison in agg["paired_differences"]["models"]:
+            result = comparison["metrics"]["fact_f1"]
+            if result["difference"] is not None:
+                entries.append((f"{comparison['left']} − {comparison['right']}",
+                                round(result["difference"] * 100, 1)))
+        if not entries:
+            return ""
+        entries.sort(key=lambda pair: pair[1])
+        return ('<details open><summary>Model pairs · fact F1 difference '
+                '(percentage points, left − right)</summary>' +
+                _chart([label for label, _ in entries],
+                       [("Δ fact F1", dict(entries))], signed=True) + '</details>')
+
+    def _difficulty_chart():
+        by_level = defaultdict(lambda: defaultdict(list))
+        for instance in instances or []:
+            difficulty = instance.get("difficulty")
+            level = instance.get("level")
+            if difficulty is None or level is None:
+                continue
+            for key in ("forward_chain_rounds", "direct_assignment_fraction"):
+                if _number(difficulty.get(key)):
+                    by_level[level][key].append(difficulty[key])
+        if not by_level:
+            return ""
+        levels = sorted(by_level)
+        series = [("forward-chain rounds (mean)",
+                   {str(l): round(statistics.mean(by_level[l]["forward_chain_rounds"]), 1)
+                    for l in levels if by_level[l]["forward_chain_rounds"]}),
+                  ("direct facts (% of vars)",
+                   {str(l): round(statistics.mean(by_level[l]["direct_assignment_fraction"]) * 100, 1)
+                    for l in levels if by_level[l]["direct_assignment_fraction"]})]
+        series = [(name, values) for name, values in series if values]
+        return ('<details open><summary>Structural depth by configured level</summary>' +
+                _chart([str(l) for l in levels], series) + '</details>') if series else ''
+
+    def _stories_chart():
+        sizes = defaultdict(lambda: defaultdict(list))
+        for instance in instances or []:
+            if _number(instance.get("input_words")) and instance.get("level") is not None:
+                sizes[instance["level"]][instance.get("condition") or "?"].append(
+                    instance["input_words"])
+        if not sizes:
+            return ""
+        levels = sorted(sizes)
+        series = [(cond, {str(l): round(statistics.mean(sizes[l][cond]))
+                          for l in levels if sizes[l][cond]})
+                  for cond in ("formal", "explicit", "implicit")]
+        series = [(name, values) for name, values in series if values]
+        return ('<details open><summary>Input size by level (mean words)</summary>' +
+                _chart([str(l) for l in levels], series) + '</details>') if series else ''
+
+    def _decisions_chart():
+        models = [r for r in rows
+                  if not r["provider"].startswith("baseline:")
+                  and r["metrics"]["decision_correct"]["all_items"]["value"] is not None]
+        if not models:
+            return ""
+        series = [("decision correct (/100)",
+                   {r["provider"]: r["scores_100"]["earned_decisions"] for r in models})]
+        return ('<details open><summary>Earned decisions (/100) — correct actions '
+                'on an exactly-right world</summary>' +
+                _chart([r["provider"] for r in models], series) + '</details>')
+
+    tabs = [("home", "Benchmark", _home_tab(rows, performance, top_line)),
+            ("how", "How it works", _how_it_works_tab()),
+            ("overview", "Full report", coverage + performance),
             ("strata", "Strata", '<p>Levels are configured strata, not calibrated capability ceilings. '
-             'Stratum estimates are descriptive; intervals below use family clusters.</p>' + ''.join(strata_parts)),
-            ("uncertainty", "Paired comparisons", '<p>Differences are left minus right, in percentage points. '
+             'Charts show scored-only fact F1 per provider; tables add all-item values and intervals '
+             '(family clusters).</p>' + strata_charts + ''.join(strata_parts)),
+            ("uncertainty", "Paired comparisons", _paired_chart() +
+             '<p>Differences are left minus right, in percentage points. '
              + _escape(agg["paired_differences"]["population"]) + '</p><pre>' +
              _json(agg["uncertainty"]) + '</pre>' + ''.join(paired_parts)),
-            ("difficulty", "Measured difficulty", '<pre>' + _json(agg["difficulty"]) + '</pre>'),
-            ("stories", "Stories", ''.join(stories) or '<p>No story data supplied.</p>'),
-            ("decisions", "Decisions", ''.join(decisions)),
+            ("difficulty", "Measured difficulty", _difficulty_chart() +
+             '<pre>' + _json(agg["difficulty"]) + '</pre>'),
+            ("stories", "Stories", _stories_chart() +
+             (''.join(stories) or '<p>No story data supplied.</p>')),
+            ("decisions", "Decisions", _decisions_chart() + ''.join(decisions)),
             ("details", "Record details", ''.join(detailed))]
+    completeness = agg.get("generation_completeness")
+    appendix_body = ('<p>Appendix: run provenance and generation completeness. '
+                     'Also available in results.json.</p>'
+                     + ('<details open><summary>Generation completeness</summary><pre>'
+                        + _json(completeness) + '</pre></details>' if completeness is not None else '')
+                     + '<details><summary>Provenance</summary><pre>' + _json(agg.get("provenance"))
+                     + '</pre></details>')
+    tabs.append(("appendix", "Appendix", appendix_body))
     nav = ''.join(f'<button type="button" role="tab" id="tab-{key}" aria-controls="pane-{key}" '
                   f'aria-selected="false">{label}</button>' for key, label, _ in tabs)
     panes = ''.join(f'<section role="tabpanel" tabindex="0" id="pane-{key}" '
                     f'aria-labelledby="tab-{key}">{body}</section>' for key, _, body in tabs)
-    completeness = agg.get("generation_completeness")
-    banner = ('<aside class="warning"><strong>Generation completeness</strong><pre>' +
-              _json(completeness) + '</pre></aside>') if completeness is not None else ''
     doc = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
            '<meta name="viewport" content="width=device-width, initial-scale=1">'
-           '<title>EnigmaForge benchmark report</title><style>' + _CSS + '</style></head><body><main>'
-           '<h1>EnigmaForge benchmark</h1><p>' + _escape(agg["generated_at"]) +
-           f' · {agg["n_instances"]} instances · {agg["n_families"]} world families</p>' + banner +
+           '<title>EnigmaForge — the find-the-problem benchmark</title><style>' + _CSS +
+           '</style></head><body><main>' + _hero(agg, rows) +
+           '<p>' + _escape(agg["generated_at"]) +
+           f' · {agg["n_instances"]} instances · {agg["n_families"]} world families</p>' +
            '<p>All scores are 0-100; lower is worse. Headline measure: fact F1. Ranking: all-item task success, then all-item fact F1, '
            'then provider name. No weighted composite. Conditional means use scored-item denominators; '
            'all-item means include missing, filtered, invalid, and failed attempts as zero achieved success. '

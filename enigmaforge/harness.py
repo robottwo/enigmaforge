@@ -65,7 +65,7 @@ def _generator_provenance():
     # verified world; only generation-side sources bind the corpus.
     p["sources"] = {k: v for k, v in p["sources"].items()
                     if k not in {"grading.py", "reporting.py", "judge.py",
-                                 "harness.py", "llm.py"}}
+                                 "harness.py", "llm.py", "__init__.py"}}
     p.pop("grader_version")
     return p
 
