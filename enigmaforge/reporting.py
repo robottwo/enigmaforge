@@ -649,14 +649,19 @@ def _score_chart_picker(rows):
     side = {r["provider"]: (f"${r['recorded_attempt_cost']:.2f}"
                             if _number(r.get("recorded_attempt_cost")) else "—")
             for r in models}
-    cats = [r["provider"] for r in models]
     options, panes = [], []
     for i, (key, label, title) in enumerate(_SCORE_VIEWS):
         if key == "combined":
             chart = _summary_chart(rows)
         else:
-            values = {r["provider"]: r["scores_100"][key] for r in models}
-            chart = _chart(cats, [(label, values)], annotate=True, side=side)
+            # Each view is sorted by its own score, descending — switching
+            # metrics re-sorts the plot without any client-side logic.
+            ordered = sorted(models, key=lambda r: (
+                r["scores_100"][key] is None,
+                -(r["scores_100"][key] or 0)))
+            values = {r["provider"]: r["scores_100"][key] for r in ordered}
+            chart = _chart([r["provider"] for r in ordered],
+                           [(label, values)], annotate=True, side=side)
         hidden = "" if i == 0 else " hidden"
         panes.append(f'<div id="scoreview-{key}"{hidden}>'
                      + (f'<p class="scale-note">{_escape(title)}</p>' if title else '')
@@ -772,6 +777,10 @@ if (scoreSelect) {
 def render_html(agg, out_path, instances=None):
     """Write an offline report. Dynamic text never enters JavaScript or IDs."""
     rows = agg["leaderboard"]  # The sole ranking order is aggregate's order.
+    # Fixed companion name: the harness renders report.html through a temp
+    # file for its atomic move, so the companion must not derive from the
+    # out_path stem (it would land under a hidden temp name and get stranded).
+    companion_name = "report-details.html"
     names = [r["provider"] for r in rows]
     records = {(r["provider"], r["iid"]): r for r in agg["records"]}
     blocks = []
@@ -1018,10 +1027,17 @@ def render_html(agg, out_path, instances=None):
              _json(agg["uncertainty"]) + '</pre>' + ''.join(paired_parts)),
             ("difficulty", "Measured difficulty", _difficulty_chart() +
              '<pre>' + _json(agg["difficulty"]) + '</pre>'),
-            ("stories", "Stories", _stories_chart() +
-             (''.join(stories) or '<p>No story data supplied.</p>')),
-            ("decisions", "Decisions", _decisions_chart() + ''.join(decisions)),
-            ("details", "Record details", ''.join(detailed))]
+            ("raw", "Raw records",
+             '<p>The full solver inputs (all realizations), hidden fact patterns, '
+             'and per-record details are large, so they live in a companion file '
+             'that loads separately:</p>'
+             f'<p><a class="button" href="{_escape(companion_name)}#stories">'
+             f'Open stories &amp; raw records</a></p>'
+             '<p class="scale-note">The companion file contains every solver '
+             'input, the hidden fact pattern per world, decision policies with '
+             'measured difficulty, and the full per-record JSON for all '
+             'providers.</p>'),
+            ("decisions", "Decisions", _decisions_chart() + ''.join(decisions))]
     completeness = agg.get("generation_completeness")
     appendix_body = ('<p>Appendix: run provenance and generation completeness. '
                      'Also available in results.json.</p>'
@@ -1029,6 +1045,21 @@ def render_html(agg, out_path, instances=None):
                         + _json(completeness) + '</pre></details>' if completeness is not None else '')
                      + '<details><summary>Provenance</summary><pre>' + _json(agg.get("provenance"))
                      + '</pre></details>')
+
+    # Raw records (solver inputs, hidden fact patterns, per-record JSON) are
+    # tens of MB; a 30 MB DOM makes every interaction sluggish, so they ship
+    # in a companion file next to the main report.
+    companion_body = ('<h1>Raw records</h1>'
+                      '<p><a class="button" href="index.html">Back to the leaderboard</a></p>'
+                      '<h2 id="stories">Solver inputs &amp; hidden fact patterns</h2>'
+                      + (''.join(stories) or '<p>No story data supplied.</p>')
+                      + '<h2 id="details">Per-record details</h2>' + ''.join(detailed))
+    companion = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                 '<meta name="viewport" content="width=device-width, initial-scale=1">'
+                 '<title>EnigmaForge — raw records</title><style>' + _CSS +
+                 '</style></head><body><main>' + companion_body +
+                 '</main></body></html>')
+    Path(Path(out_path).parent / companion_name).write_text(companion, encoding="utf-8")
     tabs.append(("appendix", "Appendix", appendix_body))
     nav = ''.join(f'<button type="button" role="tab" id="tab-{key}" aria-controls="pane-{key}" '
                   f'aria-selected="false">{label}</button>' for key, label, _ in tabs)

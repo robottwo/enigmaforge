@@ -206,6 +206,7 @@ def test_html_escapes_all_dynamic_text_and_maps_hidden_facts(tmp_path):
     render_html(agg, out, [i])
     parser = ReportParser()
     parser.feed(out.read_text())
+    parser.feed((tmp_path / "report-details.html").read_text())
     assert parser.tags.count("script") == 1
     assert "img" not in parser.tags
     assert not any(name.startswith("on") for name, _ in parser.attrs)
@@ -382,3 +383,23 @@ def test_score_picker_renders_all_views_with_toggle():
     # exactly one view visible initially
     assert 'id="scoreview-combined">' in picker
     assert 'id="scoreview-intuition" hidden>' in picker
+
+
+def test_score_views_sort_by_their_own_metric():
+    def rec(name, task, precision):
+        inst = instance(f"i-{name}")
+        row = grade("p", f"i-{name}")
+        row["provider"] = name
+        row["metrics"]["task_success"] = task
+        row["metrics"]["fact_precision"] = precision
+        return inst, row
+    # alpha: best task success, worst claim accuracy; beta the reverse
+    pairs = [rec("alpha", 0.9, 0.1), rec("beta", 0.1, 0.9)]
+    insts = [i for i, _ in pairs]
+    agg = aggregate([r for _, r in pairs], insts, ["alpha", "beta"],
+                    bootstrap_resamples=0)
+    picker = reporting._score_chart_picker(agg["leaderboard"])
+    task_view = picker.split('id="scoreview-task_success"')[1]
+    trust_view = picker.split('id="scoreview-claim_accuracy"')[1]
+    assert task_view.index("alpha") < task_view.index("beta")
+    assert trust_view.index("beta") < trust_view.index("alpha")

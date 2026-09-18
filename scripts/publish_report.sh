@@ -22,6 +22,7 @@ git worktree add --orphan -b gh-pages "$WORK" 2>/dev/null \
   || git worktree add "$WORK" gh-pages
 cp "$SRC/report.html" "$WORK/index.html"
 cp "$SRC/results.json" "$WORK/results.json"
+[ -f "$SRC/report-details.html" ] && cp "$SRC/report-details.html" "$WORK/"
 cd "$WORK"
 git add -A
 if git diff --cached --quiet gh-pages 2>/dev/null; then
