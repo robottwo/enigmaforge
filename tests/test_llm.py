@@ -6,6 +6,7 @@ with zero external dependencies."""
 import sys, os, json, threading, tempfile, io, contextlib
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import pytest
 
 from enigmaforge.llm import llm_scene_renderer
 from enigmaforge.story import build_skeleton, compile_story, RenderContractError
@@ -449,3 +450,217 @@ def test_dynamic_genre_retries_then_fails():
             assert False, "must raise"
     finally:
         srv2.shutdown()
+
+
+def _completion_server(response, status=200):
+    """Record transport calls and serve a supplied provider response."""
+    state = {"requests": [], "gets": 0}
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            state["gets"] += 1
+            self.send_response(404)
+            self.end_headers()
+
+        def do_POST(self):
+            state["requests"].append(json.loads(
+                self.rfile.read(int(self.headers["Content-Length"]))))
+            body = (response if isinstance(response, str)
+                    else json.dumps(response)).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *args):
+            pass
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, f"http://127.0.0.1:{server.server_port}/v1", state
+
+
+@pytest.mark.parametrize("message,finish,status", [
+    ({"content": None, "reasoning": "private answer"}, "length", "empty"),
+    ({"content": "partial", "reasoning_content": "private answer"},
+     "content_filter", "content_filter"),
+    ({"content": None, "refusal": "Cannot comply"}, "stop", "refusal"),
+    ({"content": "  "}, "stop", "empty"),
+])
+def test_nonanswers_keep_usage_and_never_return_reasoning(message, finish, status):
+    from enigmaforge.llm import chat_completion, ChatCompletionError
+    response = {"id": "response-1", "model": "actual-model",
+                "provider": "actual-provider",
+                "choices": [{"message": message, "finish_reason": finish}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 20,
+                          "cost": 0.004}}
+    server, url, state = _completion_server(response)
+    try:
+        kwargs = {"model": "requested-model", "base_url": url, "api_key": "test-key"}
+        metadata = chat_completion([], with_metadata=True, **kwargs)
+        assert metadata["status"] == status
+        assert metadata["finish_reason"] == finish
+        assert metadata["usage"] == response["usage"]
+        assert metadata["raw_response"] == response
+        assert metadata["text"] == (message.get("content") or "")
+        assert metadata["reasoning"] == message.get(
+            "reasoning", message.get("reasoning_content"))
+        assert metadata["response_id"] == "response-1"
+        assert metadata["model"] == "actual-model"
+        assert metadata["provider"] == "actual-provider"
+        with pytest.raises(ChatCompletionError) as raised:
+            chat_completion([], **kwargs)
+        assert raised.value.status == status
+        assert raised.value.metadata["usage"] == response["usage"]
+        assert raised.value.metadata["finish_reason"] == finish
+        # No retries on a completed but unusable model response.
+        assert len(state["requests"]) == 2
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_length_response_returns_visible_blocks_and_persists_parameters():
+    from enigmaforge.llm import chat_completion
+    response = {"choices": [{
+        "message": {"content": [{"type": "text", "text": "partial "},
+                                {"type": "text", "text": "answer"}],
+                    "reasoning": "not an answer"},
+        "finish_reason": "length"}],
+        "usage": {"completion_tokens": 32, "cost": 0.01},
+        "provider_extension": {"kept": True}}
+    server, url, state = _completion_server(response)
+    try:
+        kwargs = {"model": "fixed", "base_url": url, "api_key": "test-key",
+                  "temperature": 0, "max_tokens": 32, "seed": 0,
+                  "reasoning_effort": "low", "track_cost": True}
+        assert chat_completion([], **kwargs) == "partial answer"
+        assert chat_completion([], with_usage=True, **kwargs) == (
+            "partial answer", response["usage"])
+        metadata = chat_completion([], with_metadata=True, **kwargs)
+        assert metadata["status"] == "answered"
+        assert metadata["finish_reason"] == "length"
+        assert metadata["raw_response"] == response
+        for name, value in {"model": "fixed", "temperature": 0, "max_tokens": 32,
+                            "seed": 0, "reasoning_effort": "low",
+                            "usage": {"include": True}}.items():
+            assert state["requests"][-1][name] == value
+            assert metadata["request_metadata"][name] == value
+        assert "test-key" not in json.dumps(metadata)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+
+def test_reasoning_max_tokens_uses_unified_object():
+    from enigmaforge.llm import chat_completion
+    response = {"choices": [{"message": {"content": "answer"},
+                             "finish_reason": "stop"}],
+                "usage": {"completion_tokens": 5}}
+    server, url, state = _completion_server(response)
+    try:
+        chat_completion([], model="m", base_url=url, api_key="k",
+                        reasoning_effort="low", reasoning_max_tokens=2048,
+                        with_metadata=True)
+        sent = state["requests"][-1]
+        # OpenRouter rejects effort + max_tokens together; the hard budget wins.
+        assert sent["reasoning"] == {"max_tokens": 2048}
+        assert "reasoning_effort" not in sent
+        # Cap alone works too.
+        chat_completion([], model="m", base_url=url, api_key="k",
+                        reasoning_max_tokens=1024, with_metadata=True)
+        assert state["requests"][-1]["reasoning"] == {"max_tokens": 1024}
+        # Effort alone keeps the historical top-level form.
+        chat_completion([], model="m", base_url=url, api_key="k",
+                        reasoning_effort="high", with_metadata=True)
+        assert state["requests"][-1]["reasoning_effort"] == "high"
+        assert "reasoning" not in state["requests"][-1]
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_explicit_model_and_endpoint_are_not_substituted(monkeypatch):
+    from enigmaforge import llm
+    response = {"error": {"message": "model unavailable"}}
+    server, url, state = _completion_server(response, status=404)
+    monkeypatch.setattr(llm, "discover_llm_config",
+                        lambda: pytest.fail("explicit endpoint must not discover"))
+    try:
+        for _ in range(2):
+            result = llm.chat_completion([], model="unavailable", base_url=url,
+                                         api_key="test-key", with_metadata=True)
+            assert result["status"] == "transport_error"
+            assert result["http_status"] == 404
+        assert [r["model"] for r in state["requests"]] == [
+            "unavailable", "unavailable"]
+        assert state["gets"] == 0
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_error_metadata_redacts_credentials_without_losing_response():
+    from enigmaforge.llm import chat_completion, ChatCompletionError
+    key = 'secret-key-with-"quote'
+    response = {
+        "error": {"message": f"Rejected credential {key}", "api_key": "other-key"},
+        "id": "failed-response", "model": "fixed",
+        "choices": [{"message": {"content": None}, "finish_reason": "error"}],
+        "usage": {"completion_tokens": 9, "cost": 0.002},
+        "details": ["Bearer another-secret", {"authorization": "another-secret"}],
+    }
+    server, url, _state = _completion_server(response, status=401)
+    try:
+        kwargs = {"model": "fixed", "base_url": url, "api_key": key}
+        metadata = chat_completion([], with_metadata=True, **kwargs)
+        with pytest.raises(ChatCompletionError) as raised:
+            chat_completion([], **kwargs)
+        for envelope in (metadata, raised.value.metadata):
+            serialized = json.dumps(envelope)
+            assert "secret-key-with" not in serialized
+            assert "other-key" not in serialized
+            assert "another-secret" not in serialized
+            assert envelope["finish_reason"] == "error"
+            assert envelope["usage"] == response["usage"]
+            assert envelope["raw_response"]["id"] == "failed-response"
+            assert envelope["response_id"] == "failed-response"
+        assert "secret-key-with" not in str(raised.value)
+        assert "HTTP 401" in str(raised.value)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_malformed_response_is_preserved_as_invalid_response():
+    from enigmaforge.llm import chat_completion
+    server, url, _state = _completion_server("not JSON")
+    try:
+        metadata = chat_completion([], model="fixed", base_url=url,
+                                   api_key="test-key", with_metadata=True)
+        assert metadata["status"] == "invalid_response"
+        assert metadata["raw_response"] == "not JSON"
+        assert metadata["text"] == ""
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_timeout_is_structured_and_redacted(monkeypatch):
+    from enigmaforge import llm
+
+    def timeout(*args, **kwargs):
+        raise TimeoutError("timed out with test-secret")
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", timeout)
+    kwargs = {"model": "fixed", "base_url": "http://127.0.0.1:1/v1",
+              "api_key": "test-secret"}
+    metadata = llm.chat_completion([], with_metadata=True, **kwargs)
+    assert metadata["status"] == "transport_error"
+    assert metadata["raw_response"] is None
+    assert "test-secret" not in json.dumps(metadata)
+    with pytest.raises(llm.ChatCompletionError) as raised:
+        llm.chat_completion([], **kwargs)
+    assert "test-secret" not in str(raised.value)

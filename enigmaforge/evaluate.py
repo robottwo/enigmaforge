@@ -1,11 +1,11 @@
 """Trajectory evaluator: scores from the hidden formal representation.
 v1 dimensions: objective identification, evidence efficiency, hypothesis
 quality, insight latency, calibration. Computed mechanically where possible.
-v2 adds problem discovery (did the solver realize there was a task at all —
-the load-bearing question in story mode, where nothing announces a puzzle)
-and clue discovery latency (share of essential clues needed before the first
-insight, normalized to the clues actually rendered in the surface)."""
-from .world import HiddenWorld
+v2 adds deliberate investigation latency and clue discovery latency (share
+of essential clues needed before the first insight, normalized to the clues
+actually rendered). Final outcome requires the exact conditional action,
+not partial fact recovery or lexical similarity."""
+from .decisions import validate_action
 
 def score_trajectory(world, trajectory, realization=None):
     """trajectory = list of events, each {t, type, payload}.
@@ -17,7 +17,8 @@ def score_trajectory(world, trajectory, realization=None):
     essential = set(world.meta.get("essential_cids", []))
     n_ev = len(world.evidence)
     dims = {
-        "final_outcome": 0.0, "objective_identification": 0.0,
+        "final_outcome": 0.0 if world.meta.get("decision_policy") else None,
+        "objective_identification": 0.0,
         "evidence_efficiency": 0.0, "redundant_investigation": 0.0,
         "hypothesis_quality": 0.0, "insight_latency": 0.0,
         "objective_revision_accuracy": 0.0, "calibration": None,
@@ -31,13 +32,16 @@ def score_trajectory(world, trajectory, realization=None):
     answer_events = [e for e in events if e["type"] == "answer"]
     observe_events = [e for e in events if e["type"] in ("observe", "inspect")]
 
-    # final outcome
-    if true_stage is not None:
+    # Final outcome uses the latest submitted action, never a best-of attempt.
+    if true_stage is not None and world.meta.get("decision_policy"):
         finals = [e for e in answer_events if e["payload"].get("stage") == true_stage.sid]
         if finals:
-            best = max(finals, key=lambda e: e["t"])
-            fa = finals[-1]["payload"].get("answer", {})
-            dims["final_outcome"] = _match(fa.get("_all_", fa), gt)
+            latest = max(finals, key=lambda e: e["t"])
+            answer = latest["payload"].get("answer", {})
+            action = answer.get("final_action") if isinstance(answer, dict) else None
+            surfaces = {v.vid: v.surface_names for v in world.variables}
+            dims["final_outcome"] = float(validate_action(
+                action, world.meta["decision_policy"], gt, surfaces))
 
     # objective identification: did solver answer the TRUE stage at all
     dims["objective_identification"] = float(any(
@@ -70,9 +74,8 @@ def score_trajectory(world, trajectory, realization=None):
         kept = [e for e in hypo_events if not e["payload"].get("abandoned", False)]
         dims["objective_revision_accuracy"] = len(kept) / len(hypo_events)
 
-    # problem discovery: with no announced task, the first deliberate act
-    # (hypothesis or answer) IS the discovery. 1/(1+t); 0 if the solver
-    # only ever observed passively.
+    # The first deliberate act marks engagement with the investigation.
+    # This is a latency measure, not proof that a hidden task was discovered.
     deliberative = [e for e in events if e["type"] in ("hypothesize", "answer")]
     if deliberative:
         dims["problem_discovery"] = 1.0 / (1.0 + deliberative[0]["t"])

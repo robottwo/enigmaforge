@@ -1,5 +1,5 @@
 """Story realization: embed the hidden world in prose where the puzzle form
-is not announced — no exhibit list, no instruction, no frame.
+is not announced — no exhibit list or solver-facing puzzle frame.
 
 Macro-structure (scene allocation, clue sequencing, pacing policy, stake and
 distractor placement, length budget) is fixed by the WORLD seed, so all
@@ -8,13 +8,14 @@ controls only micro-pacing and scene texture.
 
 Contract: every clue-bearing beat's clause is embedded VERBATIM in the scene
 prose (connectives keep clauses from ever being sentence-initial), so spans
-locate it exactly and the template extractor in verify.py can round-trip the
-text back to the formal model. Custom (e.g. LLM) renderers plug in behind the
-same contract and are rejection-sampled against the gates."""
+locate it exactly and the template extractor in verify.py can recover the
+supported claims. This does not prove the semantics of arbitrary surrounding
+prose. Custom renderers are rejection-sampled against the same scoped gates.
+The public in-world decision policy is protected before verification."""
 import dataclasses as _dc
 from dataclasses import dataclass, field
 from .rng import Rng
-from .narrative import Realization, unit_body
+from .narrative import Realization, unit_body, include_policy
 
 
 class RenderContractError(Exception):
@@ -474,8 +475,8 @@ def compile_story(world, skeleton, realization_seed, renderer=None,
             clauses[ref] = clause
             rendered.append(ref)
         off += len(prose) + 2
-    return Realization(mode="story", text=text, spans=spans,
-                       clauses=clauses, rendered=rendered)
+    return include_policy(world, Realization(
+        mode="story", text=text, spans=spans, clauses=clauses, rendered=rendered))
 
 
 def compile_story_verified(world, skeleton, realization_seed, renderer=None,

@@ -14,6 +14,7 @@ class InteractiveSession:
         self.seen = set()
         self.closed = set()          # options eliminated by irreversible actions
         self.final_answer = None
+        self.policy_text = world.meta["policy_text"]
 
     def actions(self):
         opts = [("inspect", u.euid) for u in self.world.evidence
@@ -24,10 +25,15 @@ class InteractiveSession:
         return opts
 
     def step(self, action, target):
-        """Returns observation string. Consumes budget on inspect/search."""
+        """Inspect evidence or submit an {operation, subject, value} action."""
         if self.budget <= 0 and action == "inspect":
             return "BUDGET EXHAUSTED."
-        rec = {"t": len(self.trajectory), "type": action, "payload": {"euid": target}}
+        if action == "submit":
+            stage = next(o for o in self.world.objectives if o.true_objective)
+            rec = {"t": len(self.trajectory), "type": "answer",
+                   "payload": {"stage": stage.sid, "answer": {"final_action": target}}}
+        else:
+            rec = {"t": len(self.trajectory), "type": action, "payload": {"euid": target}}
         self.trajectory.append(rec)
         if action == "inspect":
             for u in self.world.evidence:

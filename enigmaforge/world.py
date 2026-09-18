@@ -67,11 +67,11 @@ class EvidenceUnit:
 
 @dataclass
 class KnowledgeBridge:
-    """External fact required (or seductive). Stored explicitly for ground truth."""
+    """Diegetic lore. No external-knowledge inference is currently implemented."""
     kbid: str
-    fact: str                          # stable, broadly-known fact
+    fact: str                          # in-world background, not a formal premise
     entity_ref: str                    # narrative entity or name mentioned
-    role: str = "essential"            # essential | confirmatory | seductive | multi_hop
+    role: str = "lore"                 # currently all bridges are non-essential lore
     encodes: list = field(default_factory=list)   # constraints it grounds
     chain: list = field(default_factory=list)     # for multi_hop: ordered sub-facts
 

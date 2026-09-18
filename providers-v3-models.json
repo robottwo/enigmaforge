@@ -1,0 +1,167 @@
+{
+  "corpus": "benchmarks/v3-pilot-models",
+  "renderer": "template",
+  "scenarios": [
+    {
+      "name": "strata",
+      "instances": 20,
+      "genre": "auto",
+      "seed_base": 2000,
+      "levels": [
+        {
+          "size": "small",
+          "burial": 1,
+          "overrides": {
+            "n_variables": 8,
+            "n_constraints": 10,
+            "dependency_depth": 2,
+            "n_people": 4,
+            "n_bridges": 1,
+            "n_distractors": 2
+          }
+        },
+        {
+          "size": "small",
+          "burial": 2,
+          "overrides": {
+            "n_variables": 12,
+            "n_constraints": 16,
+            "dependency_depth": 3,
+            "n_people": 5,
+            "n_bridges": 2,
+            "n_distractors": 3
+          }
+        },
+        {
+          "size": "small",
+          "burial": 3,
+          "overrides": {
+            "n_variables": 16,
+            "n_constraints": 22,
+            "dependency_depth": 3,
+            "n_people": 6,
+            "n_bridges": 2,
+            "n_distractors": 4
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 3,
+          "overrides": {
+            "n_variables": 20,
+            "n_constraints": 28,
+            "dependency_depth": 4,
+            "n_people": 7,
+            "n_bridges": 3,
+            "n_distractors": 5
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 4,
+          "overrides": {
+            "n_variables": 24,
+            "n_constraints": 34,
+            "dependency_depth": 4,
+            "n_people": 8,
+            "n_bridges": 3,
+            "n_distractors": 6
+          }
+        },
+        {
+          "size": "medium",
+          "burial": 4,
+          "overrides": {
+            "n_variables": 28,
+            "n_constraints": 40,
+            "dependency_depth": 5,
+            "n_people": 9,
+            "n_bridges": 4,
+            "n_distractors": 7
+          }
+        }
+      ]
+    }
+  ],
+  "providers": [
+    {
+      "name": "glm-4.7-flash",
+      "model": "z-ai/glm-4.7-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low"
+    },
+    {
+      "name": "glm-5.3-flash",
+      "model": "z-ai/glm-5.3-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-5.6-luna",
+      "model": "openai/gpt-5.6-luna",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-5.6-sol",
+      "model": "openai/gpt-5.6-sol",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-5.6-terra",
+      "model": "openai/gpt-5.6-terra",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "glm-5.3",
+      "model": "z-ai/glm-5.3",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "kimi-k2.6",
+      "model": "moonshotai/kimi-k2.6",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "deepseek-4.1-flash",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    }
+  ]
+}

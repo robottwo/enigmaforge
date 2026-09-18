@@ -38,7 +38,8 @@ def _compile_constraint(c, sat):
         for i in range(len(c.vars)):
             for j in range(i + 1, len(c.vars)):
                 for v in sat.var_domain[c.vars[i]]:
-                    sat.add([(c.vars[i], v), (c.vars[j], v)])
+                    sat.add(_neg_literals((c.vars[i], v), sat)
+                            + _neg_literals((c.vars[j], v), sat))
     elif k == ConstraintKind.EXACTLY_ONE:
         sat.add(c.lits)
         for i in range(len(c.lits)):

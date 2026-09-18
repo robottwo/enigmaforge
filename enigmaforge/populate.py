@@ -2,7 +2,8 @@
 from .rng import Rng
 from .genres import get_pack
 from .narrative import assign_surfaces
-from .world import EvidenceUnit, KnowledgeBridge, ObjectiveStage, Constraint
+from .world import EvidenceUnit, KnowledgeBridge, ObjectiveStage
+from .decisions import expected_action, policy_text
 
 CHANNELS = ["letter", "receipt", "logbook", "dialogue", "marginalia",
             "photo_caption", "chronology", "omission_note", "rule_text"]
@@ -28,80 +29,63 @@ def populate_evidence(world, seed, distractor_hypotheses=()):
     rng.shuffle(world.evidence)
     return world
 
-# Bridges are in-world lore from the active genre pack. Real-world knowledge
-# grounding (facts the SOLVER must supply) stays on the roadmap; these are
-# diegetic texture only, carrying no formal content.
+# Bridges are optional in-world lore, not external knowledge requirements.
+# They carry no formal content and play no role in the solution or decision.
 def populate_bridges(world, seed):
     rng = Rng(seed + 991)
     lore = get_pack(world).lore
     n = world.config.get("n_bridges", 2)
     picks = rng.sample(lore, min(n, len(lore)))
-    roles = ["essential"] + ["confirmatory", "seductive"] * 4
     for i, (fact, ref) in enumerate(picks):
         world.bridges.append(KnowledgeBridge(
             kbid=f"K{i}", fact=fact, entity_ref=ref,
-            role=roles[i % len(roles)] if i else "essential"))
+            role="lore"))
     return world
 
-_PERSON_ACTIONS = [
-    "restore {name}'s entry to the register",
-    "back {name}'s claim in full",
-    "void the deed filed against {name}",
-    "credit {name}'s account with the missing sum",
-    "clear {name}'s debt before the quarter closes",
-    "transfer the mooring lease to {name}",
-    "strike every charge but {name}'s from the book",
-]
-_INT_ACTIONS = [
-    "log the true count as {n}",
-    "set the ledger total to {n}",
-    "cap the season's quota at {n}",
-    "carry {n} forward as the corrected figure",
-]
-
-
-def _true_action(world, rng):
-    """Derive the final action from the resolved world: the origin variable
-    (V0, the layer-0 anchor the stage-0 statement points at) names the
-    person or count the corrected record must act on. Varies per instance,
-    and a solver that recovered the origin can actually produce it."""
-    gt = world.meta["ground_truth"]
-    origin = gt.get("V0")
-    if isinstance(origin, str):  # a person the record must be made right for
-        return rng.pick(_PERSON_ACTIONS).format(name=origin)
-    if isinstance(origin, int):
-        return rng.pick(_INT_ACTIONS).format(n=origin)
-    return "act on the corrected record"
-
-
 def populate_objectives(world, seed):
-    """Staged objectives. Level 0 = apparent (characters' belief), final =
-    true objective whose answer is derived from the ground truth model, so
-    the canonical action varies per instance instead of being one of two
-    hardcoded strings."""
+    """Publish a conditional rule and derive its answer from the resolved world.
+
+    Rule selection never consults the ground truth: the target, gate, and
+    comparison value come from the public variable domains. Multi-stage
+    objectives require replacing an explicitly provisional, opposite rule.
+    """
     rng = Rng(seed + 5501)
-    stages = []
+    if len(world.variables) < 2:
+        raise ValueError("a conditional objective requires distinct target and gate variables")
+    target, gate = rng.sample(world.variables, 2)
+    policy = {
+        "version": 1,
+        "target_vid": target.vid,
+        "gate_vid": gate.vid,
+        "gate_value": rng.pick(gate.domain),
+        "match_operation": "register",
+        "otherwise_operation": "hold",
+    }
+    surfaces = {v.vid: v.surface_names for v in world.variables}
+    revision = world.config.get("n_objective_stages", 2) >= 3
+    text = policy_text(policy, surfaces, revision=revision)
+    world.meta["decision_policy"] = policy
+    world.meta["policy_text"] = text
+    gt = world.meta["ground_truth"]
+    action = expected_action(policy, gt, surfaces)
+    stages = [ObjectiveStage(
+        sid="S0", level=0,
+        statement="Recover the target and gate values needed by the instruction.",
+        answer={target.vid: gt[target.vid], gate.vid: gt[gate.vid]},
+        unlocks="S1",
+        reveal_text=text)]
+    if revision:
+        provisional = dict(policy, match_operation=policy["otherwise_operation"],
+                           otherwise_operation=policy["match_operation"])
+        stages.append(ObjectiveStage(
+            sid="S1", level=1,
+            statement="Identify the action under the initial provisional instruction.",
+            answer={"final_action": expected_action(provisional, gt, surfaces)},
+            unlocks="S2",
+            reveal_text="The later authoritative instruction supersedes the provisional rule in full."))
     stages.append(ObjectiveStage(
-        sid="S0", level=0, statement="Identify the origin of the disruption.",
-        answer={}, unlocks="S1",
-        reveal_text="With the origin named, the sealed registry becomes legible."))
-    action = _true_action(world, rng)
-    if world.config.get("n_objective_stages", 2) >= 3:
-        stages.append(ObjectiveStage(
-            sid="S1", level=1,
-            statement="Recover the registry key (an attribute of the origin).",
-            answer={"_key": None}, unlocks="S2",
-            reveal_text="The key opens the annex ledger — which contradicts the ledger already relied upon."))
-        stages.append(ObjectiveStage(
-            sid="S2", level=2,
-            statement="Determine the correct final action given the invalidated assumption.",
-            answer={"final_action": f"discard the primary ledger; {action}"},
-            true_objective=True))
-    else:
-        stages.append(ObjectiveStage(
-            sid="S1", level=1,
-            statement="Determine the correct final action.",
-            answer={"final_action": action},
-            true_objective=True))
+        sid=f"S{len(stages)}", level=len(stages),
+        statement="Apply the authoritative instruction to the recovered target and gate values.",
+        answer={"final_action": action}, true_objective=True))
     world.objectives = stages
     return world

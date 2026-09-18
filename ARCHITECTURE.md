@@ -26,10 +26,28 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
 - `enigmaforge/verify.py` — ban-clause uniqueness (SAT, early exit),
   ablation certificates, engine-vs-oracle differential
 - `enigmaforge/populate.py` — evidence units across 9 channels, in-world lore
-  references (real-world knowledge grounding: designed, not yet wired),
-  staged objectives
+  references (diegetic only; real-world knowledge grounding: designed, not
+  yet wired), staged objectives whose final action follows a public
+  conditional decision policy
+- `enigmaforge/decisions.py` — conditional register/hold policies
+  (target/gate variables, superseded provisional rule), policy text
+  rendering, exact typed action validation
+- `enigmaforge/grading.py` — benchmark v3 grader: strict structured
+  response schema, exact assignment scoring (precision/recall/F1,
+  exact-world), policy-validated decisions, no lexical overlap, no raw
+  text fallback
+- `enigmaforge/judge.py` — blind, cached-only legacy extraction with
+  quote validation, review queues, and a human-adjudication calibration
+  workflow (`python -m enigmaforge.judge`)
+- `enigmaforge/experiments.py` — matched formal/explicit/implicit
+  condition expansion over surface realizations, measured structural
+  difficulty, deterministic no-API baselines
+- `enigmaforge/reporting.py` — coverage-first aggregation (all-item vs
+  conditional metrics, family-cluster bootstrap CIs, paired
+  condition/model differences) and the offline HTML report
 - `enigmaforge/narrative.py` — replaceable compiler returning a `Realization`
-  (text + verbatim span map per evidence unit); clauses are natural wrappers
+  (text + verbatim span map per evidence unit and the public decision
+  policy); clauses are natural wrappers
   around extractable cores; surface-noun lexicon assigned at build time,
   unique per variable so extraction is unambiguous
 - `enigmaforge/story.py` — story realization: deterministic skeleton (scenes,
@@ -47,6 +65,11 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
   destroy evidence classes
 - `enigmaforge/evaluate.py` — trajectory scoring from the hidden world
 - `enigmaforge/pipeline.py` — driver + adaptive verification gates
+- `enigmaforge/harness.py` — benchmark v3 driver: hashed independent
+  seeds, condition expansion, solver execution with structured transport
+  envelopes and per-attempt history, signed corpus manifests
+  (fail-closed cache validation), identity/provenance hashing, baseline
+  runs, and read-only legacy regrading
 
 ## Verification battery (per published instance)
 
@@ -58,13 +81,14 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
 | distractor safety | structural: distractors carry no constraints | free |
 | realizations | ≥2 surfaces, identical solution | free |
 | realization contract | coverage, verbatim spans, distractor inertness, leak/frame checks | free |
-| extraction round-trip | template extractor: prose → constraints → same unique model | any size (SAT) |
+| extraction round-trip | template extractor: prose → constraints → same unique model; scope: supported template claims, not full prose semantics | any size (SAT) |
+| decision-policy gate | public rule rendered verbatim; canonical action validates against the policy | free |
 
 ## Design invariants
 
 1. **Oracle defines correctness.** The DPLL engine is validated against
-   exhaustive enumeration on the committed corpus (75 instances, 3 shape
-   families) — never trusted on agreement of counts alone (capped
+   exhaustive enumeration on the committed test battery — never trusted on
+   agreement of counts alone (capped
    enumeration fakes disagreement; dict order fakes inequality).
 2. **Ground truth first.** Solvability is by construction; uniqueness is
    verified, never assumed.
@@ -77,6 +101,9 @@ config ─→ generator ─→ populate ─→ verify ─→ narrative ─→ pa
    extractor must round-trip the prose alone back to exactly the formal model
    with the same unique solution. Story macro-pacing is fixed per instance;
    realizations vary texture only, so surfaces stay difficulty-matched.
+6. **Grading is answer-shaped, never lexical.** Scores come from exact
+   structured assignments and policy-validated actions; there is no word
+   overlap, no raw-text fallback, and no judge in the default path.
 
 ## Known bugs caught by the battery (kept for the record)
 

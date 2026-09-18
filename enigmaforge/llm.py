@@ -33,6 +33,9 @@ import re
 import sys
 import time
 import urllib.request
+import http.client
+import urllib.error
+import urllib.parse
 
 DEFAULT_BASE_URL = "https://api.openai.com/v1"
 DEFAULT_MODEL = "gpt-4o-mini"
@@ -453,6 +456,15 @@ def resolve_llm_config(model=None, base_url=None, api_key=None):
     env_key = os.environ.get("OPENAI_API_KEY")
     env_model = (os.environ.get("ENIGMAFORGE_MODEL")
                  or os.environ.get("OPENAI_MODEL"))
+    if base_url is not None or api_key is not None:
+        # Never discover credentials for an explicitly selected endpoint.
+        selected_base = base_url or env_base or DEFAULT_BASE_URL
+        same_endpoint = selected_base.rstrip("/") == (
+            env_base or DEFAULT_BASE_URL).rstrip("/")
+        return {"source": "explicit", "base_url": selected_base,
+                "api_key": api_key if api_key is not None else (
+                    env_key if same_endpoint else None),
+                "model": model or env_model or DEFAULT_MODEL}
     if env_key or env_base:
         cand = ("environment", env_base or DEFAULT_BASE_URL, env_key, env_model)
     else:
@@ -512,102 +524,226 @@ def _pick_model(ids):
     return top[0]
 
 
-def _post_chat(base, key, model, payload, timeout):
-    req = urllib.request.Request(
-        base.rstrip("/") + "/chat/completions",
-        data=json.dumps({"model": model, **payload}).encode(),
-        headers={"Content-Type": "application/json",
-                 **({"Authorization": f"Bearer {key}"} if key else {})})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        out = json.load(resp)
-    msg = out["choices"][0]["message"]
-    content = msg.get("content")
-    if isinstance(content, list):  # some providers return text blocks
-        content = "".join(b.get("text", "") for b in content
-                          if isinstance(b, dict))
-    if content is None:  # thinking models may park the answer in reasoning
-        content = msg.get("reasoning") or ""
-    if not str(content).strip():
-        finish = out["choices"][0].get("finish_reason")
-        raise ValueError(f"model returned no content "
-                         f"(finish_reason={finish}); raise max_tokens")
-    return content, out.get("usage") or {}
+class ChatCompletionError(RuntimeError):
+    """A failed completion; ``metadata`` is safe to persist or display."""
+
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self.status = metadata["status"]
+        super().__init__(metadata["error"] or self.status)
+
+
+def _safe_metadata(value, secrets):
+    """Preserve response data except credentials, including echoed keys."""
+    if isinstance(value, str):
+        for secret in secrets:
+            if secret:
+                for encoded in (secret, urllib.parse.quote(secret, safe=""),
+                                json.dumps(secret)[1:-1]):
+                    value = value.replace(encoded, "[REDACTED]")
+        return re.sub(r"(?i)\bBearer\s+\S+", "Bearer [REDACTED]", value)
+    if isinstance(value, dict):
+        return {
+            _safe_metadata(k, secrets): (
+                "[REDACTED]" if re.sub(r"[-_]", "", k).lower() in {
+                    "apikey", "authorization", "accesstoken", "password",
+                    "secret", "token", "cookie", "setcookie"}
+                else _safe_metadata(v, secrets))
+            for k, v in value.items()
+        }
+    if isinstance(value, list):
+        return [_safe_metadata(v, secrets) for v in value]
+    return value
+
+
+def _response_metadata(raw, request, provider, error=None, http_status=None):
+    """Separate visible answer text from provider reasoning and refusals."""
+    out = raw if isinstance(raw, dict) else {}
+    choices = out.get("choices")
+    choice = (choices[0] if isinstance(choices, list) and choices
+              and isinstance(choices[0], dict) else {})
+    message = choice.get("message")
+    valid_message = isinstance(message, dict)
+    message = message if valid_message else {}
+    content = message.get("content")
+    refusal = message.get("refusal")
+    valid_content = content is None or isinstance(content, (str, list))
+    if isinstance(content, list):
+        texts, refusals = [], []
+        for block in content:
+            if not isinstance(block, dict):
+                valid_content = False
+            elif block.get("type") in ("text", "output_text", None):
+                if isinstance(block.get("text"), str):
+                    texts.append(block["text"])
+                else:
+                    valid_content = False
+            elif block.get("type") == "refusal":
+                refusals.append(block.get("refusal") or "")
+        content = "".join(texts)
+        refusal = refusal or "".join(r for r in refusals if isinstance(r, str))
+    text = content if isinstance(content, str) else ""
+    finish = choice.get("finish_reason")
+    if finish == "content_filter":
+        status = "content_filter"
+    elif error is not None or out.get("error") is not None:
+        status = "transport_error"
+    elif refusal:
+        status = "refusal"
+    elif not valid_message or not valid_content:
+        status = "invalid_response"
+    elif not text.strip():
+        status = "empty"
+    else:
+        status = "answered"
+    if status != "answered" and error is None:
+        error = (json.dumps(out["error"]) if out.get("error") is not None
+                 else f"completion {status} (finish_reason={finish})")
+    return {
+        "text": text, "reasoning": message.get(
+            "reasoning", message.get("reasoning_content")),
+        "refusal": refusal, "finish_reason": finish,
+        "usage": out.get("usage") if isinstance(out.get("usage"), dict) else {},
+        "model": out.get("model") or request["model"],
+        "provider": out.get("provider") or provider,
+        "response_id": out.get("id"), "raw_response": raw,
+        "request_metadata": request, "status": status, "error": error,
+        "http_status": http_status,
+    }
+
+
+def _post_chat(base, key, model, payload, timeout, source, attempt):
+    url = urllib.parse.urlsplit(base)
+    safe_base = urllib.parse.urlunsplit(
+        (url.scheme, url.netloc.rsplit("@", 1)[-1], url.path, "", ""))
+    secrets = [key, url.username, url.password]
+    secrets.extend(v for _, v in urllib.parse.parse_qsl(url.query))
+    request = {"base_url": safe_base, "model": model, **payload,
+               "timeout": timeout, "source": source, "attempt": attempt}
+    provider = next((name for name, endpoint in PROVIDER_BASE_URLS.items()
+                     if safe_base.rstrip("/") == endpoint.rstrip("/")),
+                    url.hostname)
+    raw, error, http_status = None, None, None
+    try:
+        req = urllib.request.Request(
+            base.rstrip("/") + "/chat/completions",
+            data=json.dumps({"model": model, **payload}).encode(),
+            headers={"Content-Type": "application/json",
+                     **({"Authorization": f"Bearer {key}"} if key else {})})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            http_status = resp.status
+            body = resp.read().decode(errors="replace")
+        try:
+            raw = json.loads(body)
+        except ValueError:
+            raw = body
+    except urllib.error.HTTPError as exc:
+        http_status = exc.code
+        try:
+            body = exc.read().decode(errors="replace")
+        except (OSError, ValueError, http.client.HTTPException):
+            body = ""
+        try:
+            raw = json.loads(body)
+        except ValueError:
+            raw = body
+        error = f"HTTP {http_status}"
+    except (urllib.error.URLError, OSError, ValueError,
+            http.client.HTTPException) as exc:
+        error = f"{type(exc).__name__}: {getattr(exc, 'reason', exc)}"
+    # Compose human-readable HTTP errors only from already-sanitized bodies.
+    raw = _safe_metadata(raw, secrets)
+    if error is not None and http_status is not None and http_status >= 400:
+        error += ": " + (raw if isinstance(raw, str) else json.dumps(raw))
+    return _safe_metadata(
+        _response_metadata(raw, request, provider, error, http_status), secrets)
 
 
 def chat_completion(messages, model=None, base_url=None, api_key=None,
                     temperature=0.7, timeout=120, with_usage=False,
-                    track_cost=False, max_tokens=None):
-    """One call against an OpenAI-compatible /chat/completions endpoint.
-    Unset fields fall back through env/autodiscovery/defaults. If the
-    resolved endpoint fails hard (auth, bad request, unreachable, timeout),
-    the remaining autodiscovered candidates are tried in order — env keys
-    on dev machines are often dead placeholders. An explicit base_url
-    disables fallback: you asked for that endpoint, you get its error."""
-    import urllib.error
+                    track_cost=False, max_tokens=None, with_metadata=False,
+                    reasoning_effort=None, reasoning_max_tokens=None, seed=None):
+    """Call an OpenAI-compatible endpoint, returning visible content only.
+
+    ``with_usage`` returns (text, usage); ``with_metadata`` takes precedence
+    and returns the full credential-redacted envelope, including failures.
+    String/tuple callers receive ChatCompletionError for non-answer statuses.
+    Partial visible content is returned with finish_reason='length' in metadata.
+    Only entirely autodiscovered configurations may fall through to another
+    endpoint. Explicit model, endpoint, or credentials are never substituted.
+    ``reasoning_max_tokens`` caps the model's internal reasoning budget via
+    the OpenRouter unified ``reasoning`` object — the guard against
+    reasoning-mode models exhausting ``max_tokens`` before emitting any
+    visible text (``empty`` with ``finish_reason='length'``).
+    """
     cfg = resolve_llm_config(model=model, base_url=base_url, api_key=api_key)
     chain = [cfg]
-    if base_url is None:
+    allow_fallback = base_url is None and model is None and api_key is None
+    if allow_fallback:
         seen = {(cfg["base_url"], cfg["api_key"])}
         for src, b, k, m in discover_llm_config()[0]:
             if ((k or _localhost(b)) and (b, k) not in seen
                     and (b, k) not in _DEAD_ENDPOINTS):
                 chain.append({"source": src, "base_url": b, "api_key": k,
-                              "model": model or m})
+                              "model": m})
                 seen.add((b, k))
-        # the resolved primary is subject to the dead-cache too: without
-        # this, every call re-probes a dead env key first
         chain = [c for c in chain
                  if (c["base_url"], c["api_key"]) not in _DEAD_ENDPOINTS] \
             or chain[-1:]
-    failures = []
+    payload = {"messages": messages, "temperature": temperature}
+    if max_tokens is not None:
+        payload["max_tokens"] = max_tokens
+    if reasoning_effort is not None:
+        payload["reasoning_effort"] = reasoning_effort
+    if reasoning_max_tokens is not None:
+        # OpenRouter rejects reasoning.effort together with
+        # reasoning.max_tokens. The hard budget is the load-bearing guard
+        # against reasoning-mode models exhausting max_tokens before
+        # emitting visible text, so it wins; effort is dropped.
+        payload["reasoning"] = {"max_tokens": reasoning_max_tokens}
+        payload.pop("reasoning_effort", None)
+    if seed is not None:
+        payload["seed"] = seed
+    if track_cost:
+        payload["usage"] = {"include": True}
+    attempts = []
     for cand in chain:
-        base = cand["base_url"]
-        key = cand["api_key"]
-        if not key and "api.openai.com" not in base:
-            key = "none"  # local servers commonly accept any bearer
-        use_model = cand["model"] or model or DEFAULT_MODEL
-        payload = {"messages": messages, "temperature": temperature}
-        if max_tokens:
-            payload["max_tokens"] = max_tokens
-        if track_cost:  # OpenRouter: opt in to usage.cost in the response
-            payload["usage"] = {"include": True}
-        if cand["model"] is None and model is None:
+        base, key = cand["base_url"], cand["api_key"]
+        use_model = cand["model"] or DEFAULT_MODEL
+        if cand["model"] is None and allow_fallback:
             ckey = (base, key)
             if ckey in _MODEL_PICK_CACHE:
                 use_model = _MODEL_PICK_CACHE[ckey]
             else:
-                try:  # endpoint knows its models better than any catalog
+                try:
                     picked = _pick_model(_list_models(base, key, timeout))
                     if picked:
                         use_model = _MODEL_PICK_CACHE[ckey] = picked
-                        _note(f"{cand['source']}: no model configured, "
-                              f"using {picked} (newest from /models)")
                 except (urllib.error.URLError, OSError, ValueError, KeyError):
                     pass
-        for attempt in (1, 2):  # one retry on transient errors, then next candidate
-            try:
-                content, usage = _post_chat(base, key, use_model,
-                                            payload, timeout)
-                return (content, usage) if with_usage else content
-            except urllib.error.HTTPError as e:
-                body = e.read().decode(errors="replace")[:300]
-                failures.append(f"{cand['source']} {base} -> HTTP {e.code}: {body}")
-                if e.code in (400, 401, 403, 404):
-                    _DEAD_ENDPOINTS.add((base, key))  # auth/bad request: not transient
-                if attempt == 1 and e.code in (429, 500, 502, 503, 504):
-                    time.sleep(2)
-                    continue
-            except (urllib.error.URLError, TimeoutError, OSError) as e:
-                # read timeouts surface as bare TimeoutError, not URLError.
-                # No in-call retry on timeouts: a stalled generation just
-                # doubles the wait — record and fall through to the next
-                # candidate / the caller's retry loop.
-                failures.append(f"{cand['source']} {base} -> "
-                                f"{getattr(e, 'reason', e)}")
+        for attempt in (1, 2):
+            result = _post_chat(base, key, use_model, payload, timeout,
+                                cand["source"], attempt)
+            attempts.append(result)
+            if result["status"] != "transport_error":
+                break
+            code = result["http_status"]
+            if allow_fallback and code in (400, 401, 403, 404):
+                _DEAD_ENDPOINTS.add((base, key))
+            if attempt == 1 and code in (429, 500, 502, 503, 504):
+                time.sleep(2)
+                continue
             break
-        if cand is not chain[-1]:
-            _note(f"{cand['source']} endpoint failed, trying next candidate…")
-    raise RuntimeError("all LLM endpoints failed:\n  " + "\n  ".join(failures))
+        # A model response (even empty/filtered) is not an endpoint failure.
+        if result["status"] != "transport_error":
+            break
+    if len(attempts) > 1:
+        result = {**result, "attempts": attempts}
+    if with_metadata:
+        return result
+    if result["status"] != "answered":
+        raise ChatCompletionError(result) from None
+    return (result["text"], result["usage"]) if with_usage else result["text"]
 
 def llm_scene_renderer(model=None, base_url=None, api_key=None,
                        temperature=0.7, timeout=240):

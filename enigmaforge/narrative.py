@@ -3,8 +3,8 @@ The same EvidenceUnit can render differently per realization seed (paraphrase
 jitter), so one hidden instance yields multiple non-isomorphic surfaces.
 
 Contract: a compiler returns a Realization — text plus a span map locating
-every rendered evidence unit's clause VERBATIM. The faithfulness gates in
-verify.py consume the spans; nothing downstream trusts prose alone.
+every rendered evidence unit and the public decision policy VERBATIM. The
+gates check protected spans and template claims, not all prose semantics.
 All flavor (nouns, wrappers, distractors) comes from the active GenrePack."""
 from dataclasses import dataclass, field
 
@@ -26,6 +26,17 @@ class Realization:
     clauses: dict
     rendered: list
     gates: dict = field(default_factory=dict)
+
+def include_policy(world, realization):
+    """Add the public rule to the protected surface before any final gates."""
+    text = world.meta["policy_text"]
+    start = len(realization.text) + 2
+    realization.text += "\n\n" + text
+    realization.spans["decision_policy"] = (start, start + len(text))
+    realization.clauses["decision_policy"] = text
+    realization.rendered.append("decision_policy")
+    return realization
+
 
 
 SYN = {  # one latent concept, many surface expressions
@@ -257,5 +268,5 @@ def compile_narrative(world, realization_seed, include_bridges=True):
         spans[ref] = (start, start + len(clause))
         clauses[ref] = clause
         rendered.append(ref)
-    return Realization(mode="record", text=text, spans=spans,
-                       clauses=clauses, rendered=rendered)
+    return include_policy(world, Realization(
+        mode="record", text=text, spans=spans, clauses=clauses, rendered=rendered))

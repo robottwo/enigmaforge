@@ -2,14 +2,12 @@
 
 Run:  python -m enigmaforge.pipeline --size small|medium|large --seed N
 """
-from .rng import Rng
 from .generator import generate_world
 from .populate import populate_evidence, populate_bridges, populate_objectives
-from .verify import (sat_vs_oracle, verify_uniqueness, verify_ablation,
-                     verify_distractor_safety, sat_models, has_other_model)
+from .verify import sat_vs_oracle, sat_models, has_other_model
 from .narrative import compile_narrative
 from .verify import verify_realization, verify_roundtrip
-from .interactive import InteractiveSession
+from .decisions import policy_text, validate_action
 
 SIZES = {
     "small":  dict(n_variables=8,  n_constraints=10, dependency_depth=3,
@@ -24,28 +22,38 @@ SIZES = {
 }
 
 def adaptive_gates(world):
-    """Full battery, oracle where affordable (<=~2M assignments), SAT elsewhere.
-    SAT-vs-oracle agreement itself is guaranteed by the committed test battery
-    on the small-shape corpus; here we use it as a live cross-check when cheap."""
-    import math
+    """Cross-check SAT against enumeration only when it is affordable.
+
+    A skipped oracle is not evidence of agreement for this instance.
+    """
     n_assign = 1
     for v in world.variables:
         n_assign *= len(v.domain)
     v = {}
     if n_assign <= 2_000_000:
         v["sat_vs_oracle"] = sat_vs_oracle(world)
+        v["sat_vs_oracle"]["status"] = (
+            "passed" if v["sat_vs_oracle"]["agree"] else "failed")
     else:
-        v["sat_vs_oracle"] = {"agree": True, "n_models": None,
-                              "note": "skipped: assignment space > 2M (oracle infeasible); agreement guaranteed by test battery"}
+        v["sat_vs_oracle"] = {
+            "status": "skipped", "agree": None, "n_models": None,
+            "note": "assignment space > 2M; no oracle cross-check performed"}
     v["uniqueness"] = verify_uniqueness_sat(world)
     v["ablation"] = verify_ablation_sat(world, world.meta["essential_cids"])
+    encoded_distractors = [u.euid for u in world.evidence
+                           if u.is_distractor and u.encodes]
     v["distractor_safety"] = {
-        "pass": True,
-        "note": "distractors carry no formal constraints; removal cannot "
-                "alter the model set (structural guarantee)"}
+        "pass": not encoded_distractors,
+        "encoded_distractors": encoded_distractors,
+        "scope": "formal inertness only; no claim about all prose semantics"}
     return v
 
 def verify_uniqueness_sat(world, want_unique=True):
+    models = sat_models(world, cap=1)
+    if not models:
+        return {"pass": False, "reason": "no satisfying model", "n": 0}
+    if models[0] != world.meta["ground_truth"]:
+        return {"pass": False, "reason": "ground truth is not the unique model"}
     other = has_other_model(world)
     if want_unique and other:
         return {"pass": False, "reason": "second model exists", "n": 2}
@@ -61,12 +69,56 @@ def verify_ablation_sat(world, essential_cids):
                         "essential": other}
     return {"pass": all(r["essential"] for r in results.values()), "detail": results}
 
+
+def _require_formal_gates(gates):
+    oracle = gates.get("sat_vs_oracle", {})
+    oracle_ok = (oracle.get("agree") is True
+                 or (oracle.get("status") == "skipped" and oracle.get("agree") is None))
+    failed = ([] if oracle_ok else ["sat_vs_oracle"])
+    failed.extend(name for name in ("uniqueness", "ablation", "distractor_safety")
+                  if gates.get(name, {}).get("pass") is not True)
+    if failed:
+        raise ValueError("formal verification failed: " + ", ".join(failed))
+
+
+def _verify_surfaces(world, realizations):
+    """Check supported claims and the published rule, not full prose meaning."""
+    surfaces = {v.vid: v.surface_names for v in world.variables}
+    policy = world.meta.get("decision_policy")
+    text = world.meta.get("policy_text")
+    expected_text = policy_text(
+        policy, surfaces, revision=world.config.get("n_objective_stages", 2) >= 3)
+    objectives = [o for o in world.objectives if o.true_objective]
+    objective_ok = len(objectives) == 1 and validate_action(
+        objectives[0].answer.get("final_action"), policy,
+        world.meta["ground_truth"], surfaces)
+    results = {}
+    for i, realization in enumerate(realizations, 1):
+        entry = verify_realization(world, realization)
+        entry["roundtrip"] = verify_roundtrip(world, realization)
+        entry["roundtrip"]["scope"] = "supported template claims, not full prose semantics"
+        entry["decision_policy"] = {
+            "pass": (objective_ok and text == expected_text
+                     and realization.clauses.get("decision_policy") == text
+                     and "decision_policy" in realization.rendered),
+            "scope": "protected public conditional rule and typed canonical action"}
+        if realization.gates.get("polished"):
+            entry["polished"] = True
+        entry["pass"] = (entry["pass"] and entry["roundtrip"]["pass"]
+                         and entry["decision_policy"]["pass"])
+        realization.gates = entry
+        results[f"r{i}"] = entry
+    failed = [name for name, entry in results.items() if not entry["pass"]]
+    if failed:
+        raise ValueError("surface verification failed: " + ", ".join(failed))
+    return results
+
 def _realizations(world, n=2, renderer=None, polisher=None):
-    """Compile n surface realizations; realization i uses seed + i*5000 so
-    surfaces differ while the skeleton (macro pacing) stays fixed. A
-    polisher(world, realization) runs a final creative pass on story
-    drafts; its output is re-gated, and the locked draft ships if the
-    polish breaks the contract."""
+    """Compile surfaces with a shared skeleton and protected public policy.
+
+    Optional story polish must preserve the protected clauses. The complete
+    returned surfaces, including the rule, are gated before build or package.
+    """
     mode = world.config.get("mode", "record")
     rs = []
     for i in range(n):
@@ -81,15 +133,6 @@ def _realizations(world, n=2, renderer=None, polisher=None):
                 # preserve the hints — no unpolished draft is ever shipped
                 # from a --polish run
                 r = polisher(world, r)
-            # decision flag: every story closes by naming the origin's
-            # surface noun, so the graded "what should be done" decision is
-            # inferable from the story alone. One deterministic sentence,
-            # appended after gates/polish — it carries no claim values, so
-            # the as-read model is unchanged.
-            v0 = world.variables[0]
-            if v0.surface_names:
-                r.text += ("\n\nOne thing was certain: a decision about "
-                           f"{v0.surface_names[0]} could wait no longer.")
             rs.append(r)
         else:
             rs.append(compile_narrative(world, realization_seed=rseed))
@@ -120,20 +163,16 @@ def build(size="small", seed=1, config_overrides=None, renderer=None,
     populate_objectives(world, seed)
     # verification battery (adaptive: oracle for small, SAT for large)
     v = adaptive_gates(world)
+    _require_formal_gates(v)
     # story mode: fix the macro-structure (pacing, sequencing) before any
     # surface exists, so all realizations of this instance are difficulty-matched
     if cfg.get("mode", "record") == "story":
         from .story import build_skeleton
         world.meta["skeleton"] = build_skeleton(world, seed)
-    # surface-faithfulness gates: coverage/spans/leakage + extraction round-trip
+    # Structural/template-claim gates do not establish full prose semantics.
     rs = _realizations(world, n=2, renderer=renderer, polisher=polisher)
-    v["realization"] = {}
-    for i, r in enumerate(rs, 1):
-        entry = verify_realization(world, r)
-        entry["roundtrip"] = verify_roundtrip(world, r)
-        if r.gates.get("polished"):
-            entry["polished"] = True
-        v["realization"][f"r{i}"] = entry
+    v["realization"] = _verify_surfaces(world, rs)
+    v["pass"] = True
     world.meta["realizations"] = rs
     world.verification = v
     return world
@@ -142,14 +181,23 @@ def build(size="small", seed=1, config_overrides=None, renderer=None,
 def package(world, out_dir, n_realizations=2, renderer=None, polisher=None):
     """Write the full benchmark package: solver-visible text + hidden files."""
     import os, json
-    os.makedirs(out_dir, exist_ok=True)
-    d = lambda f: os.path.join(out_dir, f)
+    if n_realizations < 1:
+        raise ValueError("a package requires at least one realization")
+    verification = dict(world.verification or adaptive_gates(world))
+    _require_formal_gates(verification)
     mode = world.config.get("mode", "record")
     stem = "story" if mode == "story" else "challenge"
     rs = world.meta.get("realizations") or []
     if len(rs) < n_realizations:
         rs = _realizations(world, n_realizations, renderer=renderer,
                            polisher=polisher)
+    verification["realization"] = _verify_surfaces(world, rs[:n_realizations])
+    verification["pass"] = True
+    world.verification = verification
+    world.meta["realizations"] = rs
+    # Do not create or write a package until every applicable gate has passed.
+    os.makedirs(out_dir, exist_ok=True)
+    d = lambda f: os.path.join(out_dir, f)
     pub = world.public_summary()
     pub["mode"] = mode
     for i, r in enumerate(rs[:n_realizations]):
@@ -189,14 +237,19 @@ def _hidden(world):
     return {
         "wid": world.wid, "seed": world.seed, "config": world.config,
         "ground_truth": world.meta["ground_truth"],
+        "decision_policy": world.meta["decision_policy"],
+        "policy_text": world.meta["policy_text"],
+        "surfaces": {v.vid: v.surface_names[0] for v in world.variables},
         "variables": [{"vid": v.vid, "type": v.vtype.value,
-                       "domain": v.domain, "desc": v.desc} for v in world.variables],
+                       "domain": v.domain, "desc": v.desc,
+                       "surface_names": v.surface_names} for v in world.variables],
         "constraints": [_con(c) for c in world.constraints],
         "evidence_map": {u.euid: u.encodes for u in world.evidence},
         "distractors": [u.distractor_hypothesis for u in world.evidence if u.is_distractor],
         "bridges": [{"id": b.kbid, "fact": b.fact, "role": b.role} for b in world.bridges],
         "objectives": [{"sid": o.sid, "level": o.level, "statement": o.statement,
-                        "answer": o.answer, "true": o.true_objective}
+                        "answer": o.answer, "true": o.true_objective,
+                        "unlocks": o.unlocks, "reveal_text": o.reveal_text}
                        for o in world.objectives],
     }
 

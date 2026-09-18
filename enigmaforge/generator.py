@@ -95,35 +95,19 @@ def generate_world(config: dict, seed: int) -> HiddenWorld:
     world.meta["essential_cids"] = essential
     _strengthen_to_unique(world, rng, gt)
     _minimize(world)
-    _verify_chain_depth(world, gt)
+    _measure_difficulty(world)
     return world
 
-def _verify_chain_depth(world, gt):
-    """Instrumentation: how many implication steps from anchors to the final
-    var? (Chain depth = reasoning-chain length the solver must traverse.)"""
-    pins = {c.vars[0] for c in world.constraints
-            if c.kind == ConstraintKind.EQ and len(c.vars) == 1}
-    # build implication graph from remaining constraints
-    known = set(pins)
-    depth = 0
-    changed = True
-    while changed:
-        changed = False
-        for c in world.constraints:
-            if c.kind == ConstraintKind.IMPLIES:
-                if c.vars[0] in known and c.vars[1] not in known:
-                    known.add(c.vars[1]); changed = True
-            elif c.kind == ConstraintKind.EQ and len(c.vars) == 2:
-                if c.vars[0] in known and c.vars[1] not in known:
-                    known.add(c.vars[1]); changed = True
-                elif c.vars[2 - 1] in known and c.vars[0] not in known:
-                    known.add(c.vars[0]); changed = True
-            elif c.kind == ConstraintKind.NEQ:
-                # NEQ only prunes; counts as derivational when domain reduced —
-                # approximation v1: treat as known if one side pinned and domain small
-                pass
-    world.meta["chain_depth"] = depth
-    world.meta["derivable_vars"] = sorted(known - pins)
+def _measure_difficulty(world):
+    """Measure surviving constraints; configured layering is not achieved depth."""
+    from .experiments import measure_difficulty
+    formal = {
+        "variables": [{"vid": v.vid, "type": v.vtype.value, "domain": v.domain}
+                      for v in world.variables],
+        "constraints": [{"kind": c.kind.value, "vars": c.vars,
+                         "values": c.values} for c in world.constraints],
+    }
+    world.meta["difficulty"] = measure_difficulty(formal)
     return world
 
 def _minimize(world):
