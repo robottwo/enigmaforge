@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "generated_at": "2026-09-18T18:14:13+00:00",
+  "generated_at": "2026-09-18T18:36:18+00:00",
   "n_instances": 600,
   "n_families": 120,
   "ranking": [
@@ -214,6 +214,10 @@
           "rate": 0.0,
           "count": 0,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 1.0,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -225,6 +229,8 @@
         "task_success": 100.0,
         "fact_f1": 100.0,
         "exact_world": 100.0,
+        "claim_accuracy": 100.0,
+        "intuition": 100.0,
         "discovery_retention": 100.0,
         "reasoning_discipline": 100,
         "earned_decisions": 100.0
@@ -435,6 +441,10 @@
           "rate": 0.0083,
           "count": 5,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.9833,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -446,6 +456,8 @@
         "task_success": 98.3,
         "fact_f1": 99.8,
         "exact_world": 98.3,
+        "claim_accuracy": 100.0,
+        "intuition": 98.3,
         "discovery_retention": 100.0,
         "reasoning_discipline": 100,
         "earned_decisions": 99.2
@@ -656,6 +668,10 @@
           "rate": 0.1236,
           "count": 68,
           "denominator": 550
+        },
+        "intuition": {
+          "implicit_task": 0.8009,
+          "denominator": 216
         }
       },
       "warnings": [],
@@ -667,6 +683,8 @@
         "task_success": 80.3,
         "fact_f1": 90.6,
         "exact_world": 80.3,
+        "claim_accuracy": 99.8,
+        "intuition": 80.1,
         "discovery_retention": 98.7,
         "reasoning_discipline": 100,
         "earned_decisions": 87.6
@@ -877,6 +895,10 @@
           "rate": 0.3083,
           "count": 185,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.5292,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -888,6 +910,8 @@
         "task_success": 68.7,
         "fact_f1": 91.3,
         "exact_world": 68.7,
+        "claim_accuracy": 99.6,
+        "intuition": 52.9,
         "discovery_retention": 84.5,
         "reasoning_discipline": 100,
         "earned_decisions": 69.2
@@ -1098,6 +1122,10 @@
           "rate": 0.315,
           "count": 189,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.5417,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -1109,6 +1137,8 @@
         "task_success": 68.5,
         "fact_f1": 91.0,
         "exact_world": 68.5,
+        "claim_accuracy": 98.2,
+        "intuition": 54.2,
         "discovery_retention": 83.2,
         "reasoning_discipline": 100,
         "earned_decisions": 68.5
@@ -1319,6 +1349,10 @@
           "rate": 0.4047,
           "count": 242,
           "denominator": 598
+        },
+        "intuition": {
+          "implicit_task": 0.3933,
+          "denominator": 239
         }
       },
       "warnings": [],
@@ -1330,6 +1364,8 @@
         "task_success": 59.0,
         "fact_f1": 86.2,
         "exact_world": 59.0,
+        "claim_accuracy": 99.8,
+        "intuition": 39.3,
         "discovery_retention": 75.6,
         "reasoning_discipline": 100,
         "earned_decisions": 59.5
@@ -1540,6 +1576,10 @@
           "rate": 0.3972,
           "count": 224,
           "denominator": 564
+        },
+        "intuition": {
+          "implicit_task": 0.3772,
+          "denominator": 228
         }
       },
       "warnings": [],
@@ -1551,6 +1591,8 @@
         "task_success": 53.2,
         "fact_f1": 80.1,
         "exact_world": 53.3,
+        "claim_accuracy": 97.5,
+        "intuition": 37.7,
         "discovery_retention": 92.0,
         "reasoning_discipline": 99.8,
         "earned_decisions": 60.3
@@ -1761,6 +1803,10 @@
           "rate": 0.4917,
           "count": 295,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.2417,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -1772,6 +1818,8 @@
         "task_success": 50.7,
         "fact_f1": 81.8,
         "exact_world": 50.7,
+        "claim_accuracy": 99.0,
+        "intuition": 24.2,
         "discovery_retention": 61.9,
         "reasoning_discipline": 100,
         "earned_decisions": 50.8
@@ -1982,6 +2030,10 @@
           "rate": 0.5092,
           "count": 303,
           "denominator": 595
+        },
+        "intuition": {
+          "implicit_task": 0.1799,
+          "denominator": 239
         }
       },
       "warnings": [],
@@ -1993,6 +2045,8 @@
         "task_success": 48.7,
         "fact_f1": 78.7,
         "exact_world": 48.7,
+        "claim_accuracy": 99.7,
+        "intuition": 18.0,
         "discovery_retention": 58.0,
         "reasoning_discipline": 100,
         "earned_decisions": 49.1
@@ -2203,6 +2257,10 @@
           "rate": 0.5533,
           "count": 332,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.1625,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -2214,6 +2272,8 @@
         "task_success": 43.7,
         "fact_f1": 79.5,
         "exact_world": 43.7,
+        "claim_accuracy": 99.3,
+        "intuition": 16.2,
         "discovery_retention": 81.2,
         "reasoning_discipline": 100,
         "earned_decisions": 44.7
@@ -2424,6 +2484,10 @@
           "rate": 0.3955,
           "count": 176,
           "denominator": 445
+        },
+        "intuition": {
+          "implicit_task": 0.4318,
+          "denominator": 132
         }
       },
       "warnings": [],
@@ -2435,6 +2499,8 @@
         "task_success": 41.8,
         "fact_f1": 66.9,
         "exact_world": 41.8,
+        "claim_accuracy": 96.1,
+        "intuition": 43.2,
         "discovery_retention": 90.3,
         "reasoning_discipline": 100,
         "earned_decisions": 60.5
@@ -2645,6 +2711,10 @@
           "rate": 0.555,
           "count": 333,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.1667,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -2656,6 +2726,8 @@
         "task_success": 41.7,
         "fact_f1": 81.4,
         "exact_world": 42.7,
+        "claim_accuracy": 97.6,
+        "intuition": 16.7,
         "discovery_retention": 64.5,
         "reasoning_discipline": 100,
         "earned_decisions": 44.5
@@ -2866,6 +2938,10 @@
           "rate": 0.3842,
           "count": 151,
           "denominator": 393
+        },
+        "intuition": {
+          "implicit_task": 0.4545,
+          "denominator": 143
         }
       },
       "warnings": [],
@@ -2877,6 +2953,8 @@
         "task_success": 39.5,
         "fact_f1": 62.5,
         "exact_world": 39.5,
+        "claim_accuracy": 99.5,
+        "intuition": 45.5,
         "discovery_retention": 101.0,
         "reasoning_discipline": 100,
         "earned_decisions": 61.6
@@ -3087,6 +3165,10 @@
           "rate": 0.3892,
           "count": 165,
           "denominator": 424
+        },
+        "intuition": {
+          "implicit_task": 0.4278,
+          "denominator": 194
         }
       },
       "warnings": [],
@@ -3098,6 +3180,8 @@
         "task_success": 37.2,
         "fact_f1": 57.3,
         "exact_world": 37.2,
+        "claim_accuracy": 91.7,
+        "intuition": 42.8,
         "discovery_retention": 89.6,
         "reasoning_discipline": 100,
         "earned_decisions": 61.1
@@ -3308,6 +3392,10 @@
           "rate": 0.6127,
           "count": 367,
           "denominator": 599
+        },
+        "intuition": {
+          "implicit_task": 0.175,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -3319,6 +3407,8 @@
         "task_success": 36.5,
         "fact_f1": 90.4,
         "exact_world": 36.5,
+        "claim_accuracy": 98.5,
+        "intuition": 17.5,
         "discovery_retention": 91.6,
         "reasoning_discipline": 100,
         "earned_decisions": 38.7
@@ -3529,6 +3619,10 @@
           "rate": 0.5756,
           "count": 255,
           "denominator": 443
+        },
+        "intuition": {
+          "implicit_task": 0.2737,
+          "denominator": 179
         }
       },
       "warnings": [],
@@ -3540,6 +3634,8 @@
         "task_success": 31.2,
         "fact_f1": 62.8,
         "exact_world": 31.2,
+        "claim_accuracy": 99.7,
+        "intuition": 27.4,
         "discovery_retention": 92.2,
         "reasoning_discipline": 100,
         "earned_decisions": 42.4
@@ -3750,6 +3846,10 @@
           "rate": 0.7232,
           "count": 431,
           "denominator": 596
+        },
+        "intuition": {
+          "implicit_task": 0.05,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -3761,6 +3861,8 @@
         "task_success": 25.8,
         "fact_f1": 66.7,
         "exact_world": 26.0,
+        "claim_accuracy": 98.8,
+        "intuition": 5.0,
         "discovery_retention": 88.1,
         "reasoning_discipline": 100,
         "earned_decisions": 27.7
@@ -3971,6 +4073,10 @@
           "rate": 0.7183,
           "count": 431,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.0417,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -3982,6 +4088,8 @@
         "task_success": 23.7,
         "fact_f1": 68.0,
         "exact_world": 23.7,
+        "claim_accuracy": 97.1,
+        "intuition": 4.2,
         "discovery_retention": 85.0,
         "reasoning_discipline": 100,
         "earned_decisions": 28.2
@@ -4192,6 +4300,10 @@
           "rate": 0.6184,
           "count": 350,
           "denominator": 566
+        },
+        "intuition": {
+          "implicit_task": 0.0357,
+          "denominator": 224
         }
       },
       "warnings": [],
@@ -4203,6 +4315,8 @@
         "task_success": 19.5,
         "fact_f1": 63.3,
         "exact_world": 19.5,
+        "claim_accuracy": 79.2,
+        "intuition": 3.6,
         "discovery_retention": 94.0,
         "reasoning_discipline": 99.8,
         "earned_decisions": 38.2
@@ -4413,6 +4527,10 @@
           "rate": 0.2857,
           "count": 4,
           "denominator": 14
+        },
+        "intuition": {
+          "implicit_task": 0.5556,
+          "denominator": 9
         }
       },
       "warnings": [],
@@ -4424,6 +4542,8 @@
         "task_success": 1.7,
         "fact_f1": 2.3,
         "exact_world": 1.7,
+        "claim_accuracy": 100.0,
+        "intuition": 55.6,
         "discovery_retention": 97.3,
         "reasoning_discipline": 100,
         "earned_decisions": 71.4
@@ -4634,6 +4754,10 @@
           "rate": 0.3333,
           "count": 200,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.0083,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -4645,6 +4769,8 @@
         "task_success": 0.8,
         "fact_f1": 73.7,
         "exact_world": 0.8,
+        "claim_accuracy": 100.0,
+        "intuition": 0.8,
         "discovery_retention": 100.0,
         "reasoning_discipline": 100,
         "earned_decisions": 66.7
@@ -4855,6 +4981,10 @@
           "rate": 0.0,
           "count": 0,
           "denominator": 600
+        },
+        "intuition": {
+          "implicit_task": 0.0,
+          "denominator": 240
         }
       },
       "warnings": [],
@@ -4866,6 +4996,8 @@
         "task_success": 0.0,
         "fact_f1": 0.0,
         "exact_world": 0.0,
+        "claim_accuracy": 0.0,
+        "intuition": 0.0,
         "discovery_retention": 100.0,
         "reasoning_discipline": 100,
         "earned_decisions": 100.0
@@ -5032,6 +5164,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -5197,6 +5333,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -5362,6 +5502,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -5527,6 +5671,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -5692,6 +5840,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -5857,6 +6009,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -6024,6 +6180,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -6191,6 +6351,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -6356,6 +6520,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -6520,6 +6688,10 @@
             "educated_guess": {
               "rate": 0.0,
               "count": 0,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 1.0,
               "denominator": 240
             }
           },
@@ -6688,6 +6860,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -6853,6 +7029,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -7018,6 +7198,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -7185,6 +7369,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -7350,6 +7538,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -7515,6 +7707,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -7680,6 +7876,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -7845,6 +8045,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -8012,6 +8216,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -8181,6 +8389,10 @@
               "rate": 0.15,
               "count": 15,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -8346,6 +8558,10 @@
               "rate": 0.55,
               "count": 55,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -8511,6 +8727,10 @@
               "rate": 0.3,
               "count": 30,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -8676,6 +8896,10 @@
               "rate": 0.4,
               "count": 40,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -8841,6 +9065,10 @@
               "rate": 0.2,
               "count": 20,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -9006,6 +9234,10 @@
               "rate": 0.4,
               "count": 40,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -9173,6 +9405,10 @@
               "rate": 0.3333,
               "count": 200,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0083,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -9340,6 +9576,10 @@
               "rate": 0.3333,
               "count": 80,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -9505,6 +9745,10 @@
               "rate": 0.3333,
               "count": 40,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -9669,6 +9913,10 @@
             "educated_guess": {
               "rate": 0.3333,
               "count": 80,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0083,
               "denominator": 240
             }
           },
@@ -9837,6 +10085,10 @@
               "rate": 0.3333,
               "count": 40,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -10002,6 +10254,10 @@
               "rate": 0.3333,
               "count": 80,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0083,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -10167,6 +10423,10 @@
               "rate": 0.3333,
               "count": 80,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0083,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -10334,6 +10594,10 @@
               "rate": 0.1818,
               "count": 20,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -10499,6 +10763,10 @@
               "rate": 0.5238,
               "count": 55,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -10664,6 +10932,10 @@
               "rate": 0.2222,
               "count": 20,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.0556,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -10829,6 +11101,10 @@
               "rate": 0.4,
               "count": 50,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -10994,6 +11270,10 @@
               "rate": 0.3235,
               "count": 55,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -11161,6 +11441,10 @@
               "rate": 0.3333,
               "count": 200,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0083,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -11330,6 +11614,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -11495,6 +11783,10 @@
               "rate": 0.05,
               "count": 5,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.95,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -11660,6 +11952,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -11825,6 +12121,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -11990,6 +12290,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.95,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -12155,6 +12459,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -12322,6 +12630,10 @@
               "rate": 0.0083,
               "count": 5,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.9833,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -12489,6 +12801,10 @@
               "rate": 0.0083,
               "count": 2,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -12654,6 +12970,10 @@
               "rate": 0.0083,
               "count": 1,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -12818,6 +13138,10 @@
             "educated_guess": {
               "rate": 0.0083,
               "count": 2,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.9833,
               "denominator": 240
             }
           },
@@ -12986,6 +13310,10 @@
               "rate": 0.0083,
               "count": 1,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -13151,6 +13479,10 @@
               "rate": 0.0083,
               "count": 2,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.9833,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -13316,6 +13648,10 @@
               "rate": 0.0083,
               "count": 2,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.9833,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -13483,6 +13819,10 @@
               "rate": 0.0455,
               "count": 5,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.9091,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -13648,6 +13988,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -13813,6 +14157,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -13978,6 +14326,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -14143,6 +14495,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -14310,6 +14666,10 @@
               "rate": 0.0083,
               "count": 5,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.9833,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -14479,6 +14839,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -14644,6 +15008,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -14809,6 +15177,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -14974,6 +15346,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -15139,6 +15515,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -15304,6 +15684,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -15471,6 +15855,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -15638,6 +16026,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -15803,6 +16195,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -15967,6 +16363,10 @@
             "educated_guess": {
               "rate": 0.0,
               "count": 0,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0,
               "denominator": 240
             }
           },
@@ -16135,6 +16535,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -16300,6 +16704,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -16465,6 +16873,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -16632,6 +17044,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -16797,6 +17213,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -16962,6 +17382,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -17127,6 +17551,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -17292,6 +17720,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -17459,6 +17891,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -17628,6 +18064,10 @@
               "rate": 0.36,
               "count": 27,
               "denominator": 75
+            },
+            "intuition": {
+              "implicit_task": 0.4333,
+              "denominator": 30
             }
           },
           "warnings": [],
@@ -17793,6 +18233,10 @@
               "rate": 0.3088,
               "count": 21,
               "denominator": 68
+            },
+            "intuition": {
+              "implicit_task": 0.625,
+              "denominator": 24
             }
           },
           "warnings": [],
@@ -17958,6 +18402,10 @@
               "rate": 0.5085,
               "count": 30,
               "denominator": 59
+            },
+            "intuition": {
+              "implicit_task": 0.2917,
+              "denominator": 24
             }
           },
           "warnings": [],
@@ -18123,6 +18571,10 @@
               "rate": 0.4,
               "count": 26,
               "denominator": 65
+            },
+            "intuition": {
+              "implicit_task": 0.5455,
+              "denominator": 22
             }
           },
           "warnings": [],
@@ -18288,6 +18740,10 @@
               "rate": 0.4242,
               "count": 28,
               "denominator": 66
+            },
+            "intuition": {
+              "implicit_task": 0.36,
+              "denominator": 25
             }
           },
           "warnings": [],
@@ -18453,6 +18909,10 @@
               "rate": 0.3167,
               "count": 19,
               "denominator": 60
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 18
             }
           },
           "warnings": [],
@@ -18620,6 +19080,10 @@
               "rate": 0.3842,
               "count": 151,
               "denominator": 393
+            },
+            "intuition": {
+              "implicit_task": 0.4545,
+              "denominator": 143
             }
           },
           "warnings": [],
@@ -18787,6 +19251,10 @@
               "rate": 0.4658,
               "count": 75,
               "denominator": 161
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -18952,6 +19420,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 89
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -19116,6 +19588,10 @@
             "educated_guess": {
               "rate": 0.5315,
               "count": 76,
+              "denominator": 143
+            },
+            "intuition": {
+              "implicit_task": 0.4545,
               "denominator": 143
             }
           },
@@ -19284,6 +19760,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 89
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -19449,6 +19929,10 @@
               "rate": 0.4636,
               "count": 70,
               "denominator": 151
+            },
+            "intuition": {
+              "implicit_task": 0.4789,
+              "denominator": 71
             }
           },
           "warnings": [],
@@ -19614,6 +20098,10 @@
               "rate": 0.5294,
               "count": 81,
               "denominator": 153
+            },
+            "intuition": {
+              "implicit_task": 0.4306,
+              "denominator": 72
             }
           },
           "warnings": [],
@@ -19781,6 +20269,10 @@
               "rate": 0.4576,
               "count": 27,
               "denominator": 59
+            },
+            "intuition": {
+              "implicit_task": 0.4815,
+              "denominator": 27
             }
           },
           "warnings": [],
@@ -19946,6 +20438,10 @@
               "rate": 0.3571,
               "count": 25,
               "denominator": 70
+            },
+            "intuition": {
+              "implicit_task": 0.44,
+              "denominator": 25
             }
           },
           "warnings": [],
@@ -20111,6 +20607,10 @@
               "rate": 0.3582,
               "count": 24,
               "denominator": 67
+            },
+            "intuition": {
+              "implicit_task": 0.4167,
+              "denominator": 24
             }
           },
           "warnings": [],
@@ -20276,6 +20776,10 @@
               "rate": 0.3853,
               "count": 42,
               "denominator": 109
+            },
+            "intuition": {
+              "implicit_task": 0.5128,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -20441,6 +20945,10 @@
               "rate": 0.375,
               "count": 33,
               "denominator": 88
+            },
+            "intuition": {
+              "implicit_task": 0.3929,
+              "denominator": 28
             }
           },
           "warnings": [],
@@ -20608,6 +21116,10 @@
               "rate": 0.3842,
               "count": 151,
               "denominator": 393
+            },
+            "intuition": {
+              "implicit_task": 0.4545,
+              "denominator": 143
             }
           },
           "warnings": [],
@@ -20777,6 +21289,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 1
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 1
             }
           },
           "warnings": [],
@@ -20941,6 +21457,10 @@
             "educated_guess": {
               "rate": null,
               "count": 0,
+              "denominator": 0
+            },
+            "intuition": {
+              "implicit_task": null,
               "denominator": 0
             }
           },
@@ -21107,6 +21627,10 @@
               "rate": null,
               "count": 0,
               "denominator": 0
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -21272,6 +21796,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 1
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -21437,6 +21965,10 @@
               "rate": 0.4,
               "count": 2,
               "denominator": 5
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 4
             }
           },
           "warnings": [],
@@ -21602,6 +22134,10 @@
               "rate": 0.2857,
               "count": 2,
               "denominator": 7
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 4
             }
           },
           "warnings": [],
@@ -21769,6 +22305,10 @@
               "rate": 0.2857,
               "count": 4,
               "denominator": 14
+            },
+            "intuition": {
+              "implicit_task": 0.5556,
+              "denominator": 9
             }
           },
           "warnings": [],
@@ -21936,6 +22476,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 2
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -22101,6 +22645,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 3
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -22265,6 +22813,10 @@
             "educated_guess": {
               "rate": 0.4444,
               "count": 4,
+              "denominator": 9
+            },
+            "intuition": {
+              "implicit_task": 0.5556,
               "denominator": 9
             }
           },
@@ -22433,6 +22985,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 3
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -22597,6 +23153,10 @@
             "educated_guess": {
               "rate": 0.5714,
               "count": 4,
+              "denominator": 7
+            },
+            "intuition": {
+              "implicit_task": 0.4286,
               "denominator": 7
             }
           },
@@ -22763,6 +23323,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 4
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 2
             }
           },
           "warnings": [],
@@ -22930,6 +23494,10 @@
               "rate": 1.0,
               "count": 1,
               "denominator": 1
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 1
             }
           },
           "warnings": [],
@@ -23095,6 +23663,10 @@
               "rate": 0.3333,
               "count": 1,
               "denominator": 3
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 1
             }
           },
           "warnings": [],
@@ -23260,6 +23832,10 @@
               "rate": 0.25,
               "count": 1,
               "denominator": 4
+            },
+            "intuition": {
+              "implicit_task": 0.6667,
+              "denominator": 3
             }
           },
           "warnings": [],
@@ -23425,6 +24001,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 2
+            },
+            "intuition": {
+              "implicit_task": 1.0,
+              "denominator": 1
             }
           },
           "warnings": [],
@@ -23590,6 +24170,10 @@
               "rate": 0.25,
               "count": 1,
               "denominator": 4
+            },
+            "intuition": {
+              "implicit_task": 0.6667,
+              "denominator": 3
             }
           },
           "warnings": [],
@@ -23757,6 +24341,10 @@
               "rate": 0.2857,
               "count": 4,
               "denominator": 14
+            },
+            "intuition": {
+              "implicit_task": 0.5556,
+              "denominator": 9
             }
           },
           "warnings": [],
@@ -23926,6 +24514,10 @@
               "rate": 0.6,
               "count": 60,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24091,6 +24683,10 @@
               "rate": 0.74,
               "count": 74,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24256,6 +24852,10 @@
               "rate": 0.74,
               "count": 74,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.075,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24421,6 +25021,10 @@
               "rate": 0.73,
               "count": 73,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24586,6 +25190,10 @@
               "rate": 0.74,
               "count": 74,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24751,6 +25359,10 @@
               "rate": 0.76,
               "count": 76,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -24918,6 +25530,10 @@
               "rate": 0.7183,
               "count": 431,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -25085,6 +25701,10 @@
               "rate": 0.8958,
               "count": 215,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -25250,6 +25870,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -25414,6 +26038,10 @@
             "educated_guess": {
               "rate": 0.9,
               "count": 216,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0417,
               "denominator": 240
             }
           },
@@ -25582,6 +26210,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -25747,6 +26379,10 @@
               "rate": 0.9125,
               "count": 219,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.0333,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -25912,6 +26548,10 @@
               "rate": 0.8833,
               "count": 212,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -26079,6 +26719,10 @@
               "rate": 0.6818,
               "count": 75,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.0682,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -26244,6 +26888,10 @@
               "rate": 0.6571,
               "count": 69,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.0952,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -26409,6 +27057,10 @@
               "rate": 0.7111,
               "count": 64,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.0278,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -26574,6 +27226,10 @@
               "rate": 0.776,
               "count": 97,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -26739,6 +27395,10 @@
               "rate": 0.7412,
               "count": 126,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.0294,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -26906,6 +27566,10 @@
               "rate": 0.7183,
               "count": 431,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.0417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -27075,6 +27739,10 @@
               "rate": 0.44,
               "count": 33,
               "denominator": 75
+            },
+            "intuition": {
+              "implicit_task": 0.4722,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -27240,6 +27908,10 @@
               "rate": 0.4429,
               "count": 31,
               "denominator": 70
+            },
+            "intuition": {
+              "implicit_task": 0.4516,
+              "denominator": 31
             }
           },
           "warnings": [],
@@ -27405,6 +28077,10 @@
               "rate": 0.338,
               "count": 24,
               "denominator": 71
+            },
+            "intuition": {
+              "implicit_task": 0.4375,
+              "denominator": 32
             }
           },
           "warnings": [],
@@ -27570,6 +28246,10 @@
               "rate": 0.4286,
               "count": 27,
               "denominator": 63
+            },
+            "intuition": {
+              "implicit_task": 0.4444,
+              "denominator": 27
             }
           },
           "warnings": [],
@@ -27735,6 +28415,10 @@
               "rate": 0.3562,
               "count": 26,
               "denominator": 73
+            },
+            "intuition": {
+              "implicit_task": 0.3429,
+              "denominator": 35
             }
           },
           "warnings": [],
@@ -27900,6 +28584,10 @@
               "rate": 0.3333,
               "count": 24,
               "denominator": 72
+            },
+            "intuition": {
+              "implicit_task": 0.4242,
+              "denominator": 33
             }
           },
           "warnings": [],
@@ -28067,6 +28755,10 @@
               "rate": 0.3892,
               "count": 165,
               "denominator": 424
+            },
+            "intuition": {
+              "implicit_task": 0.4278,
+              "denominator": 194
             }
           },
           "warnings": [],
@@ -28234,6 +28926,10 @@
               "rate": 0.3087,
               "count": 71,
               "denominator": 230
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -28399,6 +29095,10 @@
               "rate": null,
               "count": 0,
               "denominator": 0
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -28563,6 +29263,10 @@
             "educated_guess": {
               "rate": 0.4845,
               "count": 94,
+              "denominator": 194
+            },
+            "intuition": {
+              "implicit_task": 0.4278,
               "denominator": 194
             }
           },
@@ -28731,6 +29435,10 @@
               "rate": null,
               "count": 0,
               "denominator": 0
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -28896,6 +29604,10 @@
               "rate": 0.3767,
               "count": 81,
               "denominator": 215
+            },
+            "intuition": {
+              "implicit_task": 0.4082,
+              "denominator": 98
             }
           },
           "warnings": [],
@@ -29061,6 +29773,10 @@
               "rate": 0.4019,
               "count": 84,
               "denominator": 209
+            },
+            "intuition": {
+              "implicit_task": 0.4479,
+              "denominator": 96
             }
           },
           "warnings": [],
@@ -29228,6 +29944,10 @@
               "rate": 0.3059,
               "count": 26,
               "denominator": 85
+            },
+            "intuition": {
+              "implicit_task": 0.5366,
+              "denominator": 41
             }
           },
           "warnings": [],
@@ -29393,6 +30113,10 @@
               "rate": 0.4179,
               "count": 28,
               "denominator": 67
+            },
+            "intuition": {
+              "implicit_task": 0.3571,
+              "denominator": 28
             }
           },
           "warnings": [],
@@ -29558,6 +30282,10 @@
               "rate": 0.4857,
               "count": 34,
               "denominator": 70
+            },
+            "intuition": {
+              "implicit_task": 0.4118,
+              "denominator": 34
             }
           },
           "warnings": [],
@@ -29723,6 +30451,10 @@
               "rate": 0.3056,
               "count": 22,
               "denominator": 72
+            },
+            "intuition": {
+              "implicit_task": 0.5172,
+              "denominator": 29
             }
           },
           "warnings": [],
@@ -29888,6 +30620,10 @@
               "rate": 0.4231,
               "count": 55,
               "denominator": 130
+            },
+            "intuition": {
+              "implicit_task": 0.3548,
+              "denominator": 62
             }
           },
           "warnings": [],
@@ -30055,6 +30791,10 @@
               "rate": 0.3892,
               "count": 165,
               "denominator": 424
+            },
+            "intuition": {
+              "implicit_task": 0.4278,
+              "denominator": 194
             }
           },
           "warnings": [],
@@ -30224,6 +30964,10 @@
               "rate": 0.3295,
               "count": 29,
               "denominator": 88
+            },
+            "intuition": {
+              "implicit_task": 0.5667,
+              "denominator": 30
             }
           },
           "warnings": [],
@@ -30389,6 +31133,10 @@
               "rate": 0.3333,
               "count": 24,
               "denominator": 72
+            },
+            "intuition": {
+              "implicit_task": 0.5556,
+              "denominator": 18
             }
           },
           "warnings": [],
@@ -30554,6 +31302,10 @@
               "rate": 0.3562,
               "count": 26,
               "denominator": 73
+            },
+            "intuition": {
+              "implicit_task": 0.5263,
+              "denominator": 19
             }
           },
           "warnings": [],
@@ -30719,6 +31471,10 @@
               "rate": 0.4444,
               "count": 32,
               "denominator": 72
+            },
+            "intuition": {
+              "implicit_task": 0.3478,
+              "denominator": 23
             }
           },
           "warnings": [],
@@ -30884,6 +31640,10 @@
               "rate": 0.377,
               "count": 23,
               "denominator": 61
+            },
+            "intuition": {
+              "implicit_task": 0.2353,
+              "denominator": 17
             }
           },
           "warnings": [],
@@ -31049,6 +31809,10 @@
               "rate": 0.5316,
               "count": 42,
               "denominator": 79
+            },
+            "intuition": {
+              "implicit_task": 0.32,
+              "denominator": 25
             }
           },
           "warnings": [],
@@ -31216,6 +31980,10 @@
               "rate": 0.3955,
               "count": 176,
               "denominator": 445
+            },
+            "intuition": {
+              "implicit_task": 0.4318,
+              "denominator": 132
             }
           },
           "warnings": [],
@@ -31383,6 +32151,10 @@
               "rate": 0.5492,
               "count": 106,
               "denominator": 193
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -31548,6 +32320,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -31712,6 +32488,10 @@
             "educated_guess": {
               "rate": 0.5303,
               "count": 70,
+              "denominator": 132
+            },
+            "intuition": {
+              "implicit_task": 0.4318,
               "denominator": 132
             }
           },
@@ -31880,6 +32660,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -32045,6 +32829,10 @@
               "rate": 0.5617,
               "count": 91,
               "denominator": 162
+            },
+            "intuition": {
+              "implicit_task": 0.4308,
+              "denominator": 65
             }
           },
           "warnings": [],
@@ -32210,6 +32998,10 @@
               "rate": 0.5215,
               "count": 85,
               "denominator": 163
+            },
+            "intuition": {
+              "implicit_task": 0.4328,
+              "denominator": 67
             }
           },
           "warnings": [],
@@ -32377,6 +33169,10 @@
               "rate": 0.434,
               "count": 46,
               "denominator": 106
+            },
+            "intuition": {
+              "implicit_task": 0.4,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -32542,6 +33338,10 @@
               "rate": 0.2742,
               "count": 17,
               "denominator": 62
+            },
+            "intuition": {
+              "implicit_task": 0.5455,
+              "denominator": 11
             }
           },
           "warnings": [],
@@ -32707,6 +33507,10 @@
               "rate": 0.4151,
               "count": 22,
               "denominator": 53
+            },
+            "intuition": {
+              "implicit_task": 0.3,
+              "denominator": 10
             }
           },
           "warnings": [],
@@ -32872,6 +33676,10 @@
               "rate": 0.2712,
               "count": 16,
               "denominator": 59
+            },
+            "intuition": {
+              "implicit_task": 0.625,
+              "denominator": 8
             }
           },
           "warnings": [],
@@ -33037,6 +33845,10 @@
               "rate": 0.4545,
               "count": 75,
               "denominator": 165
+            },
+            "intuition": {
+              "implicit_task": 0.4286,
+              "denominator": 63
             }
           },
           "warnings": [],
@@ -33204,6 +34016,10 @@
               "rate": 0.3955,
               "count": 176,
               "denominator": 445
+            },
+            "intuition": {
+              "implicit_task": 0.4318,
+              "denominator": 132
             }
           },
           "warnings": [],
@@ -33373,6 +34189,10 @@
               "rate": 0.4,
               "count": 40,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.425,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -33538,6 +34358,10 @@
               "rate": 0.43,
               "count": 43,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.25,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -33703,6 +34527,10 @@
               "rate": 0.45,
               "count": 45,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.275,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -33868,6 +34696,10 @@
               "rate": 0.54,
               "count": 54,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -34033,6 +34865,10 @@
               "rate": 0.5938,
               "count": 57,
               "denominator": 96
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -34198,6 +35034,10 @@
               "rate": 0.6465,
               "count": 64,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -34365,6 +35205,10 @@
               "rate": 0.5092,
               "count": 303,
               "denominator": 595
+            },
+            "intuition": {
+              "implicit_task": 0.1799,
+              "denominator": 239
             }
           },
           "warnings": [],
@@ -34532,6 +35376,10 @@
               "rate": 0.4534,
               "count": 107,
               "denominator": 236
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -34697,6 +35545,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -34861,6 +35713,10 @@
             "educated_guess": {
               "rate": 0.8201,
               "count": 196,
+              "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.1799,
               "denominator": 239
             }
           },
@@ -35029,6 +35885,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -35194,6 +36054,10 @@
               "rate": 0.6229,
               "count": 147,
               "denominator": 236
+            },
+            "intuition": {
+              "implicit_task": 0.2083,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -35359,6 +36223,10 @@
               "rate": 0.6527,
               "count": 156,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.1513,
+              "denominator": 119
             }
           },
           "warnings": [],
@@ -35526,6 +36394,10 @@
               "rate": 0.5093,
               "count": 55,
               "denominator": 108
+            },
+            "intuition": {
+              "implicit_task": 0.2045,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -35691,6 +36563,10 @@
               "rate": 0.4476,
               "count": 47,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.2143,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -35856,6 +36732,10 @@
               "rate": 0.5333,
               "count": 48,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.2222,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -36021,6 +36901,10 @@
               "rate": 0.536,
               "count": 67,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.06,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -36186,6 +37070,10 @@
               "rate": 0.515,
               "count": 86,
               "denominator": 167
+            },
+            "intuition": {
+              "implicit_task": 0.209,
+              "denominator": 67
             }
           },
           "warnings": [],
@@ -36353,6 +37241,10 @@
               "rate": 0.5092,
               "count": 303,
               "denominator": 595
+            },
+            "intuition": {
+              "implicit_task": 0.1799,
+              "denominator": 239
             }
           },
           "warnings": [],
@@ -36522,6 +37414,10 @@
               "rate": 0.31,
               "count": 31,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -36687,6 +37583,10 @@
               "rate": 0.46,
               "count": 46,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.25,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -36852,6 +37752,10 @@
               "rate": 0.52,
               "count": 52,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.175,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -37017,6 +37921,10 @@
               "rate": 0.66,
               "count": 66,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -37182,6 +38090,10 @@
               "rate": 0.64,
               "count": 64,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -37347,6 +38259,10 @@
               "rate": 0.73,
               "count": 73,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -37514,6 +38430,10 @@
               "rate": 0.5533,
               "count": 332,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.1625,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -37681,6 +38601,10 @@
               "rate": 0.5542,
               "count": 133,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -37846,6 +38770,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -38010,6 +38938,10 @@
             "educated_guess": {
               "rate": 0.8292,
               "count": 199,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1625,
               "denominator": 240
             }
           },
@@ -38178,6 +39110,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -38343,6 +39279,10 @@
               "rate": 0.6875,
               "count": 165,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -38508,6 +39448,10 @@
               "rate": 0.6958,
               "count": 167,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1583,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -38675,6 +39619,10 @@
               "rate": 0.5273,
               "count": 58,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.2045,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -38840,6 +39788,10 @@
               "rate": 0.5619,
               "count": 59,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.0952,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -39005,6 +39957,10 @@
               "rate": 0.5778,
               "count": 52,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -39170,6 +40126,10 @@
               "rate": 0.536,
               "count": 67,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.18,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -39335,6 +40295,10 @@
               "rate": 0.5647,
               "count": 96,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.1618,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -39502,6 +40466,10 @@
               "rate": 0.5533,
               "count": 332,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.1625,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -39671,6 +40639,10 @@
               "rate": 0.18,
               "count": 18,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.85,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -39836,6 +40808,10 @@
               "rate": 0.3,
               "count": 30,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.675,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -40001,6 +40977,10 @@
               "rate": 0.19,
               "count": 19,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.75,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -40166,6 +41146,10 @@
               "rate": 0.33,
               "count": 33,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.375,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -40331,6 +41315,10 @@
               "rate": 0.45,
               "count": 45,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.275,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -40496,6 +41484,10 @@
               "rate": 0.4,
               "count": 40,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.25,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -40663,6 +41655,10 @@
               "rate": 0.3083,
               "count": 185,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.5292,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -40830,6 +41826,10 @@
               "rate": 0.3042,
               "count": 73,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -40995,6 +41995,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -41159,6 +42163,10 @@
             "educated_guess": {
               "rate": 0.4667,
               "count": 112,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.5292,
               "denominator": 240
             }
           },
@@ -41327,6 +42335,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -41492,6 +42504,10 @@
               "rate": 0.3917,
               "count": 94,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.55,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -41657,6 +42673,10 @@
               "rate": 0.3792,
               "count": 91,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.5083,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -41824,6 +42844,10 @@
               "rate": 0.3182,
               "count": 35,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.4773,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -41989,6 +43013,10 @@
               "rate": 0.2952,
               "count": 31,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.619,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -42154,6 +43182,10 @@
               "rate": 0.3667,
               "count": 33,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.4722,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -42319,6 +43351,10 @@
               "rate": 0.328,
               "count": 41,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -42484,6 +43520,10 @@
               "rate": 0.2647,
               "count": 45,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.5588,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -42651,6 +43691,10 @@
               "rate": 0.3083,
               "count": 185,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.5292,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -42820,6 +43864,10 @@
               "rate": 0.28,
               "count": 28,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.725,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -42985,6 +44033,10 @@
               "rate": 0.3,
               "count": 30,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.65,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -43150,6 +44202,10 @@
               "rate": 0.3636,
               "count": 36,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -43315,6 +44371,10 @@
               "rate": 0.41,
               "count": 41,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.3,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -43480,6 +44540,10 @@
               "rate": 0.4848,
               "count": 48,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.1538,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -43645,6 +44709,10 @@
               "rate": 0.59,
               "count": 59,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -43812,6 +44880,10 @@
               "rate": 0.4047,
               "count": 242,
               "denominator": 598
+            },
+            "intuition": {
+              "implicit_task": 0.3933,
+              "denominator": 239
             }
           },
           "warnings": [],
@@ -43979,6 +45051,10 @@
               "rate": 0.4059,
               "count": 97,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -44144,6 +45220,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -44308,6 +45388,10 @@
             "educated_guess": {
               "rate": 0.6067,
               "count": 145,
+              "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.3933,
               "denominator": 239
             }
           },
@@ -44476,6 +45560,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -44641,6 +45729,10 @@
               "rate": 0.4937,
               "count": 118,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.3833,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -44806,6 +45898,10 @@
               "rate": 0.5188,
               "count": 124,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.4034,
+              "denominator": 119
             }
           },
           "warnings": [],
@@ -44973,6 +46069,10 @@
               "rate": 0.4128,
               "count": 45,
               "denominator": 109
+            },
+            "intuition": {
+              "implicit_task": 0.3864,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -45138,6 +46238,10 @@
               "rate": 0.375,
               "count": 39,
               "denominator": 104
+            },
+            "intuition": {
+              "implicit_task": 0.4634,
+              "denominator": 41
             }
           },
           "warnings": [],
@@ -45303,6 +46407,10 @@
               "rate": 0.3889,
               "count": 35,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.4722,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -45468,6 +46576,10 @@
               "rate": 0.432,
               "count": 54,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.34,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -45633,6 +46745,10 @@
               "rate": 0.4059,
               "count": 69,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.3529,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -45800,6 +46916,10 @@
               "rate": 0.4047,
               "count": 242,
               "denominator": 598
+            },
+            "intuition": {
+              "implicit_task": 0.3933,
+              "denominator": 239
             }
           },
           "warnings": [],
@@ -45969,6 +47089,10 @@
               "rate": 0.4949,
               "count": 49,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.1538,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -46134,6 +47258,10 @@
               "rate": 0.58,
               "count": 58,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -46299,6 +47427,10 @@
               "rate": 0.6429,
               "count": 63,
               "denominator": 98
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -46464,6 +47596,10 @@
               "rate": 0.6163,
               "count": 53,
               "denominator": 86
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 34
             }
           },
           "warnings": [],
@@ -46629,6 +47765,10 @@
               "rate": 0.7241,
               "count": 63,
               "denominator": 87
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 33
             }
           },
           "warnings": [],
@@ -46794,6 +47934,10 @@
               "rate": 0.6667,
               "count": 64,
               "denominator": 96
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -46961,6 +48105,10 @@
               "rate": 0.6184,
               "count": 350,
               "denominator": 566
+            },
+            "intuition": {
+              "implicit_task": 0.0357,
+              "denominator": 224
             }
           },
           "warnings": [],
@@ -47128,6 +48276,10 @@
               "rate": 0.7432,
               "count": 165,
               "denominator": 222
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -47293,6 +48445,10 @@
               "rate": 0.1417,
               "count": 17,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -47457,6 +48613,10 @@
             "educated_guess": {
               "rate": 0.75,
               "count": 168,
+              "denominator": 224
+            },
+            "intuition": {
+              "implicit_task": 0.0357,
               "denominator": 224
             }
           },
@@ -47625,6 +48785,10 @@
               "rate": 0.1417,
               "count": 17,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -47790,6 +48954,10 @@
               "rate": 0.7376,
               "count": 163,
               "denominator": 221
+            },
+            "intuition": {
+              "implicit_task": 0.027,
+              "denominator": 111
             }
           },
           "warnings": [],
@@ -47955,6 +49123,10 @@
               "rate": 0.7556,
               "count": 170,
               "denominator": 225
+            },
+            "intuition": {
+              "implicit_task": 0.0442,
+              "denominator": 113
             }
           },
           "warnings": [],
@@ -48122,6 +49294,10 @@
               "rate": 0.6105,
               "count": 58,
               "denominator": 95
+            },
+            "intuition": {
+              "implicit_task": 0.0571,
+              "denominator": 35
             }
           },
           "warnings": [],
@@ -48287,6 +49463,10 @@
               "rate": 0.5588,
               "count": 57,
               "denominator": 102
+            },
+            "intuition": {
+              "implicit_task": 0.0714,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -48452,6 +49632,10 @@
               "rate": 0.6548,
               "count": 55,
               "denominator": 84
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 33
             }
           },
           "warnings": [],
@@ -48617,6 +49801,10 @@
               "rate": 0.6083,
               "count": 73,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": 0.0417,
+              "denominator": 48
             }
           },
           "warnings": [],
@@ -48782,6 +49970,10 @@
               "rate": 0.6485,
               "count": 107,
               "denominator": 165
+            },
+            "intuition": {
+              "implicit_task": 0.0152,
+              "denominator": 66
             }
           },
           "warnings": [],
@@ -48949,6 +50141,10 @@
               "rate": 0.6184,
               "count": 350,
               "denominator": 566
+            },
+            "intuition": {
+              "implicit_task": 0.0357,
+              "denominator": 224
             }
           },
           "warnings": [],
@@ -49118,6 +50314,10 @@
               "rate": 0.3776,
               "count": 37,
               "denominator": 98
+            },
+            "intuition": {
+              "implicit_task": 0.3333,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -49283,6 +50483,10 @@
               "rate": 0.2947,
               "count": 28,
               "denominator": 95
+            },
+            "intuition": {
+              "implicit_task": 0.5128,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -49448,6 +50652,10 @@
               "rate": 0.172,
               "count": 16,
               "denominator": 93
+            },
+            "intuition": {
+              "implicit_task": 0.6757,
+              "denominator": 37
             }
           },
           "warnings": [],
@@ -49613,6 +50821,10 @@
               "rate": 0.4574,
               "count": 43,
               "denominator": 94
+            },
+            "intuition": {
+              "implicit_task": 0.4103,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -49778,6 +50990,10 @@
               "rate": 0.5319,
               "count": 50,
               "denominator": 94
+            },
+            "intuition": {
+              "implicit_task": 0.1795,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -49943,6 +51159,10 @@
               "rate": 0.5556,
               "count": 50,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.1429,
+              "denominator": 35
             }
           },
           "warnings": [],
@@ -50110,6 +51330,10 @@
               "rate": 0.3972,
               "count": 224,
               "denominator": 564
+            },
+            "intuition": {
+              "implicit_task": 0.3772,
+              "denominator": 228
             }
           },
           "warnings": [],
@@ -50277,6 +51501,10 @@
               "rate": 0.4306,
               "count": 93,
               "denominator": 216
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -50442,6 +51670,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -50606,6 +51838,10 @@
             "educated_guess": {
               "rate": 0.5746,
               "count": 131,
+              "denominator": 228
+            },
+            "intuition": {
+              "implicit_task": 0.3772,
               "denominator": 228
             }
           },
@@ -50774,6 +52010,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -50939,6 +52179,10 @@
               "rate": 0.4685,
               "count": 104,
               "denominator": 222
+            },
+            "intuition": {
+              "implicit_task": 0.4248,
+              "denominator": 113
             }
           },
           "warnings": [],
@@ -51104,6 +52348,10 @@
               "rate": 0.5405,
               "count": 120,
               "denominator": 222
+            },
+            "intuition": {
+              "implicit_task": 0.3304,
+              "denominator": 115
             }
           },
           "warnings": [],
@@ -51271,6 +52519,10 @@
               "rate": 0.434,
               "count": 46,
               "denominator": 106
+            },
+            "intuition": {
+              "implicit_task": 0.3023,
+              "denominator": 43
             }
           },
           "warnings": [],
@@ -51436,6 +52688,10 @@
               "rate": 0.36,
               "count": 36,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.3902,
+              "denominator": 41
             }
           },
           "warnings": [],
@@ -51601,6 +52857,10 @@
               "rate": 0.4458,
               "count": 37,
               "denominator": 83
+            },
+            "intuition": {
+              "implicit_task": 0.4062,
+              "denominator": 32
             }
           },
           "warnings": [],
@@ -51766,6 +53026,10 @@
               "rate": 0.3707,
               "count": 43,
               "denominator": 116
+            },
+            "intuition": {
+              "implicit_task": 0.4255,
+              "denominator": 47
             }
           },
           "warnings": [],
@@ -51931,6 +53195,10 @@
               "rate": 0.3899,
               "count": 62,
               "denominator": 159
+            },
+            "intuition": {
+              "implicit_task": 0.3692,
+              "denominator": 65
             }
           },
           "warnings": [],
@@ -52098,6 +53366,10 @@
               "rate": 0.3972,
               "count": 224,
               "denominator": 564
+            },
+            "intuition": {
+              "implicit_task": 0.3772,
+              "denominator": 228
             }
           },
           "warnings": [],
@@ -52267,6 +53539,10 @@
               "rate": 0.6465,
               "count": 64,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -52432,6 +53708,10 @@
               "rate": 0.6531,
               "count": 64,
               "denominator": 98
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -52597,6 +53877,10 @@
               "rate": 0.6869,
               "count": 68,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.075,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -52762,6 +54046,10 @@
               "rate": 0.77,
               "count": 77,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.025,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -52927,6 +54215,10 @@
               "rate": 0.79,
               "count": 79,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -53092,6 +54384,10 @@
               "rate": 0.79,
               "count": 79,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -53259,6 +54555,10 @@
               "rate": 0.7232,
               "count": 431,
               "denominator": 596
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -53426,6 +54726,10 @@
               "rate": 0.7966,
               "count": 188,
               "denominator": 236
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -53591,6 +54895,10 @@
               "rate": 0.1667,
               "count": 20,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -53755,6 +55063,10 @@
             "educated_guess": {
               "rate": 0.9292,
               "count": 223,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.05,
               "denominator": 240
             }
           },
@@ -53923,6 +55235,10 @@
               "rate": 0.1667,
               "count": 20,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -54088,6 +55404,10 @@
               "rate": 0.8619,
               "count": 206,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.0333,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -54253,6 +55573,10 @@
               "rate": 0.865,
               "count": 205,
               "denominator": 237
+            },
+            "intuition": {
+              "implicit_task": 0.0667,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -54420,6 +55744,10 @@
               "rate": 0.7273,
               "count": 80,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.0455,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -54585,6 +55913,10 @@
               "rate": 0.6476,
               "count": 68,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.0952,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -54750,6 +56082,10 @@
               "rate": 0.764,
               "count": 68,
               "denominator": 89
+            },
+            "intuition": {
+              "implicit_task": 0.0278,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -54915,6 +56251,10 @@
               "rate": 0.736,
               "count": 92,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -55080,6 +56420,10 @@
               "rate": 0.7365,
               "count": 123,
               "denominator": 167
+            },
+            "intuition": {
+              "implicit_task": 0.0735,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -55247,6 +56591,10 @@
               "rate": 0.7232,
               "count": 431,
               "denominator": 596
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -55416,6 +56764,10 @@
               "rate": 0.59,
               "count": 59,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.275,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -55581,6 +56933,10 @@
               "rate": 0.51,
               "count": 51,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.225,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -55746,6 +57102,10 @@
               "rate": 0.55,
               "count": 55,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -55911,6 +57271,10 @@
               "rate": 0.56,
               "count": 56,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.125,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -56076,6 +57440,10 @@
               "rate": 0.53,
               "count": 53,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.175,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -56241,6 +57609,10 @@
               "rate": 0.59,
               "count": 59,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -56408,6 +57780,10 @@
               "rate": 0.555,
               "count": 333,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -56575,6 +57951,10 @@
               "rate": 0.5833,
               "count": 140,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -56740,6 +58120,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -56904,6 +58288,10 @@
             "educated_guess": {
               "rate": 0.8042,
               "count": 193,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
               "denominator": 240
             }
           },
@@ -57072,6 +58460,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -57237,6 +58629,10 @@
               "rate": 0.7167,
               "count": 172,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1333,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -57402,6 +58798,10 @@
               "rate": 0.6708,
               "count": 161,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.2,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -57569,6 +58969,10 @@
               "rate": 0.5455,
               "count": 60,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.1364,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -57734,6 +59138,10 @@
               "rate": 0.5238,
               "count": 55,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.2381,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -57899,6 +59307,10 @@
               "rate": 0.7111,
               "count": 64,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.0556,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -58064,6 +59476,10 @@
               "rate": 0.496,
               "count": 62,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.14,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -58229,6 +59645,10 @@
               "rate": 0.5412,
               "count": 92,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.2206,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -58396,6 +59816,10 @@
               "rate": 0.555,
               "count": 333,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -58565,6 +59989,10 @@
               "rate": 0.46,
               "count": 46,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.4,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -58730,6 +60158,10 @@
               "rate": 0.29,
               "count": 29,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.65,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -58895,6 +60327,10 @@
               "rate": 0.3,
               "count": 30,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.6,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -59060,6 +60496,10 @@
               "rate": 0.22,
               "count": 22,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.75,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -59225,6 +60665,10 @@
               "rate": 0.29,
               "count": 29,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.45,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -59390,6 +60834,10 @@
               "rate": 0.33,
               "count": 33,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.4,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -59557,6 +61005,10 @@
               "rate": 0.315,
               "count": 189,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.5417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -59724,6 +61176,10 @@
               "rate": 0.3292,
               "count": 79,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -59889,6 +61345,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -60053,6 +61513,10 @@
             "educated_guess": {
               "rate": 0.4583,
               "count": 110,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.5417,
               "denominator": 240
             }
           },
@@ -60221,6 +61685,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -60386,6 +61854,10 @@
               "rate": 0.3833,
               "count": 92,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.5167,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -60551,6 +62023,10 @@
               "rate": 0.4042,
               "count": 97,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.5667,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -60718,6 +62194,10 @@
               "rate": 0.2364,
               "count": 26,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.5909,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -60883,6 +62363,10 @@
               "rate": 0.3429,
               "count": 36,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.4524,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -61048,6 +62532,10 @@
               "rate": 0.5,
               "count": 45,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.3611,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -61213,6 +62701,10 @@
               "rate": 0.248,
               "count": 31,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.62,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -61378,6 +62870,10 @@
               "rate": 0.3,
               "count": 51,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.6029,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -61545,6 +63041,10 @@
               "rate": 0.315,
               "count": 189,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.5417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -61714,6 +63214,10 @@
               "rate": 0.49,
               "count": 49,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.3,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -61879,6 +63383,10 @@
               "rate": 0.46,
               "count": 46,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.35,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -62044,6 +63552,10 @@
               "rate": 0.41,
               "count": 41,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.375,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -62209,6 +63721,10 @@
               "rate": 0.51,
               "count": 51,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.225,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -62374,6 +63890,10 @@
               "rate": 0.52,
               "count": 52,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.15,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -62539,6 +64059,10 @@
               "rate": 0.56,
               "count": 56,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.05,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -62706,6 +64230,10 @@
               "rate": 0.4917,
               "count": 295,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.2417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -62873,6 +64401,10 @@
               "rate": 0.475,
               "count": 114,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -63038,6 +64570,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -63202,6 +64738,10 @@
             "educated_guess": {
               "rate": 0.7542,
               "count": 181,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.2417,
               "denominator": 240
             }
           },
@@ -63370,6 +64910,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -63535,6 +65079,10 @@
               "rate": 0.6,
               "count": 144,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.2583,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -63700,6 +65248,10 @@
               "rate": 0.6292,
               "count": 151,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.225,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -63867,6 +65419,10 @@
               "rate": 0.4909,
               "count": 54,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.2273,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -64032,6 +65588,10 @@
               "rate": 0.4762,
               "count": 50,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.3095,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -64197,6 +65757,10 @@
               "rate": 0.5556,
               "count": 50,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.1944,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -64362,6 +65926,10 @@
               "rate": 0.456,
               "count": 57,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.2,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -64527,6 +66095,10 @@
               "rate": 0.4941,
               "count": 84,
               "denominator": 170
+            },
+            "intuition": {
+              "implicit_task": 0.2647,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -64694,6 +66266,10 @@
               "rate": 0.4917,
               "count": 295,
               "denominator": 600
+            },
+            "intuition": {
+              "implicit_task": 0.2417,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -64863,6 +66439,10 @@
               "rate": 0.35,
               "count": 35,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.5,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -65028,6 +66608,10 @@
               "rate": 0.1546,
               "count": 15,
               "denominator": 97
+            },
+            "intuition": {
+              "implicit_task": 0.7568,
+              "denominator": 37
             }
           },
           "warnings": [],
@@ -65193,6 +66777,10 @@
               "rate": 0.07,
               "count": 7,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.85,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -65358,6 +66946,10 @@
               "rate": 0.051,
               "count": 5,
               "denominator": 98
+            },
+            "intuition": {
+              "implicit_task": 0.8974,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -65523,6 +67115,10 @@
               "rate": 0.0515,
               "count": 5,
               "denominator": 97
+            },
+            "intuition": {
+              "implicit_task": 0.9189,
+              "denominator": 37
             }
           },
           "warnings": [],
@@ -65688,6 +67284,10 @@
               "rate": 0.0172,
               "count": 1,
               "denominator": 58
+            },
+            "intuition": {
+              "implicit_task": 0.9565,
+              "denominator": 23
             }
           },
           "warnings": [],
@@ -65855,6 +67455,10 @@
               "rate": 0.1236,
               "count": 68,
               "denominator": 550
+            },
+            "intuition": {
+              "implicit_task": 0.8009,
+              "denominator": 216
             }
           },
           "warnings": [],
@@ -66022,6 +67626,10 @@
               "rate": 0.1136,
               "count": 25,
               "denominator": 220
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -66187,6 +67795,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 114
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -66351,6 +67963,10 @@
             "educated_guess": {
               "rate": 0.1991,
               "count": 43,
+              "denominator": 216
+            },
+            "intuition": {
+              "implicit_task": 0.8009,
               "denominator": 216
             }
           },
@@ -66519,6 +68135,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 114
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -66684,6 +68304,10 @@
               "rate": 0.148,
               "count": 33,
               "denominator": 223
+            },
+            "intuition": {
+              "implicit_task": 0.8198,
+              "denominator": 111
             }
           },
           "warnings": [],
@@ -66849,6 +68473,10 @@
               "rate": 0.1643,
               "count": 35,
               "denominator": 213
+            },
+            "intuition": {
+              "implicit_task": 0.781,
+              "denominator": 105
             }
           },
           "warnings": [],
@@ -67016,6 +68644,10 @@
               "rate": 0.1154,
               "count": 12,
               "denominator": 104
+            },
+            "intuition": {
+              "implicit_task": 0.8049,
+              "denominator": 41
             }
           },
           "warnings": [],
@@ -67181,6 +68813,10 @@
               "rate": 0.1263,
               "count": 12,
               "denominator": 95
+            },
+            "intuition": {
+              "implicit_task": 0.7838,
+              "denominator": 37
             }
           },
           "warnings": [],
@@ -67346,6 +68982,10 @@
               "rate": 0.1647,
               "count": 14,
               "denominator": 85
+            },
+            "intuition": {
+              "implicit_task": 0.7941,
+              "denominator": 34
             }
           },
           "warnings": [],
@@ -67511,6 +69151,10 @@
               "rate": 0.0877,
               "count": 10,
               "denominator": 114
+            },
+            "intuition": {
+              "implicit_task": 0.8636,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -67676,6 +69320,10 @@
               "rate": 0.1316,
               "count": 20,
               "denominator": 152
+            },
+            "intuition": {
+              "implicit_task": 0.7667,
+              "denominator": 60
             }
           },
           "warnings": [],
@@ -67843,6 +69491,10 @@
               "rate": 0.1236,
               "count": 68,
               "denominator": 550
+            },
+            "intuition": {
+              "implicit_task": 0.8009,
+              "denominator": 216
             }
           },
           "warnings": [],
@@ -68012,6 +69664,10 @@
               "rate": 0.46,
               "count": 46,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.375,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -68177,6 +69833,10 @@
               "rate": 0.61,
               "count": 61,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.2,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -68342,6 +70002,10 @@
               "rate": 0.63,
               "count": 63,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.175,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -68507,6 +70171,10 @@
               "rate": 0.63,
               "count": 63,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.2,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -68672,6 +70340,10 @@
               "rate": 0.65,
               "count": 65,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.1,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -68837,6 +70509,10 @@
               "rate": 0.697,
               "count": 69,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -69004,6 +70680,10 @@
               "rate": 0.6127,
               "count": 367,
               "denominator": 599
+            },
+            "intuition": {
+              "implicit_task": 0.175,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -69171,6 +70851,10 @@
               "rate": 0.7406,
               "count": 177,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -69336,6 +71020,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -69500,6 +71188,10 @@
             "educated_guess": {
               "rate": 0.7917,
               "count": 190,
+              "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.175,
               "denominator": 240
             }
           },
@@ -69668,6 +71360,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 120
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -69833,6 +71529,10 @@
               "rate": 0.7708,
               "count": 185,
               "denominator": 240
+            },
+            "intuition": {
+              "implicit_task": 0.1417,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -69998,6 +71698,10 @@
               "rate": 0.7615,
               "count": 182,
               "denominator": 239
+            },
+            "intuition": {
+              "implicit_task": 0.2083,
+              "denominator": 120
             }
           },
           "warnings": [],
@@ -70165,6 +71869,10 @@
               "rate": 0.6455,
               "count": 71,
               "denominator": 110
+            },
+            "intuition": {
+              "implicit_task": 0.1591,
+              "denominator": 44
             }
           },
           "warnings": [],
@@ -70330,6 +72038,10 @@
               "rate": 0.581,
               "count": 61,
               "denominator": 105
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 42
             }
           },
           "warnings": [],
@@ -70495,6 +72207,10 @@
               "rate": 0.5889,
               "count": 53,
               "denominator": 90
+            },
+            "intuition": {
+              "implicit_task": 0.25,
+              "denominator": 36
             }
           },
           "warnings": [],
@@ -70660,6 +72376,10 @@
               "rate": 0.592,
               "count": 74,
               "denominator": 125
+            },
+            "intuition": {
+              "implicit_task": 0.18,
+              "denominator": 50
             }
           },
           "warnings": [],
@@ -70825,6 +72545,10 @@
               "rate": 0.6391,
               "count": 108,
               "denominator": 169
+            },
+            "intuition": {
+              "implicit_task": 0.1471,
+              "denominator": 68
             }
           },
           "warnings": [],
@@ -70992,6 +72716,10 @@
               "rate": 0.6127,
               "count": 367,
               "denominator": 599
+            },
+            "intuition": {
+              "implicit_task": 0.175,
+              "denominator": 240
             }
           },
           "warnings": [],
@@ -71161,6 +72889,10 @@
               "rate": 0.4583,
               "count": 44,
               "denominator": 96
+            },
+            "intuition": {
+              "implicit_task": 0.45,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -71326,6 +73058,10 @@
               "rate": 0.5238,
               "count": 44,
               "denominator": 84
+            },
+            "intuition": {
+              "implicit_task": 0.4,
+              "denominator": 35
             }
           },
           "warnings": [],
@@ -71491,6 +73227,10 @@
               "rate": 0.5758,
               "count": 57,
               "denominator": 99
+            },
+            "intuition": {
+              "implicit_task": 0.2821,
+              "denominator": 39
             }
           },
           "warnings": [],
@@ -71656,6 +73396,10 @@
               "rate": 0.64,
               "count": 64,
               "denominator": 100
+            },
+            "intuition": {
+              "implicit_task": 0.15,
+              "denominator": 40
             }
           },
           "warnings": [],
@@ -71821,6 +73565,10 @@
               "rate": 0.7143,
               "count": 45,
               "denominator": 63
+            },
+            "intuition": {
+              "implicit_task": 0.0,
+              "denominator": 24
             }
           },
           "warnings": [],
@@ -71985,6 +73733,10 @@
             "educated_guess": {
               "rate": 1.0,
               "count": 1,
+              "denominator": 1
+            },
+            "intuition": {
+              "implicit_task": 0.0,
               "denominator": 1
             }
           },
@@ -72153,6 +73905,10 @@
               "rate": 0.5756,
               "count": 255,
               "denominator": 443
+            },
+            "intuition": {
+              "implicit_task": 0.2737,
+              "denominator": 179
             }
           },
           "warnings": [],
@@ -72320,6 +74076,10 @@
               "rate": 0.731,
               "count": 125,
               "denominator": 171
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -72485,6 +74245,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 93
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -72649,6 +74413,10 @@
             "educated_guess": {
               "rate": 0.7263,
               "count": 130,
+              "denominator": 179
+            },
+            "intuition": {
+              "implicit_task": 0.2737,
               "denominator": 179
             }
           },
@@ -72817,6 +74585,10 @@
               "rate": 0.0,
               "count": 0,
               "denominator": 93
+            },
+            "intuition": {
+              "implicit_task": null,
+              "denominator": 0
             }
           },
           "warnings": [],
@@ -72982,6 +74754,10 @@
               "rate": 0.7371,
               "count": 129,
               "denominator": 175
+            },
+            "intuition": {
+              "implicit_task": 0.2614,
+              "denominator": 88
             }
           },
           "warnings": [],
@@ -73147,6 +74923,10 @@
               "rate": 0.72,
               "count": 126,
               "denominator": 175
+            },
+            "intuition": {
+              "implicit_task": 0.2857,
+              "denominator": 91
             }
           },
           "warnings": [],
@@ -73314,6 +75094,10 @@
               "rate": 0.5591,
               "count": 52,
               "denominator": 93
+            },
+            "intuition": {
+              "implicit_task": 0.2703,
+              "denominator": 37
             }
           },
           "warnings": [],
@@ -73479,6 +75263,10 @@
               "rate": 0.5263,
               "count": 40,
               "denominator": 76
+            },
+            "intuition": {
+              "implicit_task": 0.3226,
+              "denominator": 31
             }
           },
           "warnings": [],
@@ -73644,6 +75432,10 @@
               "rate": 0.6557,
               "count": 40,
               "denominator": 61
+            },
+            "intuition": {
+              "implicit_task": 0.1667,
+              "denominator": 24
             }
           },
           "warnings": [],
@@ -73809,6 +75601,10 @@
               "rate": 0.5789,
               "count": 55,
               "denominator": 95
+            },
+            "intuition": {
+              "implicit_task": 0.3158,
+              "denominator": 38
             }
           },
           "warnings": [],
@@ -73974,6 +75770,10 @@
               "rate": 0.5763,
               "count": 68,
               "denominator": 118
+            },
+            "intuition": {
+              "implicit_task": 0.2653,
+              "denominator": 49
             }
           },
           "warnings": [],
@@ -74141,6 +75941,10 @@
               "rate": 0.5756,
               "count": 255,
               "denominator": 443
+            },
+            "intuition": {
+              "implicit_task": 0.2737,
+              "denominator": 179
             }
           },
           "warnings": [],
@@ -553327,7 +555131,7 @@
       "oracle.py": "ab5878f8ed180bccc9653a0b2fc601220d0d81cbaa24a91622d764aacfc37c55",
       "pipeline.py": "e05a0889f24003a90ef4b6c4a9ce60bd50759939e839a9bc4d03377e3dc572ca",
       "populate.py": "2dab5370fd9895de2f25c92cd851dff84a642bb125d6e07666241661136577a3",
-      "reporting.py": "0a2a1e1512f2115145043f2c5cc7fa061a0e9e772e62eec3f9ef9b9a7917573e",
+      "reporting.py": "e8843ebdb4d040302d1311a64f524c9b8f9ba67f1e788914bb309fbd07cff827",
       "rng.py": "3de3ceaced32995ab61a317be204656229ad67b10a05f21736cac082b1941917",
       "sat.py": "bfbb94117dca5e649f609b388dc741d5082be17cb278c581a7da78cd3b81797d",
       "story.py": "391f2f97fd142cbd0cbcdf12fbdef194ba4377896fd315ee19ec1bddf7d1f965",
@@ -560349,7 +562153,7 @@
     "complete": true,
     "integrity_sha256": "b2632b00e4e25aa7b33fcb28e9a3be4055d5b95436a7f253c9fd7fa2ed725e12"
   },
-  "finished_at": "2026-09-18T18:14:57.643400+00:00",
-  "regrading_seconds": 52.679757,
+  "finished_at": "2026-09-18T18:37:02.940536+00:00",
+  "regrading_seconds": 52.350804,
   "evaluation_seconds": 719001.67962
 }
