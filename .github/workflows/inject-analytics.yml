@@ -1,0 +1,55 @@
+name: Inject analytics beacon
+
+# After a gh-pages push, insert the analytics snippet (stored as the
+# ANALYTICS_SNIPPET repo secret) into the <head> of every published page.
+# The snippet never appears in the repository; clones cannot post to the
+# beacon because the injection only runs server-side on GitHub.
+
+on:
+  push:
+    branches: [gh-pages]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - name: Inject snippet into all HTML pages
+        env:
+          SNIPPET: ${{ secrets.ANALYTICS_SNIPPET }}
+        run: |
+          set -euo pipefail
+          [ -n "$SNIPPET" ] || { echo "ANALYTICS_SNIPPET secret is empty; nothing to inject"; exit 0; }
+          shopt -s nullglob
+          pages=( *.html )
+          [ ${#pages[@]} -gt 0 ] || { echo "no HTML pages found"; exit 0; }
+          python3 - <<'PYEOF'
+          import glob, os
+          snippet = os.environ["SNIPPET"]
+          marker = "<head>"
+          for path in glob.glob("*.html"):
+              html = open(path).read()
+              if "goatcounter" in html:
+                  print(f"skip (beacon already present): {path}")
+                  continue
+              assert marker in html, f"no <head> in {path}"
+              open(path, "w").write(html.replace(marker, marker + snippet, 1))
+              print(f"injected: {path}")
+          PYEOF
+      - name: Commit if changed
+        run: |
+          if git diff --quiet; then
+            echo "no changes"
+          else
+            git config user.name "analytics-bot"
+            git config user.email "actions@github.com"
+            git add -A
+            git commit -m "Inject analytics beacon [skip ci]"
+            git push
+          fi
