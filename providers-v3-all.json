@@ -262,6 +262,46 @@
       "max_tokens": 32768,
       "reasoning_effort": "low",
       "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "grok-4.6",
+      "model": "x-ai/grok-4.6",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "qwen3.8-27b",
+      "model": "qwen/qwen3.8-27b",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "minimax-m3",
+      "model": "minimax/minimax-m3",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "deepseek-v4-pro",
+      "model": "deepseek/deepseek-v4-pro",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
     }
   ]
 }
