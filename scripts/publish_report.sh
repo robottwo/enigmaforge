@@ -54,3 +54,13 @@ else
   git push origin gh-pages
   echo "published: https://robottwo.github.io/enigmaforge/"
 fi
+
+# Dispatch the analytics-injection workflow on main (it cannot trigger from
+# gh-pages pushes because that orphan branch has no workflow files).
+if command -v gh >/dev/null 2>&1; then
+  gh workflow run inject-analytics.yml \
+    && echo "analytics injection dispatched" \
+    || echo "WARNING: could not dispatch inject-analytics.yml (beacon missing until re-run)"
+else
+  echo "WARNING: gh CLI not found; run 'gh workflow run inject-analytics.yml' to inject the analytics beacon"
+fi
