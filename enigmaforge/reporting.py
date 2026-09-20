@@ -1076,6 +1076,7 @@ def render_html(agg, out_path, instances=None):
                       + '<h2 id="details">Per-record details</h2>' + ''.join(detailed))
     companion = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
                  '<meta name="viewport" content="width=device-width, initial-scale=1">'
+                 '<script data-goatcounter="https://enigmaforge.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
                  '<title>EnigmaForge — raw records</title><style>' + _CSS +
                  '</style></head><body><main>' + companion_body +
                  '</main></body></html>')
@@ -1087,6 +1088,7 @@ def render_html(agg, out_path, instances=None):
                     f'aria-labelledby="tab-{key}">{body}</section>' for key, _, body in tabs)
     doc = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+           '<script data-goatcounter="https://enigmaforge.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
            '<title>EnigmaForge — the find-the-problem benchmark</title><style>' + _CSS +
            '</style></head><body><main>' + _hero(agg, rows) +
            '<p class="scale-note">' + _escape(agg["generated_at"]) +
