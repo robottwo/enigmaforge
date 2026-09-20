@@ -207,8 +207,7 @@ def test_html_escapes_all_dynamic_text_and_maps_hidden_facts(tmp_path):
     parser = ReportParser()
     parser.feed(out.read_text())
     parser.feed((tmp_path / "report-details.html").read_text())
-    # 1 in-page data script + 2 GoatCounter analytics beacons (reporting.py)
-    assert parser.tags.count("script") == 3
+    assert parser.tags.count("script") == 1
     assert "img" not in parser.tags
     assert not any(name.startswith("on") for name, _ in parser.attrs)
     assert attack in "".join(parser.text)
