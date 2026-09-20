@@ -4,3 +4,6 @@ runs/
 .env
 benchmarks/
 .DS_Store
+
+# Local analytics snippet — injected into published pages by publish_report.sh
+analytics.html
