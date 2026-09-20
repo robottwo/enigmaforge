@@ -192,6 +192,23 @@ def _summary(pairs, resamples, seed):
             "finish_reason=length). This is a budget configuration problem; "
             "raise max_tokens and/or cap the reasoning budget "
             "(reasoning_max_tokens) before comparing these scores.")
+    # Provider-side refusals and delivery failures are not capability zeros:
+    # all-item scores treat them as missing mass, so a heavily filtered model
+    # is not comparable to a fully answered one. Warn loudly when either
+    # crosses a tenth of the corpus.
+    threshold = max(1, round(0.1 * len(pairs)))
+    if counts["content_filter"] >= threshold:
+        warnings.append(
+            f"{counts['content_filter']}/{len(pairs)} attempts were blocked by "
+            "the provider's content filter before any answer. These count as "
+            "missing mass in all-item scores; treat this row as a lower bound, "
+            "not a capability estimate.")
+    if counts["transport_error"] >= threshold:
+        warnings.append(
+            f"{counts['transport_error']}/{len(pairs)} attempts failed in "
+            "transport (network/provider errors, no response). These count as "
+            "missing mass in all-item scores; treat this row as a lower bound, "
+            "not a capability estimate.")
     return {"coverage": coverage, "status_counts": {s: counts[s] for s in STATUSES},
             "metrics": metrics, "score": metrics["fact_f1"]["all_items"]["value"],
             "derived": derived,

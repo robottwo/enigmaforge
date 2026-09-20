@@ -405,3 +405,23 @@ def test_score_views_sort_by_their_own_metric():
     trust_view = picker.split('id="scoreview-claim_accuracy"')[1]
     assert task_view.index("alpha") < task_view.index("beta")
     assert trust_view.index("beta") < trust_view.index("alpha")
+
+
+def test_content_filter_and_transport_warnings():
+    # 3/10 content-filtered -> loud refusal warning with the fraction named.
+    instances = [instance(str(n)) for n in range(10)]
+    records = ([grade("p", str(n)) for n in range(7)]
+               + [grade("p", str(n), f1=0, status="content_filter") for n in range(7, 10)])
+    row = aggregate(records, instances, ["p"], bootstrap_resamples=0)["leaderboard"][0]
+    assert any("content filter" in w and "3/10" in w for w in row["warnings"])
+    # Same threshold logic for transport errors.
+    records = ([grade("p", str(n)) for n in range(7)]
+               + [grade("p", str(n), f1=0, status="transport_error") for n in range(7, 10)])
+    row = aggregate(records, instances, ["p"], bootstrap_resamples=0)["leaderboard"][0]
+    assert any("transport" in w and "3/10" in w for w in row["warnings"])
+    # Below the threshold (1/20 = 5%): no warning.
+    instances20 = [instance(str(n)) for n in range(20)]
+    records = ([grade("p", str(n)) for n in range(19)]
+               + [grade("p", "19", f1=0, status="content_filter")])
+    row = aggregate(records, instances20, ["p"], bootstrap_resamples=0)["leaderboard"][0]
+    assert not any("content filter" in w for w in row["warnings"])
