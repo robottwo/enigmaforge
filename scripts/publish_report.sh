@@ -28,7 +28,10 @@ WORK=$(mktemp -d)
 trap 'git worktree remove --force "$WORK" 2>/dev/null; rm -rf "$WORK"' EXIT
 
 git worktree add --orphan -b gh-pages "$WORK" 2>/dev/null \
-  || git worktree add "$WORK" gh-pages
+  || { git fetch origin gh-pages -q \
+       && git worktree add "$WORK" gh-pages \
+       && (cd "$WORK" && git pull --ff-only origin gh-pages -q) \
+       || git worktree add "$WORK" gh-pages; }
 cp "$SRC/report.html" "$WORK/index.html"
 cp "$SRC/results.json" "$WORK/results.json"
 [ -f "$SRC/report-details.html" ] && cp "$SRC/report-details.html" "$WORK/"
