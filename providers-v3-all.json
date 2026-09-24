@@ -302,6 +302,56 @@
       "max_tokens": 32768,
       "reasoning_effort": "low",
       "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-6-luna",
+      "model": "openai/gpt-6-luna",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-6-sol",
+      "model": "openai/gpt-6-sol",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "claude-opus-5.5",
+      "model": "anthropic/claude-opus-5.5",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "mimo-v2.6-flash",
+      "model": "xiaomi/mimo-v2.6-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "mimo-v2.6-pro",
+      "model": "xiaomi/mimo-v2.6-pro",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
     }
   ]
 }
