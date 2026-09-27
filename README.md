@@ -2,6 +2,8 @@
 
 **Procedurally generated benchmarks for the hardest thing an LLM can do: discover the problem before solving it.**
 
+📄 **Paper: [EnigmaForge: The Question Is Hidden in the Story](https://arxiv.org/abs/2609.30144)** (arXiv:2609.30144)
+
 Most benchmarks hand a model the question. EnigmaForge hands it a *record* — letters, receipts, logbooks, marginalia — and asks nothing else. The real task is hidden inside: the solver must infer latent entities, decide which evidence matters, supply world knowledge the narrative never states, abandon objectives that turn out to be intermediate, and justify a final answer against a **mechanically verified ground truth**.
 
 > *You have been given the complete record of an unusual sequence of events. Determine what the record ultimately requires you to figure out. Then figure it out.*

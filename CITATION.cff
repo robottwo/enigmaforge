@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: >-
+  If you use EnigmaForge in your research, please cite it using the
+  following metadata.
+title: 'EnigmaForge: The Question Is Hidden in the Story'
+authors:
+  - family-names: Eisner
+    given-names: Daniel
+type: article
+repository: https://github.com/robottwo/enigmaforge
+repository-artifact: https://robottwo.github.io/enigmaforge/
+url: https://arxiv.org/abs/2609.30144
+preferred-citation:
+  type: article
+  title: 'EnigmaForge: The Question Is Hidden in the Story'
+  authors:
+    - family-names: Eisner
+      given-names: Daniel
+  repository: https://github.com/robottwo/enigmaforge
+  year: 2026
