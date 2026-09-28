@@ -37,6 +37,11 @@ button.big:disabled{background:#b9c8d4;cursor:default}
 table.mini{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:8px}
 table.mini td,table.mini th{border:1px solid var(--line);padding:6px 10px;text-align:left}
 .note{color:var(--faint);font-size:.88rem}
+.toggle{background:none;border:1px solid var(--line);border-radius:6px;padding:5px 12px;font-family:inherit;font-size:.85rem;cursor:pointer;color:var(--faint);margin-right:6px}
+.toggle.on{border-color:var(--accent);color:var(--accent);font-weight:bold}
+#story p{margin:0 0 14px}
+#story .title{font-weight:bold;font-size:1.08rem;margin-bottom:10px}
+.clue{background:#fdf3d0;border-bottom:1px dotted #c9a227}
 footer{margin-top:36px;color:var(--faint);font-size:.85rem}
 </style>
 </head>
@@ -52,7 +57,13 @@ footer{margin-top:36px;color:var(--faint);font-size:.85rem}
 <div class="step-tag">Step 1 · Read the record</div>
 <p class="instr">"You have been given the complete record of an unusual sequence of events. Determine what the record ultimately requires you to figure out. Then figure it out."</p>
 <p class="note">That is the <em>entire</em> instruction. Ten documents follow. Two of them are decoys — they sound relevant but carry no formal weight. Notice what is being asked before you try to answer.</p>
+<div style="margin:10px 0 6px">
+<button class="toggle on" id="tgStory" onclick="setMode('story')">The story</button>
+<button class="toggle" id="tgRec" onclick="setMode('record')">The exhibit list</button>
+</div>
 <div id="docs"></div>
+<div id="story"></div>
+<div class="note" id="modenote"></div>
 <div class="note" style="margin-top:12px">Marginal references found with the record: <em>(K0)</em> A note mentions Shakespeare. <em>(K1)</em> A note mentions penicillin.</div>
 <button class="big" onclick="go(2)">I've read it — show me the question I was never asked</button>
 </div>
@@ -117,6 +128,39 @@ const DOCS = [
 "the vintage of the wine did not match the year of the dinner — the harbor fee was never paid.",
 "When pressed, the correspondent allowed only that the dog barked at nobody in particular that night — the harbor fee was never paid."
 ];
+const STORY = [
+'The cold lake',
+'The radiator ticked and went silent. The cable hummed faintly in its channel.',
+'The kitchen corridor smelled of boot wax and coffee. Juno had an hour before the last cable down. Halden argued over the stair rail with more patience than it deserved.',
+'The talk kept coming back to it: something had unsettled the ordinary working of the hotel, and no one would say what. Boot powder hung in the cold of the corridor. Juno allowed that it took an argument and half the evening, but everyone finally allowed that the bar ledger and the guest register agreed. Ansel turned out the terrace cushions with more patience than it deserved. Sooner or later everyone admitted that the vintage that season did not match the cellar order — the deposit was never banked — or so it was repeated. A storm slid off the ridge and took the light with it. Juno gave up on the wet umbrellas with more patience than it deserved. The piano upstairs worked through the same eight bars.',
+'Juno argued over the linen cart as if it mattered. Juno kept half an eye on the linen cart with more patience than it deserved. Ansel argued over the wet umbrellas as if it mattered.',
+'The boot room smelled of boot wax and coffee. Juno had an hour before the last cable down. By then everyone had heard that the cold lake came up when the talk went quiet. Snow squeaked under someone\'s boots and stopped. It was Cassia who finally said it: the talk kept circling back to the same stubborn fact: the patrol book was signed out under Ansel. Ansel turned out the wet umbrellas long after it stopped being useful.',
+'Juno argued over the lamp without much hope.',
+'Cassia carried down the wood box for the third time that week. The great clock over the desk lost a second and found it. Ansel left standing the boot rack as if it mattered.',
+'Halden set to rights the gramophone and thought better of it. Frost ferned the porthole by the stairs. Ansel kept half an eye on the biscuit tin with more patience than it deserved.',
+'Ansel kept the kitchen corridor open late that week, and the evenings ran long. Someone was drying mittens at the stove, humming. Nobody had to ask Cassia twice: it came out at the lobby, the way such things do — the left-luggage ticket was stamped 3. The lobby cat claimed the window seat and stayed. Cassia gave up on the wood box without much hope.',
+'Cassia argued over the kettle twice before supper. Cassia turned out the biscuit tin without much hope.',
+'Juno kept half an eye on the linen cart before the light went. Juno argued over the terrace cushions long after it stopped being useful. Cassia gave up on the wet umbrellas and said nothing about it.',
+'The lobby smelled of boot wax and coffee. Juno had an hour before the last cable down. Ansel allowed that the switchboard log carried Halden\'s mark. Even the newest hand knew that a discrepancy behind the bar totals was noted — the deposit was never banked. Cassia set to rights the terrace cushions twice before supper. Juno left standing the lamp out of habit. Ansel carried down the kettle without much hope. Cassia kept half an eye on the stove long after it stopped being useful.',
+'Halden set to rights the wood box long after it stopped being useful. Ansel left standing the gramophone long after it stopped being useful. Juno kept half an eye on the stair rail without much hope. Halden argued over the stair rail without much hope.',
+'Ansel kept half an eye on the stove without much hope. Cassia left standing the gramophone and said nothing about it. Juno kept half an eye on the stove and said nothing about it. Halden left standing the kettle for the third time that week.',
+'Snow set in over the boot room, and there was nothing to do but talk. Juno kept half an eye on the biscuit tin out of habit. Nobody had to ask Cassia twice: it held like a habit: whenever the lift log read Halden, the baggage tag read 4. Ansel turned out the stair rail for the third time that week. Ansel carried down the linen cart and thought better of it.',
+'Ansel left standing the wood box without much hope. Halden kept half an eye on the stair rail and said nothing about it. Juno gave up on the wood box and said nothing about it.',
+'Ansel turned out the wet umbrellas with more patience than it deserved. Halden put right the wood box twice before supper. Ansel set to rights the stove before the light went.',
+'Juno kept half an eye on the gramophone with more patience than it deserved. Juno set to rights the stove for the third time that week.',
+'Halden gave up on the kettle out of habit. Halden argued over the boot rack for the third time that week. Halden tripped over the linen cart twice before supper.',
+'Snow set in over the reading room, and there was nothing to do but talk. Even the newest hand knew that whoever went and checked came back with the same answer: the bar ledger was signed out under Juno, for whatever that was worth. Cassia kept half an eye on the kettle long after it stopped being useful. Still, the season being what it was, the lost station came up when the talk went quiet — or so it was repeated. Cassia carried down the kettle for the third time that week. Juno put right the stove twice before supper. Ansel set to rights the lamp without much hope. Ansel gave up on the stair rail as if it mattered.',
+'Cassia turned out the boot rack without much hope. Halden kept half an eye on the lamp with more patience than it deserved. Cassia argued over the linen cart long after it stopped being useful. Ansel set to rights the lamp twice before supper.',
+'Cassia gave up on the stove and thought better of it. Ansel argued over the stove as if it mattered. Halden put right the biscuit tin long after it stopped being useful.',
+'Ansel argued over the wood box long after it stopped being useful. Juno tripped over the kettle for the third time that week.',
+'It was quiet in the bar. Outside, the lifts had stopped for the day. If Juno was to be believed, old mountain hands still traded stories about the season when whatever the kitchen chit showed, the left-luggage ticket matched it. Juno set to rights the wood box before the light went. Ansel turned out the biscuit tin for the third time that week.',
+'Juno left standing the boot rack and said nothing about it. Juno kept half an eye on the gramophone and thought better of it. Ansel tripped over the terrace cushions with more patience than it deserved.',
+'Snow set in over the reading room, and there was nothing to do but talk. If Ansel was to be believed, no one disputed that the lift log pointed to Halden, and that was the end of the discussion. Ansel turned out the linen cart as if it mattered.',
+'Juno allowed that pointing at it was no longer the point; what mattered now was what to do. Juno carried down the biscuit tin for the third time that week. Cassia left standing the stair rail out of habit. Ansel set to rights the boot rack with more patience than it deserved.',
+'Halden put right the linen cart before the light went. Halden made room for the biscuit tin as if it mattered. Juno tripped over the wet umbrellas out of habit.',
+'Juno set to rights the wet umbrellas before the light went. Halden tripped over the kettle with more patience than it deserved. Halden turned out the linen cart without much hope. Ansel put right the stove out of habit.'
+];
+const INSTRUCTION = 'The standing instruction governs the final action. The action\\'s subject is "lift log", and its value must be that subject\\'s resolved value, not the gate\\'s value. If the resolved value of "kitchen chit" equals 3, the operation is "register"; otherwise the operation is "hold". These operation names are exact. String, integer, and boolean values remain distinct.';
 const CHOICES = [
 ["a","Record the harbor fee as paid and close the ledger — the omission was clerical.",0],
 ["b","Act on the corrected record — reconcile the marks, stamps, and sign-outs to the one world they jointly describe, and do what that world requires.",1],
@@ -127,6 +171,14 @@ let picked=false;
 function init(){
   const d=document.getElementById('docs');
   DOCS.forEach((t,i)=>{const e=document.createElement('div');e.className='doc';e.innerHTML='<span class="n">('+(i+1)+')</span> '+t;d.appendChild(e);});
+  const s=document.getElementById('story');
+  STORY.forEach((t,i)=>{
+    const e=document.createElement('p');
+    if(i===0){e.className='title';e.textContent=t;}
+    else{e.innerHTML=clueify(t);}
+    s.appendChild(e);
+  });
+  setMode('story');
   const c=document.getElementById('choices');
   CHOICES.forEach(([k,txt,right])=>{
     const b=document.createElement('button');b.className='choice';b.textContent=txt;b.id='ch'+k;
@@ -135,12 +187,27 @@ function init(){
       if(!right)b.classList.add('wrong');else b.classList.add('picked');
       const v=document.getElementById('verdict');
       v.innerHTML=right
-        ?'<p class="verdict"><span class="good">Correct.</span> "Act on the corrected record" is the verified objective — the unique world requires it. You just did what most frontier models, handed the same record with no question, failed to do.</p>'
+        ?'<p class="verdict"><span class="good">Correct.</span> "Act on the corrected record" is the verified objective — the unique world requires it. You just did what most frontier models, handed the same story with no question, failed to do.</p>'
         :'<p class="verdict"><span class="bad">Not this one.</span> The verified answer is "act on the corrected record" — the unique world the clues pin down requires exactly that action. Most frontier models missed it too, and they had the question hidden, not just hard.</p>';
       document.getElementById('revealbtn').disabled=false;
     };
     c.appendChild(b);
   });
+}
+const CLUES=['bar ledger and the guest register agreed','patrol book was signed out under Ansel','lift log read Halden','baggage tag read 4','no one disputed that the lift log pointed to Halden','left-luggage ticket was stamped 3','bar ledger was signed out under Juno','switchboard log carried Halden','kitchen chit showed, the left-luggage ticket matched it','deposit was never banked'];
+function clueify(t){
+  let out=t;
+  CLUES.forEach(c=>{out=out.split(c).join('<span class="clue">'+c+'</span>');});
+  return out;
+}
+function setMode(m){
+  document.getElementById('docs').style.display = m==='record'?'block':'none';
+  document.getElementById('story').style.display = m==='story'?'block':'none';
+  document.getElementById('tgStory').classList.toggle('on', m==='story');
+  document.getElementById('tgRec').classList.toggle('on', m==='record');
+  document.getElementById('modenote').innerHTML = m==='story'
+    ?'The story — one of the benchmark\'s two realizations of the same hidden world. The ten load-bearing clue phrases are <span style="background:#fdf3d0">highlighted</span> here for your convenience; the models never got highlights. The final paragraph (the standing instruction) is shown after the story in the real benchmark too.'
+    :'The exhibit list — the benchmark\'s other realization of the same world: same constraints, flattened into numbered documents. Both forms carry identical information.';
 }
 function go(n){document.getElementById('stage'+n).style.display='block';
   if(n===3)document.getElementById('stage4').style.display='block';
