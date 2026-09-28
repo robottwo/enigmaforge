@@ -3,6 +3,7 @@
 **Procedurally generated benchmarks for the hardest thing an LLM can do: discover the problem before solving it.**
 
 📄 **Paper: [EnigmaForge: The Question Is Hidden in the Story](https://arxiv.org/abs/2609.30144)** (arXiv:2609.30144)
+📊 **Full results & interactive leaderboard: [robottwo.github.io/enigmaforge](https://robottwo.github.io/enigmaforge/)**
 
 Most benchmarks hand a model the question. EnigmaForge hands it a *record* — letters, receipts, logbooks, marginalia — and asks nothing else. The real task is hidden inside: the solver must infer latent entities, decide which evidence matters, supply world knowledge the narrative never states, abandon objectives that turn out to be intermediate, and justify a final answer against a **mechanically verified ground truth**.
 
@@ -18,6 +19,48 @@ Most benchmarks hand a model the question. EnigmaForge hands it a *record* — l
 | Distractors are noise | Distractors **support plausible false hypotheses** |
 | Score = final answer | **Answer-shaped scoring**: exact assignments, policy-validated actions, coverage-first reporting |
 | One canonical wording | Multiple **surface realizations** of one hidden instance |
+
+## The intuition leaderboard
+
+The benchmark's headline measure is **intuition**: task success when the model
+receives only the story — no stated question. Sorted by intuition (not by
+fact recovery), the frontier looks very different than on conventional
+leaderboards: a 22× spread where fact recovery spans 1.6×, and the
+second-best fact-recoverer ranks 14th.
+
+| # | Model | Intuition | Fact F1 |
+|---:|---|---:|---:|
+| 1 | `gpt-6-astra` | 80.1 | 0.906 |
+| 2 | `gpt-6-sol` | 75.0 | 0.966 |
+| 3 | `claude-fable-5.1` | 55.6 | 0.023 |
+| 4 | `gpt-5.6-sol` | 54.2 | 0.910 |
+| 5 | `gemini-3.7-flash` | 52.9 | 0.913 |
+| 6 | `claude-fable-5` | 45.5 | 0.625 |
+| 7 | `claude-sonnet-5` | 43.2 | 0.669 |
+| 8 | `claude-opus-5` | 42.8 | 0.573 |
+| 9 | `gemini-3.8-flash` | 39.3 | 0.862 |
+| 10 | `glm-5.3` | 37.7 | 0.801 |
+| 11 | `kimi-k3` | 27.4 | 0.628 |
+| 12 | `gpt-5.6-terra` | 24.2 | 0.818 |
+| 13 | `gpt-6-luna` | 22.9 | 0.815 |
+| 14 | `claude-opus-5.5` | 22.0 | 0.919 |
+| 15 | `grok-4.6` | 21.2 | 0.895 |
+| 16 | `deepseek-v4-pro` | 19.2 | 0.915 |
+| 17 | `deepseek-4.1-flash` | 18.0 | 0.787 |
+| 18 | `kimi-k2.6` | 17.5 | 0.904 |
+| 19 | `gpt-5.6-luna` | 16.7 | 0.814 |
+| 20 | `gemini-3.6-flash` | 16.2 | 0.795 |
+| 21 | `qwen3.8-27b` | 12.1 | 0.836 |
+| 22 | `minimax-m3` | 11.2 | 0.685 |
+| 23 | `glm-5.3-flash` | 5.0 | 0.667 |
+| 24 | `claude-haiku-4.5` | 4.2 | 0.680 |
+| 25 | `glm-4.7-flash` | 3.6 | 0.633 |
+
+*Intuition = implicit-condition task success (0–100). Fact F1 = world
+reconstruction over all conditions. 25 frontier models, 600 instances,
+17,400 scored records — the full tables, confidence intervals, and
+coverage warnings are on the [results site](https://robottwo.github.io/enigmaforge/).* Full methodology and
+findings are in the [paper](https://arxiv.org/abs/2609.30144).
 
 ## The pipeline
 
