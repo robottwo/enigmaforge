@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnigmaForge — Try One Instance</title>
+<script data-goatcounter="https://enigmaforge.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<style>
+:root{--paper:#faf6ee;--ink:#2b2620;--faint:#8a7f6d;--accent:#1d5c8f;--card:#fff;--line:#e4dcc9}
+*{box-sizing:border-box}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);margin:0;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px}
+header h1{font-size:1.7rem;margin:0 0 4px}
+header .sub{color:var(--faint);font-style:italic;margin-bottom:18px}
+a{color:var(--accent)}
+.step-tag{display:inline-block;font-family:menlo,monospace;font-size:.72rem;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin-bottom:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px 30px;margin-bottom:22px;box-shadow:0 1px 3px rgba(60,45,20,.06)}
+.instr{font-style:italic;color:var(--ink)}
+.doc{margin:14px 0;padding-left:14px;border-left:3px solid var(--line)}
+.doc .n{color:var(--faint);font-family:menlo,monospace;font-size:.8rem}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.choice{display:block;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:12px 16px;cursor:pointer;font-family:inherit;font-size:1rem;text-align:left;color:var(--ink)}
+.choice:hover{border-color:var(--accent)}
+.choice.picked{border-color:var(--accent);background:#eef5fb}
+.choice.right{border-color:#2e7d32;background:#eef7ee}
+.choice.wrong{border-color:#b3563a;background:#f9eeea}
+button.big{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 22px;font-size:1.02rem;font-family:inherit;cursor:pointer;margin-top:16px}
+button.big:disabled{background:#b9c8d4;cursor:default}
+.reveal{display:none}
+.sol-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-family:menlo,monospace;font-size:.9rem}
+.sol-row b{font-family:Georgia,serif}
+.verdict{font-size:1.05rem;margin:6px 0}
+.verdict .good{color:#2e7d32;font-weight:bold}
+.verdict .bad{color:#b3563a;font-weight:bold}
+.cert{margin:10px 0;padding:12px 16px;background:#f4f0e4;border-radius:8px;font-size:.92rem}
+.cert .name{font-weight:bold}
+table.mini{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:8px}
+table.mini td,table.mini th{border:1px solid var(--line);padding:6px 10px;text-align:left}
+.note{color:var(--faint);font-size:.88rem}
+footer{margin-top:36px;color:var(--faint);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="step-tag">EnigmaForge · one real instance · seed 2026</div>
+<h1>The question is hidden in the story.</h1>
+<div class="sub">You are about to be evaluated the way 25 frontier models were evaluated. No question will be given.</div>
+</header>
+
+<div class="card" id="stage1">
+<div class="step-tag">Step 1 · Read the record</div>
+<p class="instr">"You have been given the complete record of an unusual sequence of events. Determine what the record ultimately requires you to figure out. Then figure it out."</p>
+<p class="note">That is the <em>entire</em> instruction. Ten documents follow. Two of them are decoys — they sound relevant but carry no formal weight. Notice what is being asked before you try to answer.</p>
+<div id="docs"></div>
+<div class="note" style="margin-top:12px">Marginal references found with the record: <em>(K0)</em> A note mentions Shakespeare. <em>(K1)</em> A note mentions penicillin.</div>
+<button class="big" onclick="go(2)">I've read it — show me the question I was never asked</button>
+</div>
+
+<div class="card reveal" id="stage2">
+<div class="step-tag">Step 2 · The hidden question</div>
+<p>The record never asks anything outright. But its own constraints pin down exactly one consistent world — and that world demands one final action. The question the model must <em>discover</em> is:</p>
+<p class="instr">"Who is behind the pattern in the record, and what must the corrected record require to be done?"</p>
+<p>You do not need to solve the whole logic world (that took a SAT solver to verify). Just the human part — the final decision. What is the correct final action?</p>
+<div class="choices" id="choices"></div>
+<button class="big" id="revealbtn" onclick="go(3)" disabled>Reveal the verified world</button>
+</div>
+
+<div class="card reveal" id="stage3">
+<div class="step-tag">Step 3 · The verified world</div>
+<p id="verdict"></p>
+<p>Here is the hidden world — the unique assignment of all eight variables that satisfies every constraint in the record:</p>
+<div id="solution"></div>
+<p style="margin-top:16px"><b>How the record pins this down</b> (each line is a clue you just read, formalized):</p>
+<div class="cert">
+<div>EC0 — "whatever the broker's stamp showed, the chandlery invoice matched it" → <b>V3 = V6</b></div>
+<div>EC2 — "the consignment tag and the harbor manifest agreed" → <b>V4 = V0</b></div>
+<div>EC5 — "whenever the crate mark read Halden, the watch rotation read 4" → <b>V1=Halden ⇒ V5=4</b></div>
+<div>EPINV1 — the crate mark pointed to Halden → <b>V1 = Halden</b></div>
+<div>EPINV2 — the tide-table entry was signed out under Ansel → <b>V2 = Ansel</b></div>
+<div>EPINV4 — the consignment tag carried Juno's mark → <b>V4 = Juno</b></div>
+<div>EPINV6 — the chandlery invoice was stamped 3 → <b>V6 = 3</b></div>
+<div>EPINV7 — the ballast slip was signed out under Halden → <b>V7 = Halden</b></div>
+</div>
+<p><b>The decoys</b>, for the record: items (9) and (10) — "the harbor fee was never paid" — appear twice, sound conspiratorial, and constrain nothing. Removing them cannot change the answer (that is a structural guarantee, not an assumption).</p>
+<p><b>The marginalia</b>: K0 ("Shakespeare wrote Hamlet") is an <em>essential</em> knowledge anchor — the solver must connect it to date the events; K1 ("Penicillin was discovered by Fleming") is <em>confirmatory</em> — it corroborates but is not required.</p>
+</div>
+
+<div class="card reveal" id="stage4">
+<div class="step-tag">Step 4 · Why you can trust this puzzle</div>
+<p>Every EnigmaForge instance ships with machine-checkable certificates. For this one (seed 2026, world W002026):</p>
+<div class="cert"><span class="name">✓ SAT–oracle agreement</span> — an independent SAT solver and a brute-force oracle return the same single solution.</div>
+<div class="cert"><span class="name">✓ Uniqueness</span> — exactly one satisfying assignment exists among all possible worlds.</div>
+<div class="cert"><span class="name">✓ Every clue is load-bearing</span> — remove any one of the eight constraints and a second valid solution appears. Nothing in the record is filler.</div>
+<div class="cert"><span class="name">✓ Decoy safety</span> — the decoys carry no formal constraints, so they cannot alter the answer by design.</div>
+<p>Reproduce this instance, byte for byte, with one command:</p>
+<p style="font-family:menlo,monospace;background:#f4f0e4;padding:10px 14px;border-radius:8px">python3 -m enigmaforge.pipeline --size small --seed 2026</p>
+<p class="note">Frontier models saw exactly what you saw in Step 1 — no question, no hint. The best recovered the world nearly perfectly; most could recover the facts yet failed to take the action the record required. That gap is what the benchmark measures.</p>
+</div>
+
+<footer>
+<a href="../">← Full leaderboard</a> · <a href="https://arxiv.org/abs/2609.30144">The paper</a> · <a href="https://github.com/robottwo/enigmaforge">Code &amp; seeds</a><br>
+Instance seed 2026 · world W002026 · generated and verified by <a href="https://github.com/robottwo/enigmaforge">enigmaforge</a>
+</footer>
+</div>
+
+<script>
+const DOCS = [
+"The sequence is not disputed: whatever the broker's stamp showed, the chandlery invoice matched it.",
+"'the consignment tag and the harbor manifest agreed,' Halden said, not looking up.",
+"Nothing in the record states whenever the crate mark read Halden, the watch rotation read 4 — the absence is itself the record.",
+"Photograph, undated. On the reverse, pencil: no one disputed that the crate mark pointed to Halden.",
+"A receipt, water-stained: the tide-table entry was signed out under Ansel. The ink had run at the total.",
+"Nothing in the record states the consignment tag carried Juno's mark — the absence is itself the record.",
+"When pressed, Halden allowed only that the chandlery invoice was stamped 3.",
+"A print with a caption scratched into the border: the ballast slip was signed out under Halden.",
+"the vintage of the wine did not match the year of the dinner — the harbor fee was never paid.",
+"When pressed, the correspondent allowed only that the dog barked at nobody in particular that night — the harbor fee was never paid."
+];
+const CHOICES = [
+["a","Record the harbor fee as paid and close the ledger — the omission was clerical.",0],
+["b","Act on the corrected record — reconcile the marks, stamps, and sign-outs to the one world they jointly describe, and do what that world requires.",1],
+["c","Escalate to the harbor master for a new manifest — the consignment tag and manifest cannot both be authentic.",0],
+["d","Conclude the record is internally inconsistent and cannot be resolved.",0]
+];
+let picked=false;
+function init(){
+  const d=document.getElementById('docs');
+  DOCS.forEach((t,i)=>{const e=document.createElement('div');e.className='doc';e.innerHTML='<span class="n">('+(i+1)+')</span> '+t;d.appendChild(e);});
+  const c=document.getElementById('choices');
+  CHOICES.forEach(([k,txt,right])=>{
+    const b=document.createElement('button');b.className='choice';b.textContent=txt;b.id='ch'+k;
+    b.onclick=()=>{if(picked)return;picked=true;
+      CHOICES.forEach(([kk,,r])=>{const el=document.getElementById('ch'+kk);if(r)el.classList.add('right');});
+      if(!right)b.classList.add('wrong');else b.classList.add('picked');
+      const v=document.getElementById('verdict');
+      v.innerHTML=right
+        ?'<p class="verdict"><span class="good">Correct.</span> "Act on the corrected record" is the verified objective — the unique world requires it. You just did what most frontier models, handed the same record with no question, failed to do.</p>'
+        :'<p class="verdict"><span class="bad">Not this one.</span> The verified answer is "act on the corrected record" — the unique world the clues pin down requires exactly that action. Most frontier models missed it too, and they had the question hidden, not just hard.</p>';
+      document.getElementById('revealbtn').disabled=false;
+    };
+    c.appendChild(b);
+  });
+}
+function go(n){document.getElementById('stage'+n).style.display='block';
+  if(n===3)document.getElementById('stage4').style.display='block';
+  document.getElementById('stage'+n).scrollIntoView({behavior:'smooth'});
+}
+const SOL=[["V1 — the crate mark","Halden"],["V2 — the tide-table sign-out","Ansel"],["V4 — the consignment tag","Juno"],["V3 — the broker's stamp","3"],["V6 — the chandlery invoice stamp","3 (equals V3 — they matched)"],["V5 — the watch rotation","4 (whenever the mark read Halden)"],["V0 — the harbor manifest","Juno (equals V4 — tag and manifest agreed)"],["V7 — the ballast slip","Halden"]];
+function fillSol(){const s=document.getElementById('solution');SOL.forEach(([k,v])=>{const r=document.createElement('div');r.className='sol-row';r.innerHTML='<span>'+k+'</span><b>'+v+'</b>';s.appendChild(r);});}
+init();fillSol();
+</script>
+</body>
+</html>
