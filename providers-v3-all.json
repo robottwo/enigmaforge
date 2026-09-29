@@ -372,6 +372,16 @@
       "max_tokens": 32768,
       "reasoning_effort": "low",
       "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "deepseek-v4-flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
     }
   ]
 }
