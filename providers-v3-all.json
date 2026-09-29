@@ -352,6 +352,26 @@
       "max_tokens": 32768,
       "reasoning_effort": "low",
       "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "claude-sonnet-5.5",
+      "model": "anthropic/claude-sonnet-5.5",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gpt-6.1-sol",
+      "model": "openai/gpt-6.1-sol",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
     }
   ]
 }
