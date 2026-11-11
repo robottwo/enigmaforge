@@ -224,6 +224,16 @@
       "reasoning_max_tokens": 8192
     },
     {
+      "name": "claude-fable-5.2",
+      "model": "anthropic/claude-fable-5.2",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
       "name": "gpt-6-astra",
       "model": "openai/gpt-6-astra",
       "base_url": "https://openrouter.ai/api/v1",
@@ -266,6 +276,16 @@
     {
       "name": "gemini-4-argon",
       "model": "google/gemini-4-argon",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "gemini-4-carbon",
+      "model": "google/gemini-4-carbon",
       "base_url": "https://openrouter.ai/api/v1",
       "api_key_env": "OPENROUTER_API_KEY",
       "track_cost": true,
@@ -404,6 +424,16 @@
       "reasoning_max_tokens": 8192
     },
     {
+      "name": "gpt-6.1-terra",
+      "model": "openai/gpt-6.1-terra",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
       "name": "deepseek-v4-flash",
       "model": "deepseek/deepseek-v4-flash",
       "base_url": "https://openrouter.ai/api/v1",
@@ -416,6 +446,26 @@
     {
       "name": "ling-3.1-flash",
       "model": "inclusionai/ling-3.1-flash",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "muse-ember",
+      "model": "meta/muse-ember",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "track_cost": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "low",
+      "reasoning_max_tokens": 8192
+    },
+    {
+      "name": "muse-wonder",
+      "model": "meta/muse-wonder",
       "base_url": "https://openrouter.ai/api/v1",
       "api_key_env": "OPENROUTER_API_KEY",
       "track_cost": true,
